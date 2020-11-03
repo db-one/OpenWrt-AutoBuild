@@ -1,0 +1,282 @@
+#
+#
+# 感谢p3terx大神的一键编译脚本
+# 
+# Copyright (C) 2019 P3TERX <https://p3terx.com>
+# <https://github.com/P3TERX/Actions-OpenWrt.git>
+#
+
+
+name: 编译OpenWrt固件
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'build-openwrt'
+        required: true
+        default: '编译OpenWrt固件'
+
+
+# 定时触发编译(每天早5点)
+  schedule:
+    - cron: 0 21 * * *
+
+# 点赞☆Star触发编译
+#  watch:
+#    types: [started]
+
+# 编辑触发
+  push:
+    branches:
+      - master
+    paths:
+      - '开启编译'
+
+env: 
+  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+  SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+  GITHUB_RELEASE: https://github.com/db-one/OpenWrt-AutoBuild/releases
+  TZ: Asia/Shanghai
+
+jobs: 
+  build:
+    runs-on: ubuntu-18.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    name: 编译 ${{matrix.target}}
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [Lean_x86_64,Lienol_x86_64,Lean_x86_64_Long,Lienol_x86_64_Long]  #[Lean_x86_64,Lienol_x86_64,Lean_x86_64_Long,Lienol_x86_64_Long]
+
+    steps:
+    - name: 准备完成
+      uses: actions/checkout@v2
+
+    - name: 检测脚本设置
+      run: |
+        source "${GITHUB_WORKSPACE}/build/${{matrix.target}}/settings.ini"
+        echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
+        echo "REPO_BRANCH=${REPO_BRANCH}" >> $GITHUB_ENV
+        echo "CONFIG_FILE=${CONFIG_FILE}" >> $GITHUB_ENV
+        echo "WXFB_MESSAGE=${WXFB_MESSAGE}" >> $GITHUB_ENV
+        echo "CUSTOM_SH=${CUSTOM_SH}" >> $GITHUB_ENV
+        echo "SSH_ACTIONS=${SSH_ACTIONS}" >> $GITHUB_ENV
+        echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> $GITHUB_ENV
+        echo "UPLOAD_VMDK=${UPLOAD_VMDK}" >> $GITHUB_ENV
+        echo "UPLOAD_IPK=${UPLOAD_IPK}" >> $GITHUB_ENV
+        echo "UPLOAD_CONFIG=${UPLOAD_CONFIG}" >> $GITHUB_ENV
+        echo "UPLOAD_COWTRANSFER=${UPLOAD_COWTRANSFER}" >> $GITHUB_ENV
+        echo "UPLOAD_WETRANSFER=${UPLOAD_WETRANSFER}" >> $GITHUB_ENV
+        echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
+        echo "SERVERCHAN_SCKEY=${SERVERCHAN_SCKEY}" >> $GITHUB_ENV
+
+    - name: 开始安装编译所需系统
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+    - name: 下载${{matrix.target}}源码
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone -b $REPO_BRANCH --single-branch $REPO_URL openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: 更新时区、编译时间
+      id: date
+      run: |
+        sudo timedatectl set-timezone "$TZ"
+        echo "::set-output name=status::success"
+        echo "FILE_DATE=$(date +"%m-%d %H.%M")" >> $GITHUB_ENV
+        echo "FILE_DATE1=$(date "+%Y年%m月%d号-%H点%M分")" >> $GITHUB_ENV
+        echo "FILE_DATE2=$(date "+%Y%m%d-%H%M")" >> $GITHUB_ENV
+
+    - name: 加载源,定制文件并生成自定义配置
+      run: |
+        # 复制配置文件到源码目录
+        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
+        cd openwrt
+
+        echo "Apply Files..."
+        if [ -n "$(ls -A "build/${{matrix.target}}/files" 2>/dev/null)" ]; then
+         cp -rf build/${{matrix.target}}/files files
+        fi
+        if [ -n "$(ls -A "build/${{matrix.target}}/Source" 2>/dev/null)" ]; then
+         cp -Rf build/${{matrix.target}}/Source/* ./
+        fi
+
+        echo "Apply Custom"
+        if [ -f "build/${{matrix.target}}/$CUSTOM_SH" ]; then
+        (
+          chmod +x build/${{matrix.target}}/$CUSTOM_SH
+          /bin/bash "build/${{matrix.target}}/$CUSTOM_SH"
+        )
+        fi
+         mv build/${{matrix.target}}/$CONFIG_FILE .config
+        make defconfig
+
+    - name: SSH远程连接服务器配置固件
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: env.SSH_ACTIONS == 'true' || contains(github.event.action, 'ssh')
+
+    - name: 下载软件包
+      run: |
+        cd openwrt && make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: 开始编译固件
+      id: compile
+      run: |
+        cd openwrt
+        echo -e "$(($(nproc)+1)) thread compile"
+        make -j$(($(nproc)+1)) || make -j1 V=s
+
+    - name: 检查空间使用情况
+      run: |
+        echo "======================="
+        echo "Space usage:"
+        echo "======================="
+        df -hT
+        echo "======================="
+        du -h --max-depth=1 openwrt/ --exclude=build_dir --exclude=bin
+        du -h --max-depth=1 openwrt/build_dir
+        du -h --max-depth=1 openwrt/bin
+
+    - name: 整理固件文件
+      id: organizer
+      run: |
+        mkdir config
+        find openwrt/bin/targets/ -name "*config.buildinfo*" | xargs -i mv -f {} config
+        mkdir -p ./artifact/firmware
+        mkdir -p ./artifact/vmware
+        mkdir -p ./artifact/package
+        mkdir -p ./artifact/buildinfo
+        rm -rf $(find openwrt/bin/targets/ -type d -name "packages")
+        cp -rf $(find openwrt/bin/packages/ -type f -name "*.ipk") ./artifact/package/
+        cp -rf $(find openwrt/bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+        cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*img*") ./artifact/firmware/
+        cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*vmdk*") ./artifact/vmware/
+        echo "::set-output name=status::success"
+
+    - name: 上传固件文件
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenWrt_firmware_${{matrix.target}}_${{ env.FILE_DATE }}
+        path: ./artifact/firmware/
+
+    - name: 上传vmware镜像文件
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VMDK == 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenWrt_vmware_${{matrix.target}}_${{ env.FILE_DATE }}
+        path: ./artifact/vmware/
+
+    - name: 上传插件包文件
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_IPK == 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenWrt_package_${{matrix.target}}_${{ env.FILE_DATE }}
+        path: ./artifact/package/
+
+    - name: 上传固件配置信息
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_CONFIG == 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenWrt_buildinfo_${{matrix.target}}_${{ env.FILE_DATE }}
+        path: ./artifact/buildinfo/
+
+    - name: 上传固件到 奶牛快传
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true'
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ./artifact/firmware/ 2>&1 | tee cowtransfer.log
+        echo "::warning file=奶牛快传（${{matrix.target}}）::$(cat cowtransfer.log | grep https)"
+
+    - name: 上传固件到 WeTransfer
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true'
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ./artifact/firmware/ 2>&1 | tee wetransfer.log
+        echo "::warning file=WeTransfer（${{matrix.target}}）::$(cat wetransfer.log | grep https)"
+    
+    - name: 提取发布用的「奶牛快传」和「WeTransfer」的链接
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ./artifact/firmware/ 2>&1 | tee cowtransfer.log
+        echo "COWTRANSFER_URL=$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV 
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ./artifact/firmware/ 2>&1 | tee wetransfer.log
+        echo "WETRANSFER_URL=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV 
+
+    - name: 自动发布固件到 Releases
+      uses: softprops/action-gh-release@v1
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+      with:
+        name: ${{ env.FILE_DATE1 }} 「 ${{ env.WXFB_MESSAGE }} 」固件
+        tag_name: ${{ env.FILE_DATE2 }}
+        body: |            
+            ☆  源码 : ${{ env.REPO_URL }}
+            ☆  分支 : ${{ env.REPO_BRANCH }}
+            ☆  感谢源码作者无私分享！
+            
+            🎉 [ ${{ env.WXFB_MESSAGE }} ]固件下载 ✨
+            
+            💐 奶牛快传(国内高速🚀下载)： ${{ env.COWTRANSFER_URL }}
+            
+            ⛄ WeTransfer(国外高速🚀下载)： ${{ env.WETRANSFER_URL }}
+            
+            🌴 链接有效期为7天，无需注册直接下载 🐤
+        files: ./artifact/firmware/*
+
+    - name: 删除已发布的老固件
+      uses: c-hive/gha-remove-artifacts@v1
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
+      with:
+        age: '1 day'   #删除多少天前的旧固件
+
+    - name: 删除自动发布的老固件
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
+      with:
+        keep_latest: 12         #保留多少个发布不删除
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 完成编译微信通知
+      uses: emon100/Action-Serverchan@v2
+      if: steps.organizer.outputs.status == 'success' && env.SERVERCHAN_SCKEY == 'true'
+      with:
+        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        text: 恭喜${{matrix.target}}固件编译成功！
+        desp: 您的${{ env.WXFB_MESSAGE }}固件成功编译完成了！
+
+              
+              完成时间：${{ env.FILE_DATE1 }}
+              
+              
+              发布地址：${{ env.GITHUB_RELEASE }}
+              
+              
+              奶牛快传：${{ env.COWTRANSFER_URL }}
+              
+              
+              WeTransfer：${{ env.WETRANSFER_URL }}
+              
+              
+              固件全部编译完成 🎈！！！
