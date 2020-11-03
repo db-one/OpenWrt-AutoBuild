@@ -241,6 +241,9 @@ jobs:
             ⛄ WeTransfer(国外高速🚀下载)： ${{ env.WETRANSFER_URL }}
             
             🌴 链接有效期为7天，无需注册直接下载 🐤
+            
+            =========================================
+            
         files: ./artifact/firmware/*
 
     - name: 删除已发布的老固件
@@ -279,4 +282,4 @@ jobs:
               WeTransfer：${{ env.WETRANSFER_URL }}
               
               
-              固件全部编译完成 🎈！！！
+              固件已经编译完成 🎈！！！
