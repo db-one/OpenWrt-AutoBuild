@@ -228,7 +228,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
         name: ${{ env.FILE_DATE1 }} 「 ${{ env.WXFB_MESSAGE }} 」固件
-        tag_name: ${{ env.FILE_DATE2 }}
+        tag_name: ${{ env.FILE_DATE2 }}-${{matrix.target}}
         body: |            
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
