@@ -156,8 +156,6 @@ jobs:
     - name: 整理固件文件
       id: organizer
       run: |
-        mkdir config
-        find openwrt/bin/targets/ -name "*config.buildinfo*" | xargs -i mv -f {} config
         mkdir -p ./artifact/firmware
         mkdir -p ./artifact/vmware
         mkdir -p ./artifact/package
@@ -250,7 +248,7 @@ jobs:
       uses: c-hive/gha-remove-artifacts@v1
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
       with:
-        age: '1 day'   #删除多少天前的旧固件
+        age: '3 day'   #删除多少天前的旧固件
 
     - name: 删除自动发布的老固件
       uses: dev-drprasad/delete-older-releases@v0.1.0
