@@ -26,12 +26,6 @@ on:
 #  watch:
 #    types: [started]
 
-# 编辑触发
-#  push:
-#    branches:
-#      - master
-#    paths:
-#      - '开启编译'
 
 env: 
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
@@ -41,7 +35,7 @@ env:
 
 jobs: 
   build:
-    runs-on: ubuntu-18.04
+    runs-on: Ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     name: 编译 ${{matrix.target}}
@@ -77,9 +71,9 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo -E apt-get -qq update -y
-        sudo -E apt-get -qq install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler ccache xsltproc rename antlr3 gperf wget curl swig rsync libtinfo5
-        sudo -E apt-get -qq autoremove -y --purge
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq -y install build-essential asciidoc binutils bzip2 gawk gettext git libc6-dev libncurses5 libtinfo-dev libtinfo5 ncurses-doc libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl swig rsync
+        sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean -y
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
@@ -118,11 +112,11 @@ jobs:
         echo "复制文件..."
         if [ -n "$(ls -A "build/${{matrix.target}}/files" 2>/dev/null)" ]; then
          cp -rf build/${{matrix.target}}/files files
+         chmod -R 755 build/${{matrix.target}}/files/* ./
         fi
         if [ -n "$(ls -A "build/${{matrix.target}}/sources" 2>/dev/null)" ]; then
          cp -Rf build/${{matrix.target}}/sources/* ./
         fi
-        chmod -R 755 ./
 
         echo "写入配置文件"
          mv build/${{matrix.target}}/$CONFIG_FILE .config
@@ -248,11 +242,13 @@ jobs:
         files: ./artifact/firmware/*
 
     - name: 删除旧的GitHub-workflow
-      uses: ActionsRML/delete-workflow-runs@main
+      uses: Mattraks/delete-workflow-runs@main
       with:
-        retain_days: 0
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 0.1
         keep_minimum_runs: 30    #保留多少个workflow不删除
-
+    
     - name: 删除自动发布的旧固件
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
