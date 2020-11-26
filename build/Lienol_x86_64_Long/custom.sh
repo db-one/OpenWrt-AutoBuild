@@ -10,7 +10,6 @@ cat feeds.conf.default
 
 # 删除部分默认包
 rm -rf package/lean/luci-theme-argon
-rm -rf package/lean/luci-app-wrtbwmon
 rm -rf feeds/packages/net/haproxy
 
 # 添加第三方软件包
@@ -133,7 +132,6 @@ CONFIG_PACKAGE_luci-app-openclash=y #OpenClash客户端
 CONFIG_PACKAGE_luci-app-eqos=y #IP限速
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-theme-edge=y #edge主题
-CONFIG_PACKAGE_luci-app-wrtbwmon-zh=y #实时流量监测
 EOF
 
 # ShadowsocksR插件:
@@ -197,9 +195,9 @@ CONFIG_PACKAGE_luci-app-wol=y #网络唤醒
 CONFIG_PACKAGE_luci-app-control-mia=y #时间控制
 CONFIG_PACKAGE_luci-app-control-timewol=y #定时唤醒
 CONFIG_PACKAGE_luci-app-control-webrestriction=y #访问限制
-# CONFIG_PACKAGE_luci-app-control-weburl=y #网址过滤
+CONFIG_PACKAGE_luci-app-control-weburl=y #网址过滤
 CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
-# CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
+CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
 CONFIG_PACKAGE_luci-app-sfe=y #高通开源的 Shortcut FE 转发加速引擎
 # CONFIG_PACKAGE_luci-app-smartdns is not set #smartdns服务器
 # CONFIG_PACKAGE_luci-app-diskman is not set #磁盘管理磁盘信息
