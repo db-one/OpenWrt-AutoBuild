@@ -242,13 +242,11 @@ jobs:
         files: ./artifact/firmware/*
 
     - name: 删除旧的GitHub-workflow
-      uses: Mattraks/delete-workflow-runs@main
+      uses: ActionsRML/delete-workflow-runs@main
       with:
-        token: ${{ github.token }}
-        repository: ${{ github.repository }}
-        retain_days: 0.1
+        retain_days: 0
         keep_minimum_runs: 30    #保留多少个workflow不删除
-    
+
     - name: 删除自动发布的旧固件
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
@@ -256,7 +254,7 @@ jobs:
         keep_latest: 60         #保留多少个releases不删除
         delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
 
     - name: 完成编译微信通知
       uses: emon100/Action-Serverchan@v2

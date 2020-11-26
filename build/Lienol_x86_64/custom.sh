@@ -5,24 +5,20 @@
 # sudo -E apt-get -y install rename
 
 # 更新feeds文件
-# sed -i 's#diy1 https://github.com/xiaorouji/openwrt-package#diy1 https://github.com/db-one/Lienol-openwrt-package#g' feeds.conf.default #更换默认包源
-sed -i 's#src-git luci https://github.com/Lienol/openwrt-luci.git;17.01#src-git luci https://github.com/Lienol/openwrt-luci.git;18.06#g' feeds.conf.default #更换luci版本
+sed -i 's#src-git luci https://github.com/Lienol/openwrt-luci.git;17.01#src-git luci https://github.com/Lienol/openwrt-luci.git;19.07#g' feeds.conf.default #更换luci版本
 cat feeds.conf.default
 
+# 删除部分默认包
+rm -rf package/lean/luci-theme-argon
+rm -rf package/lean/luci-app-wrtbwmon
+rm -rf feeds/packages/net/haproxy
+
 # 添加第三方软件包
-git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
-git clone https://github.com/destan19/OpenAppFilter package/OpenAppFilter
-git clone https://github.com/tty228/luci-app-serverchan package/luci-app-serverchan
-git clone https://github.com/garypang13/luci-theme-edge package/luci-theme-edge -b 18.06
-git clone https://github.com/esirplayground/luci-app-poweroff package/uci-app-poweroff
+git clone https://github.com/281677160/openwrt-package.git -b 19.07 package/openwrt-package
 
 # 更新并安装源
 ./scripts/feeds clean
 ./scripts/feeds update -a && ./scripts/feeds install -a
-
-# 替换更新passwall和ssrplus+
-rm -rf package/openwrt-packages/luci-app-passwall && svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/openwrt-packages/luci-app-passwall
-rm -rf package/openwrt-packages/luci-app-ssr-plus && svn co https://github.com/fw876/helloworld package/openwrt-packages/helloworld
 
 # 为19.07添加libcap-bin依赖
 rm -rf feeds/packages/libs/libcap
@@ -34,8 +30,8 @@ sed -i 's#max-width:200px#max-width:1000px#g' feeds/luci/modules/luci-mod-admin-
 sed -i 's#max-width:200px#max-width:1000px#g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index_x86.htm #修改X86首页样式
 sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config #修改流量统计写入为10分钟
 sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config #修改流量统计数据存放默认位置
-sed -i 's@background-color: #e5effd@background-color: #f8fbfe@g' package/luci-theme-edge/htdocs/luci-static/edge/cascade.css #luci-theme-edge主题颜色微调
-sed -i 's#rgba(223, 56, 18, 0.04)#rgba(223, 56, 18, 0.02)#g' package/luci-theme-edge/htdocs/luci-static/edge/cascade.css #luci-theme-edge主题颜色微调
+sed -i 's@background-color: #e5effd@background-color: #f8fbfe@g' package/openwrt-package/luci-theme-edge/htdocs/luci-static/edge/cascade.css #luci-theme-edge主题颜色微调
+sed -i 's#rgba(223, 56, 18, 0.04)#rgba(223, 56, 18, 0.02)#g' package/openwrt-package/luci-theme-edge/htdocs/luci-static/edge/cascade.css #luci-theme-edge主题颜色微调
 
 # 创建自定义配置文件 - Lienol_x86_64
 
@@ -136,6 +132,9 @@ CONFIG_PACKAGE_luci-app-oaf=y #应用过滤
 # CONFIG_PACKAGE_luci-app-serverchan=y #微信推送
 CONFIG_PACKAGE_luci-app-eqos=y #IP限速
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
+CONFIG_PACKAGE_luci-theme-edge=y #edge主题
+CONFIG_PACKAGE_luci-app-autopoweroff=y #定时设置
+CONFIG_PACKAGE_luci-app-wrtbwmon-zh=y #实时流量监测
 EOF
 
 # ShadowsocksR插件:
@@ -201,10 +200,9 @@ CONFIG_PACKAGE_luci-app-control-timewol=y #定时唤醒
 CONFIG_PACKAGE_luci-app-control-webrestriction=y #访问限制
 CONFIG_PACKAGE_luci-app-control-weburl=y #网址过滤
 CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
-CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
+# CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
 CONFIG_PACKAGE_luci-app-sfe=y #高通开源的 Shortcut FE 转发加速引擎
 # CONFIG_PACKAGE_luci-app-smartdns is not set #smartdns服务器
-# CONFIG_PACKAGE_luci-app-flowoffload is not set #开源 Linux Flow Offload 驱动
 # CONFIG_PACKAGE_luci-app-diskman is not set #磁盘管理磁盘信息
 # CONFIG_PACKAGE_luci-app-adguardhome is not set #ADguardHome去广告服务
 # CONFIG_PACKAGE_luci-app-unblockmusic is not set #解锁网易云灰色歌曲
@@ -253,7 +251,6 @@ cat >> .config <<EOF
 CONFIG_PACKAGE_luci-theme-argon-dark-mod=y
 CONFIG_PACKAGE_luci-theme-argon-light-mod=y
 CONFIG_PACKAGE_luci-theme-bootstrap=y
-CONFIG_PACKAGE_luci-theme-edge=y
 # CONFIG_PACKAGE_luci-theme-bootstrap-mod is not set
 # CONFIG_PACKAGE_luci-theme-darkmatter is not set
 # CONFIG_PACKAGE_luci-theme-freifunk-generic is not set

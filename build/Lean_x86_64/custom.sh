@@ -8,43 +8,25 @@
 # sed -i 's@#src-git helloworld@src-git helloworld@g' feeds.conf.default #启用helloworld
 cat feeds.conf.default
 
+# 删除部分默认包
+rm -rf package/lean/luci-theme-argon
+rm -rf package/lean/luci-app-wrtbwmon
+rm -rf feeds/packages/net/haproxy
+
 # 添加第三方软件包
-git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
-git clone https://github.com/destan19/OpenAppFilter package/OpenAppFilter
-git clone https://github.com/tty228/luci-app-serverchan package/luci-app-serverchan
-git clone https://github.com/pymumu/luci-app-smartdns package/luci-app-smartdns
-git clone https://github.com/garypang13/luci-theme-edge package/luci-theme-edge -b 18.06
-git clone https://github.com/esirplayground/luci-app-poweroff package/uci-app-poweroff
+git clone https://github.com/281677160/openwrt-package.git -b master package/openwrt-package
 
 # 更新并安装源
 ./scripts/feeds clean
 ./scripts/feeds update -a && ./scripts/feeds install -a
-
-# 替换更新默认argon主题并添加argon主题设置
-rm -rf package/lean/luci-theme-argon && git clone https://github.com/jerrykuku/luci-theme-argon package/luci-theme-argon -b 18.06
-git clone https://github.com/jerrykuku/luci-app-argon-config package/luci-app-argon-config
-
-# 替换更新passwall和ssrplus+
-rm -rf package/openwrt-packages/luci-app-passwall && svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/openwrt-packages/luci-app-passwall
-rm -rf package/openwrt-packages/luci-app-ssr-plus && svn co https://github.com/fw876/helloworld package/openwrt-packages/helloworld
-
-# 添加passwall依赖库
-# git clone https://github.com/kenzok8/small package/small
-svn co https://github.com/xiaorouji/openwrt-package/trunk/package package/small
-
-# 替换更新haproxy默认版本
-rm -rf feeds/packages/net/haproxy && svn co https://github.com/lienol/openwrt-packages/trunk/net/haproxy feeds/packages/net/haproxy
-
-# 替换https-dns-proxy.init文件,解决用LEDE源码加入passwall编译固件后DNS转发127.0.0.1#5053和12.0.0.1#5054问题
-curl -fsSL  https://raw.githubusercontent.com/Lienol/openwrt-packages/19.07/net/https-dns-proxy/files/https-dns-proxy.init > feeds/packages/net/https-dns-proxy/files/https-dns-proxy.init
 
 # 自定义定制选项
 sed -i 's#192.168.1.1#10.0.0.1#g' package/base-files/files/bin/config_generate #定制默认IP
 sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' package/lean/default-settings/files/zzz-default-settings #取消系统默认密码
 sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config #修改流量统计写入为10分钟
 sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config #修改流量统计数据存放默认位置
-sed -i 's@background-color: #e5effd@background-color: #f8fbfe@g' package/luci-theme-edge/htdocs/luci-static/edge/cascade.css #luci-theme-edge主题颜色微调
-sed -i 's#rgba(223, 56, 18, 0.04)#rgba(223, 56, 18, 0.02)#g' package/luci-theme-edge/htdocs/luci-static/edge/cascade.css #luci-theme-edge主题颜色微调
+sed -i 's@background-color: #e5effd@background-color: #f8fbfe@g' package/openwrt-package/luci-theme-edge/htdocs/luci-static/edge/cascade.css #luci-theme-edge主题颜色微调
+sed -i 's#rgba(223, 56, 18, 0.04)#rgba(223, 56, 18, 0.02)#g' package/openwrt-package/luci-theme-edge/htdocs/luci-static/edge/cascade.css #luci-theme-edge主题颜色微调
 
 #创建自定义配置文件 - Lean_x86_64
 
@@ -144,10 +126,15 @@ CONFIG_PACKAGE_luci-app-oaf=y #应用过滤
 # CONFIG_PACKAGE_luci-app-openclash=y #OpenClash客户端
 # CONFIG_PACKAGE_luci-app-serverchan=y #微信推送
 CONFIG_PACKAGE_luci-app-eqos=y #IP限速
+CONFIG_PACKAGE_luci-app-control-weburl=y #网址过滤
 # CONFIG_PACKAGE_luci-app-smartdns=y #smartdns服务器
 # CONFIG_PACKAGE_luci-app-adguardhome=y #ADguardhome
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 # CONFIG_PACKAGE_luci-app-argon-config=y #argon主题设置
+CONFIG_PACKAGE_luci-theme-atmaterial=y #atmaterial 三合一主题
+CONFIG_PACKAGE_luci-theme-edge=y #edge主题
+CONFIG_PACKAGE_luci-app-autopoweroff=y #定时设置
+CONFIG_PACKAGE_luci-app-wrtbwmon-zh=y #实时流量监测
 EOF
 
 # ShadowsocksR插件:
@@ -211,7 +198,7 @@ CONFIG_PACKAGE_luci-app-accesscontrol=y #上网时间控制
 CONFIG_PACKAGE_luci-app-wol=y #网络唤醒
 CONFIG_PACKAGE_luci-app-frpc=y #Frp内网穿透
 CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
-CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
+# CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
 CONFIG_PACKAGE_luci-app-sfe=y #高通开源的 Shortcut FE 转发加速引擎
 # CONFIG_PACKAGE_luci-app-flowoffload is not set #开源 Linux Flow Offload 驱动
 # CONFIG_PACKAGE_luci-app-haproxy-tcp is not set #Haproxy负载均衡
@@ -247,10 +234,8 @@ EOF
 
 # LuCI主题:
 cat >> .config <<EOF
-CONFIG_PACKAGE_luci-theme-atmaterial=y
 CONFIG_PACKAGE_luci-theme-argon=y
 CONFIG_PACKAGE_luci-theme-netgear=y
-CONFIG_PACKAGE_luci-theme-edge=y
 EOF
 
 # 常用软件包:
