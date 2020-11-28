@@ -13,8 +13,7 @@ rm -rf package/lean/luci-theme-argon
 rm -rf feeds/packages/net/haproxy
 
 # 添加第三方软件包
-git clone https://github.com/281677160/openwrt-package.git -b master package/openwrt-package
-svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-atmaterial package/luci-theme-atmaterial
+git clone https://github.com/db-one/dbone-update.git -b 18.06 package/dbone-update
 
 # 更新并安装源
 ./scripts/feeds clean
