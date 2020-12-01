@@ -165,6 +165,7 @@ CONFIG_PACKAGE_https-dns-proxy=y
 CONFIG_PACKAGE_kcptun-client=y
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_haproxy=y
+CONFIG_PACKAGE_xray=y
 CONFIG_PACKAGE_v2ray=y
 CONFIG_PACKAGE_v2ray-plugin=y
 CONFIG_PACKAGE_simple-obfs=y

@@ -15,7 +15,6 @@ rm -rf feeds/packages/net/haproxy
 # 添加第三方软件包
 git clone https://github.com/db-one/dbone-update.git -b 18.06 package/dbone-update
 
-
 # 更新并安装源
 ./scripts/feeds clean
 ./scripts/feeds update -a && ./scripts/feeds install -a
@@ -167,6 +166,7 @@ CONFIG_PACKAGE_https-dns-proxy=y
 CONFIG_PACKAGE_kcptun-client=y
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_haproxy=y
+CONFIG_PACKAGE_xray=y
 CONFIG_PACKAGE_v2ray=y
 CONFIG_PACKAGE_v2ray-plugin=y
 CONFIG_PACKAGE_simple-obfs=y
