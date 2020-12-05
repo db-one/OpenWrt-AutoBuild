@@ -8,16 +8,16 @@
 # sed -i 's@#src-git helloworld@src-git helloworld@g' feeds.conf.default #启用helloworld
 cat feeds.conf.default
 
-# 删除部分默认包
-rm -rf package/lean/luci-theme-argon
-rm -rf feeds/packages/net/haproxy
-
 # 添加第三方软件包
 git clone https://github.com/db-one/dbone-update.git -b 18.06 package/dbone-update
 
 # 更新并安装源
 ./scripts/feeds clean
 ./scripts/feeds update -a && ./scripts/feeds install -a
+
+# 删除部分默认包
+rm -rf package/lean/luci-theme-argon
+rm -rf feeds/packages/net/haproxy
 
 # 自定义定制选项
 sed -i 's#192.168.1.1#10.0.0.1#g' package/base-files/files/bin/config_generate #定制默认IP

@@ -8,10 +8,6 @@
 sed -i 's#src-git luci https://github.com/Lienol/openwrt-luci.git;17.01#src-git luci https://github.com/Lienol/openwrt-luci.git;18.06#g' feeds.conf.default #更换luci版本
 cat feeds.conf.default
 
-# 删除部分默认包
-rm -rf package/lean/luci-theme-argon
-rm -rf feeds/packages/net/haproxy
-
 # 添加第三方软件包
 git clone https://github.com/db-one/dbone-update.git -b 19.07 package/dbone-update
 
