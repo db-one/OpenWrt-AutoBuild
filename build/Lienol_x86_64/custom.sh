@@ -202,8 +202,6 @@ CONFIG_PACKAGE_luci-app-sfe=y #高通开源的 Shortcut FE 转发加速引擎
 # CONFIG_PACKAGE_luci-app-diskman is not set #磁盘管理磁盘信息
 # CONFIG_PACKAGE_luci-app-adguardhome is not set #ADguardHome去广告服务
 # CONFIG_PACKAGE_luci-app-unblockmusic is not set #解锁网易云灰色歌曲
-# CONFIG_PACKAGE_luci-app-unblockneteasemusic-go is not set #解锁网易云灰色歌曲
-# CONFIG_PACKAGE_luci-app-unblockneteasemusic-mini is not set #解锁网易云灰色歌曲
 # CONFIG_PACKAGE_luci-app-xlnetacc is not set #迅雷快鸟
 # CONFIG_PACKAGE_luci-app-usb-printer is not set #USB打印机
 # CONFIG_PACKAGE_luci-app-mwan3helper is not set #多拨负载均衡
