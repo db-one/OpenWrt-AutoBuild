@@ -242,7 +242,7 @@ jobs:
         files: ./artifact/firmware/*
 
     - name: 删除旧的GitHub-workflow
-      uses: ActionsRML/delete-workflow-runs@main
+      uses: Mattraks/delete-workflow-runs@main
       with:
         retain_days: 0
         keep_minimum_runs: 30    #保留多少个workflow不删除
