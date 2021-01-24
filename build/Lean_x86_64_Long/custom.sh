@@ -215,6 +215,7 @@ CONFIG_PACKAGE_luci-app-unblockmusic=y #解锁网易云灰色歌曲
 # CONFIG_PACKAGE_luci-app-usb-printer is not set #USB打印机
 # CONFIG_PACKAGE_luci-app-sqm is not set #SQM智能队列管理
 # CONFIG_PACKAGE_luci-app-jd-dailybonus is not set #京东签到服务
+# CONFIG_PACKAGE_luci-app-uugamebooster is not set #UU加速器
 #
 # VPN相关插件(禁用):
 #
