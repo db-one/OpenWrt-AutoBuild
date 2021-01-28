@@ -152,7 +152,6 @@ CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ipt2socks=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG=y
-CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan_Plus=y
