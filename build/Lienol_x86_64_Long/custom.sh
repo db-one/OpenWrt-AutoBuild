@@ -135,6 +135,7 @@ cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-ssr-plus=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Socks=y
+CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y
 EOF
 
@@ -158,7 +159,7 @@ CONFIG_PACKAGE_https-dns-proxy=y
 CONFIG_PACKAGE_kcptun-client=y
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_haproxy=y
-CONFIG_PACKAGE_xray=y
+CONFIG_PACKAGE_xray-core=y
 CONFIG_PACKAGE_v2ray-plugin=y
 CONFIG_PACKAGE_simple-obfs=y
 CONFIG_PACKAGE_trojan-plus=y
