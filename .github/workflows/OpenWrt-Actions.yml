@@ -130,7 +130,7 @@ jobs:
       uses: P3TERX/ssh2actions@v1.0.0
       if: env.SSH_ACTIONS == 'true' || contains(github.event.action, 'ssh')
 
-    - name: 下载软件包
+    - name: 下载固件包
       run: |
         cd openwrt && make download -j8
         find dl -size -1024c -exec ls -l {} \;
@@ -189,7 +189,7 @@ jobs:
         name: OpenWrt_package_${{matrix.target}}_${{ env.FILE_DATE }}
         path: ./artifact/package/
 
-    - name: 上传固件配置信息
+    - name: 上传固件信息
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_CONFIG == 'true'
       uses: actions/upload-artifact@v2
       with:
