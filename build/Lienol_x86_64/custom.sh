@@ -143,7 +143,6 @@ CONFIG_PACKAGE_https-dns-proxy=y
 CONFIG_PACKAGE_ssocks=y
 CONFIG_PACKAGE_microsocks=y
 CONFIG_PACKAGE_ipt2socks=y
-CONFIG_PACKAGE_ipt2socks-alt=y
 CONFIG_PACKAGE_pdnsd-alt=y
 CONFIG_PACKAGE_naiveproxy=y
 CONFIG_PACKAGE_kcptun-client=y
