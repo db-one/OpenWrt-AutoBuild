@@ -133,7 +133,7 @@ CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-theme-atmaterial=y #atmaterial 三合一主题
 CONFIG_PACKAGE_luci-theme-edge=y #edge主题
 CONFIG_PACKAGE_luci-app-turboacc=y #Turbo ACC 网络加速设置
-CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
+# CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
 EOF
 
 # ShadowsocksR插件:
@@ -171,39 +171,39 @@ CONFIG_PACKAGE_luci-app-wol=y #网络唤醒
 CONFIG_PACKAGE_luci-app-frpc=y #Frp内网穿透
 CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
 CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
-# CONFIG_PACKAGE_luci-app-sfe is not set #高通开源的 Shortcut FE 转发加速引擎
-# CONFIG_PACKAGE_luci-app-flowoffload is not set #开源 Linux Flow Offload 驱动
-# CONFIG_PACKAGE_luci-app-haproxy-tcp is not set #Haproxy负载均衡
-# CONFIG_PACKAGE_luci-app-diskman is not set #磁盘管理磁盘信息
-# CONFIG_PACKAGE_luci-app-transmission is not set #TR离线下载
-# CONFIG_PACKAGE_luci-app-qbittorrent is not set #QB离线下载
-# CONFIG_PACKAGE_luci-app-amule is not set #电驴离线下载
-# CONFIG_PACKAGE_luci-app-xlnetacc is not set #迅雷快鸟
-# CONFIG_PACKAGE_luci-app-zerotier is not set #zerotier内网穿透
-# CONFIG_PACKAGE_luci-app-hd-idle is not set #磁盘休眠
-# CONFIG_PACKAGE_luci-app-unblockmusic is not set #解锁网易云灰色歌曲
-# CONFIG_PACKAGE_luci-app-airplay2 is not set #Apple AirPlay2音频接收服务器
-# CONFIG_PACKAGE_luci-app-music-remote-center is not set #PCHiFi数字转盘遥控
-# CONFIG_PACKAGE_luci-app-usb-printer is not set #USB打印机
-# CONFIG_PACKAGE_luci-app-sqm is not set #SQM智能队列管理
-# CONFIG_PACKAGE_luci-app-jd-dailybonus is not set #京东签到服务
-# CONFIG_PACKAGE_luci-app-uugamebooster is not set #UU加速器
+CONFIG_PACKAGE_luci-app-sfe=n #高通开源的 Shortcut FE 转发加速引擎
+CONFIG_PACKAGE_luci-app-flowoffload=n #开源 Linux Flow Offload 驱动
+CONFIG_PACKAGE_luci-app-haproxy-tcp=n #Haproxy负载均衡
+CONFIG_PACKAGE_luci-app-diskman=n #磁盘管理磁盘信息
+CONFIG_PACKAGE_luci-app-transmission=n #TR离线下载
+CONFIG_PACKAGE_luci-app-qbittorrent=n #QB离线下载
+CONFIG_PACKAGE_luci-app-amule=n #电驴离线下载
+CONFIG_PACKAGE_luci-app-xlnetacc=n #迅雷快鸟
+CONFIG_PACKAGE_luci-app-zerotier=n #zerotier内网穿透
+CONFIG_PACKAGE_luci-app-hd-idle=n #磁盘休眠
+CONFIG_PACKAGE_luci-app-unblockmusic=n #解锁网易云灰色歌曲
+CONFIG_PACKAGE_luci-app-airplay2=n #Apple AirPlay2音频接收服务器
+CONFIG_PACKAGE_luci-app-music-remote-center=n #PCHiFi数字转盘遥控
+CONFIG_PACKAGE_luci-app-usb-printer=n #USB打印机
+CONFIG_PACKAGE_luci-app-sqm=n #SQM智能队列管理
+CONFIG_PACKAGE_luci-app-jd-dailybonus=n #京东签到服务
+CONFIG_PACKAGE_luci-app-uugamebooster=n #UU游戏加速器
 #
 # VPN相关插件(禁用):
 #
-# CONFIG_PACKAGE_luci-app-v2ray-server is not set #V2ray服务器
-# CONFIG_PACKAGE_luci-app-pptp-server is not set #PPTP VPN 服务器
-# CONFIG_PACKAGE_luci-app-ipsec-vpnd is not set #ipsec VPN服务
-# CONFIG_PACKAGE_luci-app-openvpn-server is not set #openvpn服务
-# CONFIG_PACKAGE_luci-app-softethervpn is not set #SoftEtherVPN服务器
+CONFIG_PACKAGE_luci-app-v2ray-server=n #V2ray服务器
+CONFIG_PACKAGE_luci-app-pptp-server=n #PPTP VPN 服务器
+CONFIG_PACKAGE_luci-app-ipsec-vpnd=n #ipsec VPN服务
+CONFIG_PACKAGE_luci-app-openvpn-server=n #openvpn服务
+CONFIG_PACKAGE_luci-app-softethervpn=n #SoftEtherVPN服务器
 #
 # 文件共享相关(禁用):
 #
-# CONFIG_PACKAGE_luci-app-minidlna is not set #miniDLNA服务
-# CONFIG_PACKAGE_luci-app-vsftpd is not set #FTP 服务器
-# CONFIG_PACKAGE_luci-app-samba is not set #网络共享
-# CONFIG_PACKAGE_autosamba is not set #网络共享
-# CONFIG_PACKAGE_samba36-server is not set #网络共享
+CONFIG_PACKAGE_luci-app-minidlna=n #miniDLNA服务
+CONFIG_PACKAGE_luci-app-vsftpd=n #FTP 服务器
+CONFIG_PACKAGE_luci-app-samba=n #网络共享
+CONFIG_PACKAGE_autosamba=n #网络共享
+CONFIG_PACKAGE_samba36-server=n #网络共享
 EOF
 
 # LuCI主题:

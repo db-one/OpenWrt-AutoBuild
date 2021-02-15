@@ -129,7 +129,7 @@ CONFIG_PACKAGE_luci-app-eqos=y #IP限速
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-theme-edge=y #edge主题
 CONFIG_PACKAGE_luci-app-turboacc=y #Turbo ACC 网络加速设置
-CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
+# CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
 EOF
 
 # ShadowsocksR插件:
@@ -170,47 +170,47 @@ CONFIG_PACKAGE_luci-app-control-webrestriction=y #访问限制
 CONFIG_PACKAGE_luci-app-control-weburl=y #网址过滤
 CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
 CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
-# CONFIG_PACKAGE_luci-app-sfe is not set #高通开源的 Shortcut FE 转发加速引擎
-# CONFIG_PACKAGE_luci-app-smartdns is not set #smartdns服务器
-# CONFIG_PACKAGE_luci-app-diskman is not set #磁盘管理磁盘信息
-# CONFIG_PACKAGE_luci-app-adguardhome is not set #ADguardHome去广告服务
+CONFIG_PACKAGE_luci-app-sfe=n #高通开源的 Shortcut FE 转发加速引擎
+CONFIG_PACKAGE_luci-app-smartdns=n #smartdns服务器
+CONFIG_PACKAGE_luci-app-diskman=n #磁盘管理磁盘信息
+CONFIG_PACKAGE_luci-app-adguardhome=n #ADguardHome去广告服务
 CONFIG_PACKAGE_luci-app-unblockmusic=y #解锁网易云灰色歌曲
-# CONFIG_PACKAGE_luci-app-xlnetacc is not set #迅雷快鸟
-# CONFIG_PACKAGE_luci-app-usb-printer is not set #USB打印机
-# CONFIG_PACKAGE_luci-app-mwan3helper is not set #多拨负载均衡
-# CONFIG_PACKAGE_luci-app-mwan3 is not set #多线多拨
-# CONFIG_PACKAGE_luci-app-hd-idle is not set #磁盘休眠
+CONFIG_PACKAGE_luci-app-xlnetacc=n #迅雷快鸟
+CONFIG_PACKAGE_luci-app-usb-printer=n #USB打印机
+CONFIG_PACKAGE_luci-app-mwan3helper=n #多拨负载均衡
+CONFIG_PACKAGE_luci-app-mwan3=n #多线多拨
+CONFIG_PACKAGE_luci-app-hd-idle=n #磁盘休眠
 CONFIG_PACKAGE_luci-app-zerotier=y #Zerotier内网穿透
-# CONFIG_PACKAGE_luci-app-sqm is not set #SQM智能队列管理
+# CONFIG_PACKAGE_luci-app-sqm=n #SQM智能队列管理
 #
 # passwall相关(禁用):
 #
 #
 # VPN相关插件(禁用):
 #
-# CONFIG_PACKAGE_luci-app-ipsec-vpnserver-manyusers is not set #ipsec VPN服务
-# CONFIG_PACKAGE_luci-app-pppoe-relay is not set #PPPoE穿透
-# CONFIG_PACKAGE_luci-app-pppoe-server is not set #PPPoE服务器
-# CONFIG_PACKAGE_luci-app-pptp-vpnserver-manyusers is not set #PPTP VPN 服务器
-# CONFIG_PACKAGE_luci-app-trojan-server is not set #Trojan服务器
-# CONFIG_PACKAGE_luci-app-v2ray-server is not set #V2ray服务器
-# CONFIG_PACKAGE_luci-app-brook-server is not set #brook服务端
-# CONFIG_PACKAGE_luci-app-ssr-libev-server is not set #ssr-libev服务端
-# CONFIG_PACKAGE_luci-app-ssr-python-pro-server is not set #ssr-python服务端
-# CONFIG_PACKAGE_luci-app-kcptun is not set #Kcptun客户端
-# CONFIG_PACKAGE_luci-app-softethervpn is not set #SoftEtherVPN服务器
+CONFIG_PACKAGE_luci-app-ipsec-vpnserver-manyusers=n #ipsec VPN服务
+CONFIG_PACKAGE_luci-app-pppoe-relay=n #PPPoE穿透
+CONFIG_PACKAGE_luci-app-pppoe-server=n #PPPoE服务器
+CONFIG_PACKAGE_luci-app-pptp-vpnserver-manyusers=n #PPTP VPN 服务器
+CONFIG_PACKAGE_luci-app-trojan-server=n #Trojan服务器
+CONFIG_PACKAGE_luci-app-v2ray-server=n #V2ray服务器
+CONFIG_PACKAGE_luci-app-brook-server=n #brook服务端
+CONFIG_PACKAGE_luci-app-ssr-libev-server=n #ssr-libev服务端
+CONFIG_PACKAGE_luci-app-ssr-python-pro-server=n #ssr-python服务端
+CONFIG_PACKAGE_luci-app-kcptun=n #Kcptun客户端
+CONFIG_PACKAGE_luci-app-softethervpn=n #SoftEtherVPN服务器
 #
 # 文件共享相关(禁用):
 #
-# CONFIG_PACKAGE_luci-app-aria2 is not set #Aria2离线下载
-# CONFIG_PACKAGE_luci-app-minidlna is not set #miniDLNA服务
-# CONFIG_PACKAGE_luci-app-kodexplorer is not set #可到私有云
-# CONFIG_PACKAGE_luci-app-filebrowser is not set #File Browser私有云
-# CONFIG_PACKAGE_luci-app-fileassistant is not set #文件助手
-# CONFIG_PACKAGE_luci-app-vsftpd is not set #FTP 服务器
-# CONFIG_PACKAGE_luci-app-samba is not set #网络共享
-# CONFIG_PACKAGE_autosamba is not set #网络共享
-# CONFIG_PACKAGE_samba36-server is not set #网络共享
+CONFIG_PACKAGE_luci-app-aria2=n #Aria2离线下载
+CONFIG_PACKAGE_luci-app-minidlna=n #miniDLNA服务
+CONFIG_PACKAGE_luci-app-kodexplorer=n #可到私有云
+CONFIG_PACKAGE_luci-app-filebrowser=n #File Browser私有云
+CONFIG_PACKAGE_luci-app-fileassistant=n #文件助手
+CONFIG_PACKAGE_luci-app-vsftpd=n #FTP 服务器
+CONFIG_PACKAGE_luci-app-samba=n #网络共享
+CONFIG_PACKAGE_autosamba=n #网络共享
+CONFIG_PACKAGE_samba36-server=n #网络共享
 EOF
 
 # LuCI主题:
@@ -218,11 +218,11 @@ cat >> .config <<EOF
 CONFIG_PACKAGE_luci-theme-argon-dark-mod=y
 CONFIG_PACKAGE_luci-theme-argon-light-mod=y
 CONFIG_PACKAGE_luci-theme-bootstrap=y
-# CONFIG_PACKAGE_luci-theme-bootstrap-mod is not set
-# CONFIG_PACKAGE_luci-theme-darkmatter is not set
-# CONFIG_PACKAGE_luci-theme-freifunk-generic is not set
-# CONFIG_PACKAGE_luci-theme-material is not set
-# CONFIG_PACKAGE_luci-theme-openwrt is not set
+CONFIG_PACKAGE_luci-theme-bootstrap-mod=n
+CONFIG_PACKAGE_luci-theme-darkmatter=n
+CONFIG_PACKAGE_luci-theme-freifunk-generic=n
+CONFIG_PACKAGE_luci-theme-material=n
+CONFIG_PACKAGE_luci-theme-openwrt=n
 EOF
 
 # 常用软件包:
