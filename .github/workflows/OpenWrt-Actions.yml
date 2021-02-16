@@ -29,7 +29,8 @@ on:
 
 env: 
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
-  SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TZ: Asia/Shanghai
   GITHUB_RELEASE: https://github.com/db-one/OpenWrt-AutoBuild/releases
 
@@ -54,7 +55,7 @@ jobs:
         echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
         echo "REPO_BRANCH=${REPO_BRANCH}" >> $GITHUB_ENV
         echo "CONFIG_FILE=${CONFIG_FILE}" >> $GITHUB_ENV
-        echo "WXFB_MESSAGE=${WXFB_MESSAGE}" >> $GITHUB_ENV
+        echo "FB_MESSAGE=${FB_MESSAGE}" >> $GITHUB_ENV
         echo "CUSTOM_SH=${CUSTOM_SH}" >> $GITHUB_ENV
         echo "SSH_ACTIONS=${SSH_ACTIONS}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> $GITHUB_ENV
@@ -227,14 +228,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.FILE_DATE1 }} 「 ${{ env.WXFB_MESSAGE }} 」固件
+        name: ${{ env.FILE_DATE1 }} 「 ${{ env.FB_MESSAGE }} 」固件
         tag_name: ${{ env.FILE_DATE2 }}-${{matrix.target}}
         body: |            
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
             ☆  感谢源码作者无私分享！
             
-            🎉 [ ${{ env.WXFB_MESSAGE }} ]固件下载 ✨
+            🎉 [ ${{ env.FB_MESSAGE }} ]固件下载 ✨
             
             💐 奶牛快传(国内高速🚀下载)： ${{ env.COWTRANSFER_URL }}
             
@@ -261,25 +262,20 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
 
-    - name: 完成编译微信通知
-      uses: emon100/Action-Serverchan@v2
+    - name: 完成编译信息通知
       if: steps.organizer.outputs.status == 'success' && env.SERVERCHAN_SCKEY == 'true'
-      with:
-        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
-        text: 恭喜${{matrix.target}}固件编译成功！
-        desp: 您的${{ env.WXFB_MESSAGE }}固件成功编译完成了！
+      run: |
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=您的${{ env.FB_MESSAGE }}固件成功编译完成了！
+      
+          完成时间：${{ env.FILE_DATE1 }}
+      
+          发布地址：${{ env.GITHUB_RELEASE }}
+      
+          奶牛快传：${{ env.COWTRANSFER_URL }}
+      
+          WeTransfer：${{ env.WETRANSFER_URL }}
+      
+          固件已经编译完成 🎈！！！" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" 
 
-              
-              完成时间：${{ env.FILE_DATE1 }}
-              
-              
-              发布地址：${{ env.GITHUB_RELEASE }}
-              
-              
-              奶牛快传：${{ env.COWTRANSFER_URL }}
-              
-              
-              WeTransfer：${{ env.WETRANSFER_URL }}
-              
-              
-              固件已经编译完成 🎈！！！
+
+
