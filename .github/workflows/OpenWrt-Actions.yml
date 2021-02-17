@@ -270,7 +270,7 @@ jobs:
       run: |
         curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=您的${{ env.FB_MESSAGE }}固件成功编译完成了！
       
-          完成时间：${{ env.FILE_DATE1 }}
+          编译时间：${{ env.FILE_DATE1 }}
       
           发布地址：${{ env.GITHUB_RELEASE }}
       
