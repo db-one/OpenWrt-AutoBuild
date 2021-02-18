@@ -25,7 +25,7 @@ sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' package/lean/default-settings/files/zzz
 sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config #修改流量统计写入为10分钟
 sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config #修改流量统计数据存放默认位置
 sed -i 's@interval: 5@interval: 1@g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon.js #wrtbwmon默认刷新时间更改为1秒
-sed -i 's@114.114.114.114,114.114.115.115@202.102.224.68,202.102.227.68,223.5.5.5,223.6.6.6,119.29.29.29,114.114.114.114,114.114.115.115@g' package/lean/luci-app-sfe/root/etc/config/sfe #Turbo ACC (SFE) 默认DNS服务器
+sed -i 's@114.114.114.114,114.114.115.115@202.102.224.68,202.102.227.68,223.5.5.5,223.6.6.6,119.29.29.29,114.114.114.114,114.114.115.115@g' package/lean/luci-app-sfe/luasrc/model/cbi/sfe.lua #Turbo ACC (SFE) 默认DNS服务器
 sed -i 's@%D %V, %C@%D %V, %C Lean_x86_64@g' package/base-files/files/etc/banner #自定义banner显示
 
 #创建自定义配置文件 - Lean_x86_64_Long
@@ -135,6 +135,7 @@ CONFIG_PACKAGE_luci-theme-atmaterial=y #atmaterial 三合一主题
 CONFIG_PACKAGE_luci-theme-edge=y #edge主题
 # CONFIG_PACKAGE_luci-app-turboacc=y #Turbo ACC 网络加速设置
 # CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
+CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
 EOF
 
 # ShadowsocksR插件:
@@ -165,7 +166,7 @@ CONFIG_PACKAGE_luci-app-webadmin=y #Web管理页面设置
 CONFIG_PACKAGE_luci-app-ddns=y #DDNS服务
 CONFIG_DEFAULT_luci-app-vlmcsd=y #KMS激活服务器
 CONFIG_PACKAGE_luci-app-filetransfer=y #系统-文件传输
-CONFIG_PACKAGE_luci-app-autoreboot=y #定时重启
+CONFIG_PACKAGE_luci-app-autoreboot=n #定时重启
 CONFIG_PACKAGE_luci-app-upnp=y #通用即插即用UPnP(端口自动转发)
 CONFIG_PACKAGE_luci-app-accesscontrol=y #上网时间控制
 CONFIG_PACKAGE_luci-app-wol=y #网络唤醒

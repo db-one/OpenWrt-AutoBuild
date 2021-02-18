@@ -130,6 +130,7 @@ CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-theme-edge=y #edge主题
 # CONFIG_PACKAGE_luci-app-turboacc=y #Turbo ACC 网络加速设置
 # CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
+CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
 EOF
 
 # ShadowsocksR插件:
@@ -158,7 +159,7 @@ cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-adbyby-plus=y #adbyby去广告
 CONFIG_PACKAGE_luci-app-webadmin=y #Web管理页面设置
 CONFIG_PACKAGE_luci-app-filetransfer=y #系统-文件传输
-CONFIG_PACKAGE_luci-app-autoreboot=y #定时重启
+CONFIG_PACKAGE_luci-app-autoreboot=n #定时重启
 CONFIG_PACKAGE_luci-app-frpc=y #Frp内网穿透
 CONFIG_PACKAGE_luci-app-upnp=y #通用即插即用UPnP(端口自动转发)
 CONFIG_DEFAULT_luci-app-vlmcsd=y #KMS激活服务器
