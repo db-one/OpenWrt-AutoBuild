@@ -29,7 +29,7 @@ on:
 
 env: 
   TZ: Asia/Shanghai
-  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+  GIT_USER_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   GITHUB_RELEASE: https://github.com/db-one/OpenWrt-AutoBuild/releases
@@ -229,7 +229,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
       with:
         name: ${{ env.FILE_DATE1 }} 「 ${{ env.FB_MESSAGE }} 」固件
         tag_name: ${{ env.FILE_DATE2 }}-${{matrix.target}}
@@ -263,12 +263,12 @@ jobs:
         keep_latest: 20         #保留多少个releases不删除
         delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
 
     - name: 完成编译信息通知
       if: steps.organizer.outputs.status == 'success' && env.SERVERCHAN_SCKEY == 'true'
       run: |
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=您的${{ env.FB_MESSAGE }}固件成功编译完成了！
+        curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=您的${{ env.FB_MESSAGE }}固件成功编译完成了！
       
           编译时间：${{ env.FILE_DATE1 }}
       
@@ -278,7 +278,7 @@ jobs:
       
           WeTransfer：${{ env.WETRANSFER_URL }}
       
-          固件已经编译完成 🎈！！！" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" 
+          固件已经编译完成 🎈！！！"
 
 
 
