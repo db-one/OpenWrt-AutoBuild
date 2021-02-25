@@ -237,15 +237,17 @@ jobs:
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
             ☆  感谢源码作者无私分享！
-            
+
+            🎈 编译时间：${{ env.FILE_DATE1 }}
+
             🎉 [ ${{ env.FB_MESSAGE }} ]固件下载 ✨
-            
+
             💐 奶牛快传(国内高速🚀下载)： ${{ env.COWTRANSFER_URL }}
-            
+
             ⛄ WeTransfer(国外高速🚀下载)： ${{ env.WETRANSFER_URL }}
-            
+
             🌴 链接有效期为7天，无需注册直接下载 🐤
-            
+
             =========================================
             
         files: ./artifact/firmware/*
@@ -269,15 +271,15 @@ jobs:
       if: steps.organizer.outputs.status == 'success' && env.SERVERCHAN_SCKEY == 'true'
       run: |
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=您的${{ env.FB_MESSAGE }}固件成功编译完成了！
-      
+
           编译时间：${{ env.FILE_DATE1 }}
-      
+
           发布地址：${{ env.GITHUB_RELEASE }}
-      
+
           奶牛快传：${{ env.COWTRANSFER_URL }}
-      
+
           WeTransfer：${{ env.WETRANSFER_URL }}
-      
+
           固件已经编译完成 🎈！！！"
 
 
