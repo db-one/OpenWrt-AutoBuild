@@ -120,6 +120,13 @@ EOF
 # CONFIG_PACKAGE_kmod-usb3=y
 # EOF
 
+# 多线多拨:
+# cat >> .config <<EOF
+# CONFIG_PACKAGE_luci-app-syncdial=y #多拨虚拟WAN
+# CONFIG_PACKAGE_luci-app-mwan3=y #MWAN负载均衡
+# CONFIG_PACKAGE_luci-app-mwan3helper=n #MWAN3分流助手
+# EOF
+
 # 第三方插件选择:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-oaf=y #应用过滤
