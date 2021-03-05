@@ -17,6 +17,7 @@ git clone https://github.com/db-one/dbone-packages.git -b 18.06 package/dbone-pa
 
 # 删除部分默认包
 rm -rf package/lean/luci-theme-argon
+rm -rf package/lean/v2ray-plugin
 rm -rf feeds/packages/net/haproxy
 
 # 自定义定制选项
