@@ -142,7 +142,7 @@ CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-theme-atmaterial=y #atmaterial 三合一主题
 CONFIG_PACKAGE_luci-theme-edge=y #edge主题
 # CONFIG_PACKAGE_luci-app-turboacc=y #Turbo ACC 网络加速设置
-# CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
+CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
 CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
 EOF
 
