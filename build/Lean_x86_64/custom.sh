@@ -142,7 +142,8 @@ CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-theme-atmaterial=y #atmaterial 三合一主题
 CONFIG_PACKAGE_luci-theme-edge=y #edge主题
 # CONFIG_PACKAGE_luci-app-turboacc=y #Turbo ACC 网络加速设置
-CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
+CONFIG_PACKAGE_luci-app-godproxy=y #GodProxy去广告，基于GodProxyP修改而来
+# CONFIG_PACKAGE_luci-app-dnsfilter=y #基于DNS的广告过滤
 CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
 EOF
 
@@ -168,7 +169,7 @@ EOF
 
 # 常用LuCI插件:
 cat >> .config <<EOF
-CONFIG_PACKAGE_luci-app-adbyby-plus=y #adbyby去广告
+CONFIG_PACKAGE_luci-app-adbyby-plus=n #adbyby去广告
 CONFIG_PACKAGE_luci-app-webadmin=y #Web管理页面设置
 CONFIG_PACKAGE_luci-app-ddns=y #DDNS服务
 CONFIG_DEFAULT_luci-app-vlmcsd=y #KMS激活服务器
