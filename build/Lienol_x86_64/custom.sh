@@ -159,6 +159,7 @@ CONFIG_PACKAGE_naiveproxy=y
 CONFIG_PACKAGE_kcptun-client=y
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_brook=y
+CONFIG_PACKAGE_trojan-go=y
 EOF
 
 # 常用LuCI插件:
