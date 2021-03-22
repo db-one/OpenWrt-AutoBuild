@@ -74,17 +74,6 @@ function storage_info()
 	boot_usage=$(awk '/\// {print $(NF-1)}' <<<${BootInfo} | sed 's/%//g')
 	boot_total=$(awk '/\// {print $(NF-4)}' <<<${BootInfo})
 
-	StorageInfo=$(df -h $MEDIA_STORAGE 2>/dev/null | grep $MEDIA_STORAGE)
-	if [[ -n "${StorageInfo}" && ${RootInfo} != *$MEDIA_STORAGE* ]]; then
-		media_usage=$(awk '/\// {print $(NF-1)}' <<<${StorageInfo} | sed 's/%//g')
-		media_total=$(awk '/\// {print $(NF-4)}' <<<${StorageInfo})
-	fi
-
-	StorageInfo=$(df -h $DATA_STORAGE 2>/dev/null | grep $DATA_STORAGE)
-	if [[ -n "${StorageInfo}" && ${RootInfo} != *$DATA_STORAGE* ]]; then
-		data_usage=$(awk '/\// {print $(NF-1)}' <<<${StorageInfo} | sed 's/%//g')
-		data_total=$(awk '/\// {print $(NF-4)}' <<<${StorageInfo})
-	fi
 } # storage_info
 
 
@@ -121,32 +110,35 @@ swap_info=$(LC_ALL=C free -m | grep "^Swap")
 swap_usage=$( (awk '/Swap/ { printf("%3.0f", $3/$2*100) }' <<<${swap_info} 2>/dev/null || echo 0) | tr -c -d '[:digit:]')
 swap_total=$(awk '{print $(2)}' <<<${swap_info})
 
+# cpu info
+cpu_temp=$(cpuinfo | grep -v '.sh')
+sys_temp=$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)
+sys_tempx=`echo $sys_temp | sed 's/ / /g'`
+
+
 
 # display info
-display "系统负载" "${load%% *}" "${critical_load}" "0" "" "${load#* }"
-printf "开机时间:  \x1B[92m%s\x1B[0m\t\t" "$time"
-echo "" # fixed newline
 
+printf "CPU 型号:  \x1B[92m%s\x1B[0m" "$sys_tempx"
+echo ""
+
+printf "CPU 信息: \x1B[92m%s\x1B[0m" "$cpu_temp"
+echo ""
+
+display "系统负载" "${load%% *}" "${critical_load}" "0" "" "${load#* }"
+printf "运行时间:  \x1B[92m%s\x1B[0m\t\t" "$time"
+echo "" # fixed newline
 
 display "内存已用" "$memory_usage" "70" "0" "%" " of ${memory_total}MB"
 display "交换内存" "$swap_usage" "10" "0" "%" " of $swap_total""Mb"
 printf "IP  地址:  \x1B[92m%s\x1B[0m" "$ip_address"
 echo "" # fixed newline
 
-
-a=0;b=0;c=0
-display "CPU 温度" "$board_temp" "45" "0" "°C" "" ; a=$?
-display "环境温度" "$amb_temp" "40" "0" "°C" "" ; b=$?
-(( ($a+$b) >0 )) && echo "" # new line only if some value is displayed
-
-
 display "启动存储" "$boot_usage" "90" "1" "%" " of $boot_total"
 display "系统存储" "$root_usage" "90" "1" "%" " of $root_total"
 echo ""
 
-display "数据存储" "$data_usage" "90" "1" "%" " of $data_total"
-display "媒体存储" "$media_usage" "90" "1" "%" " of $media_total"
-echo ""
+
 echo ""
 
 
