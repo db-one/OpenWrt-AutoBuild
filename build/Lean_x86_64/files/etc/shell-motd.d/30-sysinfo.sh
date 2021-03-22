@@ -118,6 +118,8 @@ sys_tempx=`echo $sys_temp | sed 's/ / /g'`
 
 
 # display info
+printf "设备信息： UNAS 万由 410A  技嘉 B75N"
+echo ""
 
 printf "CPU 型号:  \x1B[92m%s\x1B[0m" "$sys_tempx"
 echo ""
