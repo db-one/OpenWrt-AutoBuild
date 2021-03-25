@@ -21,13 +21,21 @@ rm -rf package/lean/v2ray-plugin
 rm -rf feeds/packages/net/haproxy
 
 # 自定义定制选项
-sed -i 's#192.168.1.1#10.0.0.1#g' package/base-files/files/bin/config_generate #定制默认IP
-sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' package/lean/default-settings/files/zzz-default-settings #取消系统默认密码
+ZZZ="package/lean/default-settings/files/zzz-default-settings"
+#
+sed -i 's#192.168.1.1#10.0.0.1#g' package/base-files/files/bin/config_generate            #定制默认IP
+sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' $ZZZ                                               #取消系统默认密码
+sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt-X86'" $ZZZ       # 修改主机名称为OpenWrt-X86
+sed -i "s/OpenWrt /ONE build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ              # 增加自己个性名称
+#sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                      # 修改内核版本为4.19
+sed -i "/uci commit luci/i\uci set luci.main.mediaurlbase=/luci-static/atmaterial_red" $ZZZ        # 设置默认主题(如果编译可会自动修改默认主题的，有可能会失效)
+
+# ================================================
+sed -i 's@%D %V, %C@%D %V, %C Lean_x86_64@g' package/base-files/files/etc/banner               #自定义banner显示
 sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config #修改流量统计写入为10分钟
-sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config #修改流量统计数据存放默认位置
-sed -i 's@interval: 5@interval: 1@g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js #wrtbwmon默认刷新时间更改为1秒
-sed -i 's@114.114.114.114,114.114.115.115@202.102.224.68,202.102.227.68,223.5.5.5,223.6.6.6,119.29.29.29,114.114.114.114,114.114.115.115@g' package/lean/luci-app-sfe/luasrc/model/cbi/sfe.lua #Turbo ACC (SFE) 默认DNS服务器
-sed -i 's@%D %V, %C@%D %V, %C Lean_x86_64@g' package/base-files/files/etc/banner #自定义banner显示
+sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               #修改流量统计数据存放默认位置
+sed -i 's@interval: 5@interval: 1@g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               #wrtbwmon默认刷新时间更改为1秒
+sed -i 's@114.114.114.114,114.114.115.115@202.102.224.68,202.102.227.68,223.5.5.5,223.6.6.6,119.29.29.29,114.114.114.114,114.114.115.115@g' package/lean/luci-app-sfe/luasrc/model/cbi/sfe.lua               #Turbo ACC (SFE) 默认DNS服务器
 
 #创建自定义配置文件 - Lean_x86_64_Long
 

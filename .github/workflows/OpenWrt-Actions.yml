@@ -124,9 +124,13 @@ jobs:
          cp -Rf build/${{matrix.target}}/sources/* ./
         fi
 
-        echo "写入配置文件"
-         mv build/${{matrix.target}}/$CONFIG_FILE .config
+        echo "写入配置文件..."
+        mv build/${{matrix.target}}/$CONFIG_FILE .config
         make defconfig
+
+    - name: 输出配置文件
+      run: |
+        cd openwrt && cat .config
 
     - name: SSH远程连接服务器
       uses: P3TERX/ssh2actions@v1.0.0
