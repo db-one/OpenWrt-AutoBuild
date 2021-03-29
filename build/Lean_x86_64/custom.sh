@@ -19,6 +19,8 @@ git clone https://github.com/db-one/dbone-packages.git -b 18.06 package/dbone-pa
 rm -rf package/lean/luci-theme-argon
 rm -rf package/lean/v2ray-plugin
 rm -rf feeds/packages/net/haproxy
+rm -rf package/lean/luci-app-sfe
+rm -rf package/lean/luci-app-flowoffload
 
 # 自定义定制选项
 ZZZ="package/lean/default-settings/files/zzz-default-settings"
@@ -31,12 +33,10 @@ sed -i "s/OpenWrt /ONE build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ    
 sed -i "/uci commit luci/i\uci set luci.main.mediaurlbase=/luci-static/atmaterial_red" $ZZZ        # 设置默认主题(如果编译可会自动修改默认主题的，有可能会失效)
 
 # ================================================
-sed -i 's@%D %V, %C@%D %V, %C Lean_x86_64@g' package/base-files/files/etc/banner               #自定义banner显示
+sed -i 's#%D %V, %C#%D %V, %C Lean_x86_64#g' package/base-files/files/etc/banner               #自定义banner显示
 sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               #修改流量统计写入为10分钟
 sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               #修改流量统计数据存放默认位置
-sed -i 's@interval: 5@interval: 1@g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               #wrtbwmon默认刷新时间更改为1秒
-sed -i 's@114.114.114.114@202.102.224.68,202.102.227.68,223.5.5.5,223.6.6.6,119.29.29.29,114.114.114.114@g' package/lean/luci-app-sfe/luasrc/model/cbi/sfe.lua               #Turbo ACC (SFE) 默认DNS服务器
-sed -i 's@114.114.114.114@202.102.224.68,202.102.227.68,223.5.5.5,223.6.6.6,119.29.29.29,114.114.114.114@g' package/lean/luci-app-flowoffload/luasrc/model/cbi/flowoffload.lua               #Turbo ACC (flowoffload) 默认DNS服务器
+sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               #wrtbwmon默认刷新时间更改为1秒
 
 #创建自定义配置文件 - Lean_x86_64
 
