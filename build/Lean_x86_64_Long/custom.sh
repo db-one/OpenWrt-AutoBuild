@@ -25,18 +25,18 @@ rm -rf package/lean/luci-app-flowoffload
 # 自定义定制选项
 ZZZ="package/lean/default-settings/files/zzz-default-settings"
 #
-sed -i 's#192.168.1.1#10.0.0.1#g' package/base-files/files/bin/config_generate            #定制默认IP
-sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' $ZZZ                                               #取消系统默认密码
+sed -i 's#192.168.1.1#10.0.0.1#g' package/base-files/files/bin/config_generate            # 定制默认IP
+sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' $ZZZ                                             # 取消系统默认密码
 sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt-X86'" $ZZZ       # 修改主机名称为OpenWrt-X86
 sed -i "s/OpenWrt /ONE build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ              # 增加自己个性名称
 #sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                      # 修改内核版本为4.19
 sed -i "/uci commit luci/i\uci set luci.main.mediaurlbase=/luci-static/atmaterial_red" $ZZZ        # 设置默认主题(如果编译可会自动修改默认主题的，有可能会失效)
 
 # ================================================
-sed -i 's#%D %V, %C#%D %V, %C Lean_x86_64#g' package/base-files/files/etc/banner               #自定义banner显示
-sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               #修改流量统计写入为10分钟
-sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               #修改流量统计数据存放默认位置
-sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               #wrtbwmon默认刷新时间更改为1秒
+sed -i 's#%D %V, %C#%D %V, %C Lean_x86_64#g' package/base-files/files/etc/banner               # 自定义banner显示
+sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计写入为10分钟
+sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计数据存放默认位置
+sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               # wrtbwmon默认刷新时间更改为1秒
 
 #创建自定义配置文件 - Lean_x86_64_Long
 
@@ -150,8 +150,6 @@ CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 # CONFIG_PACKAGE_luci-app-argon-config=y #argon主题设置
 CONFIG_PACKAGE_luci-theme-atmaterial=y #atmaterial 三合一主题
 CONFIG_PACKAGE_luci-theme-edge=y #edge主题
-# CONFIG_PACKAGE_luci-app-turboacc=y #Turbo ACC 网络加速设置
-CONFIG_PACKAGE_luci-app-godproxy=y #GodProxy去广告，基于GodProxyP修改而来
 CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
 # CONFIG_PACKAGE_luci-app-ddnsto=y #小宝开发的DDNS.to内网穿透
 # CONFIG_PACKAGE_ddnsto=y #DDNS.to内网穿透软件包
@@ -180,7 +178,7 @@ EOF
 
 # 常用LuCI插件:
 cat >> .config <<EOF
-CONFIG_PACKAGE_luci-app-adbyby-plus=n #adbyby去广告
+CONFIG_PACKAGE_luci-app-adbyby-plus=y #adbyby去广告
 CONFIG_PACKAGE_luci-app-webadmin=y #Web管理页面设置
 CONFIG_PACKAGE_luci-app-ddns=y #DDNS服务
 CONFIG_DEFAULT_luci-app-vlmcsd=y #KMS激活服务器
