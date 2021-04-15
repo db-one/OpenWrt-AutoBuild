@@ -37,6 +37,7 @@ sed -i 's#%D %V, %C#%D %V, %C Lean_x86_64#g' package/base-files/files/etc/banner
 sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计写入为10分钟
 sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计数据存放默认位置
 sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               # wrtbwmon默认刷新时间更改为1秒
+echo -e '\n\nmsgid "This will delete the database file. Are you sure?"\nmsgstr "这将删除数据库文件, 你确定吗? "' >> package/lean/luci-app-wrtbwmon/po/zh-cn/wrtbwmon.po # wrtbwmon流量统计
 
 #创建自定义配置文件 - Lean_x86_64_Long
 
