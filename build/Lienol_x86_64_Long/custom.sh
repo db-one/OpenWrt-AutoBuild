@@ -163,12 +163,7 @@ EOF
 # Passwall插件:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-passwall=y
-CONFIG_PACKAGE_shadowsocks-libev-config=y
 CONFIG_PACKAGE_https-dns-proxy=y
-CONFIG_PACKAGE_ssocks=y
-CONFIG_PACKAGE_microsocks=y
-CONFIG_PACKAGE_ipt2socks=y
-CONFIG_PACKAGE_pdnsd-alt=y
 CONFIG_PACKAGE_naiveproxy=y
 CONFIG_PACKAGE_kcptun-client=y
 CONFIG_PACKAGE_chinadns-ng=y

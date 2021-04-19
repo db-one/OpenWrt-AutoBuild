@@ -128,16 +128,16 @@ jobs:
         mv build/${{matrix.target}}/$CONFIG_FILE .config
         make defconfig
 
-    - name: 输出配置文件
-      run: |
-        cd openwrt && cat .config
-
     - name: SSH远程连接服务器
       uses: P3TERX/ssh2actions@v1.0.0
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+    - name: 输出配置文件
+      run: |
+        cd openwrt && cat .config
 
     - name: 下载固件包
       run: |
