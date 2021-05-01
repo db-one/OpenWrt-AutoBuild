@@ -30,6 +30,8 @@ on:
 env: 
   TZ: Asia/Shanghai
   GIT_USER_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+  WECHAT_WORK_URL: ${{ secrets.WECHAT_WORK_URL }}
+  WECHAT_WORK_TOKEN: ${{ secrets.WECHAT_WORK_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   GITHUB_RELEASE: https://github.com/db-one/OpenWrt-AutoBuild/releases
@@ -55,7 +57,7 @@ jobs:
         echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
         echo "REPO_BRANCH=${REPO_BRANCH}" >> $GITHUB_ENV
         echo "CONFIG_FILE=${CONFIG_FILE}" >> $GITHUB_ENV
-        echo "FB_MESSAGE=${FB_MESSAGE}" >> $GITHUB_ENV
+        echo "FIRMWARE_MESSAGE=${FIRMWARE_MESSAGE}" >> $GITHUB_ENV
         echo "CUSTOM_SH=${CUSTOM_SH}" >> $GITHUB_ENV
         echo "SSH_ACTIONS=${SSH_ACTIONS}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> $GITHUB_ENV
@@ -65,7 +67,8 @@ jobs:
         echo "UPLOAD_COWTRANSFER=${UPLOAD_COWTRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_WETRANSFER=${UPLOAD_WETRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
-        echo "SERVERCHAN_SCKEY=${SERVERCHAN_SCKEY}" >> $GITHUB_ENV
+        echo "WECHAT_WORK_PUSH=${WECHAT_WORK_PUSH}" >> $GITHUB_ENV
+        echo "TELEGRAM_BOT=${TELEGRAM_BOT}" >> $GITHUB_ENV
 
     - name: 初始化系统环境
       env:
@@ -235,7 +238,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
       with:
-        name: ${{ env.FILE_DATE1 }} 「 ${{ env.FB_MESSAGE }} 」固件
+        name: ${{ env.FILE_DATE1 }} 「 ${{ env.FIRMWARE_MESSAGE }} 」固件
         tag_name: ${{ env.FILE_DATE2 }}-${{matrix.target}}
         body: |            
             ☆  源码 : ${{ env.REPO_URL }}
@@ -244,7 +247,7 @@ jobs:
 
             🎈 编译时间：${{ env.FILE_DATE1 }}
 
-            🎉 [ ${{ env.FB_MESSAGE }} ]固件下载 ✨
+            🎉 [ ${{ env.FIRMWARE_MESSAGE }} ]固件下载 ✨
 
             💐 奶牛快传(国内高速🚀下载)： ${{ env.COWTRANSFER_URL }}
 
@@ -271,10 +274,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
 
-    - name: 完成编译信息通知
-      if: steps.organizer.outputs.status == 'success' && env.SERVERCHAN_SCKEY == 'true'
+    - name: 编译成功信息通知-企业微信
+      if: steps.organizer.outputs.status == 'success' && env.WECHAT_WORK_PUSH == 'true'
       run: |
-        curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=您的${{ env.FB_MESSAGE }}固件成功编译完成了！
+        curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！%0a%0a编译时间：${{ env.FILE_DATE1 }}%0a%0a发布地址：${{ env.GITHUB_RELEASE }}%0a%0a奶牛快传：${{ env.COWTRANSFER_URL }}%0a%0aWeTransfer：${{ env.WETRANSFER_URL }}%0a%0a固件已经编译完成🎈！！！"
+
+    - name: 编译成功信息通知-Telegram
+      if: steps.organizer.outputs.status == 'success' && env.TELEGRAM_BOT == 'true'
+      run: |
+        curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！
 
           编译时间：${{ env.FILE_DATE1 }}
 
