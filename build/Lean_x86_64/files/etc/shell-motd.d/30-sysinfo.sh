@@ -112,16 +112,19 @@ swap_total=$(awk '{print $(2)}' <<<${swap_info})
 
 # cpu info
 cpu_temp=$(cpuinfo | grep -v '.sh')
-sys_temp=$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)
-sys_tempx=`echo $sys_temp | sed 's/ / /g'`
+cpuinfox=$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)
+cpuinfo=`echo $cpuinfox | sed 's/.*G*./& 核心x/g' | sed -r 's/^(..)(.*)/\2\1/'`
 
+# chassis vendor
+chassis_vendor=`cat /sys/class/dmi/id/chassis_vendor`
+product_version=`cat /sys/class/dmi/id/product_version`
 
 
 # display info
-printf "设备信息： UNAS 万由 410A  技嘉 B75N"
+printf "制 造 商:  \x1B[92m%s\x1B[0m" "$chassis_vendor $product_version"
 echo ""
 
-printf "CPU 型号:  \x1B[92m%s\x1B[0m" "$sys_tempx"
+printf "处 理 器:  \x1B[92m%s\x1B[0m" "$cpuinfo"
 echo ""
 
 printf "CPU 信息: \x1B[92m%s\x1B[0m" "$cpu_temp"
