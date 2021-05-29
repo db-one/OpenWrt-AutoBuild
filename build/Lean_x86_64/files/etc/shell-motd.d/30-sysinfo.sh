@@ -10,9 +10,6 @@ MOTD_DISABLE=""
 
 SHOW_IP_PATTERN="^[ewr].*|^br.*|^lt.*|^umts.*"
 
-DATA_STORAGE=/userdisk/data
-MEDIA_STORAGE=/userdisk/snail
-
 
 [[ -f /etc/default/motd ]] && . /etc/default/motd
 for f in $MOTD_DISABLE; do
