@@ -5,16 +5,8 @@
 #
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-THIS_SCRIPT="sysinfo"
-MOTD_DISABLE=""
 
 SHOW_IP_PATTERN="^[ewr].*|^br.*|^lt.*|^umts.*"
-
-
-[[ -f /etc/default/motd ]] && . /etc/default/motd
-for f in $MOTD_DISABLE; do
-	[[ $f == $THIS_SCRIPT ]] && exit 0
-done
 
 
 # don't edit below here
