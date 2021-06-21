@@ -106,8 +106,10 @@ CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
 CONFIG_PACKAGE_ipv6helper=y
 EOF
 
-# 编译VMware镜像以及镜像填充
+# 编译PVE/KVM、Hyper-V、VMware镜像以及镜像填充
 cat >> .config <<EOF
+CONFIG_QCOW2_IMAGES=y
+CONFIG_VHDX_IMAGES=y
 CONFIG_VMDK_IMAGES=y
 CONFIG_TARGET_IMAGES_PAD=y
 EOF
