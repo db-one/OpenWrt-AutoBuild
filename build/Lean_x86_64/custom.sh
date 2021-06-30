@@ -19,8 +19,6 @@ git clone https://github.com/db-one/dbone-packages.git -b 18.06 package/dbone-pa
 rm -rf package/lean/luci-theme-argon
 rm -rf package/lean/v2ray-plugin
 rm -rf feeds/packages/net/haproxy
-rm -rf package/lean/luci-app-sfe
-rm -rf package/lean/luci-app-flowoffload
 
 # 自定义定制选项
 ZZZ="package/lean/default-settings/files/zzz-default-settings"
@@ -189,8 +187,7 @@ CONFIG_PACKAGE_luci-app-wol=y #网络唤醒
 CONFIG_PACKAGE_luci-app-frpc=y #Frp内网穿透
 CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
 CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
-CONFIG_PACKAGE_luci-app-sfe=n #高通开源的 Shortcut FE 转发加速引擎
-CONFIG_PACKAGE_luci-app-flowoffload=y #开源 Linux Flow Offload 驱动
+CONFIG_PACKAGE_luci-app-turboacc=y #Linux Flow Offload Forwarding 转发加速引擎
 CONFIG_PACKAGE_luci-app-haproxy-tcp=n #Haproxy负载均衡
 CONFIG_PACKAGE_luci-app-diskman=n #磁盘管理磁盘信息
 CONFIG_PACKAGE_luci-app-transmission=n #TR离线下载
