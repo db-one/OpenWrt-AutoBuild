@@ -172,6 +172,14 @@ CONFIG_PACKAGE_trojan-go=y
 CONFIG_PACKAGE_shadowsocks-rust-sslocal=y
 EOF
 
+# Turbo ACC 网络加速:
+cat >> .config <<EOF
+CONFIG_PACKAGE_luci-app-turboacc=y
+#luci-app-turboacc依赖
+CONFIG_PACKAGE_dnsproxy=y
+CONFIG_PACKAGE_dnsforwarder=y
+EOF
+
 # 常用LuCI插件:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-adbyby-plus=y #adbyby去广告
@@ -189,7 +197,6 @@ CONFIG_PACKAGE_luci-app-control-webrestriction=y #访问限制
 CONFIG_PACKAGE_luci-app-control-weburl=y #网址过滤
 CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
 CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
-CONFIG_PACKAGE_luci-app-turboacc=y #Linux Flow Offload Forwarding 转发加速引擎
 CONFIG_PACKAGE_luci-app-smartdns=n #smartdns服务器
 CONFIG_PACKAGE_luci-app-diskman=n #磁盘管理磁盘信息
 CONFIG_PACKAGE_luci-app-adguardhome=n #ADguardHome去广告服务
