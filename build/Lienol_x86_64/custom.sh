@@ -18,6 +18,7 @@ git clone https://github.com/db-one/dbone-packages.git -b 18.06 package/dbone-pa
 # 删除部分默认包
 rm -rf package/lean/luci-app-sfe
 rm -rf package/lean/luci-app-flowoffload
+rm -rf feeds/packages/net/haproxy
 
 # 为19.07添加libcap-bin依赖
 rm -rf feeds/packages/libs/libcap
@@ -144,7 +145,7 @@ EOF
 
 # 第三方插件选择:
 cat >> .config <<EOF
-# CONFIG_PACKAGE_luci-app-oaf=y #应用过滤
+CONFIG_PACKAGE_luci-app-oaf=y #应用过滤
 # CONFIG_PACKAGE_luci-app-openclash=y #OpenClash客户端
 # CONFIG_PACKAGE_luci-app-serverchan=y #微信推送
 CONFIG_PACKAGE_luci-app-eqos=y #IP限速
