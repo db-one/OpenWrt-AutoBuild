@@ -71,6 +71,9 @@ jobs:
         echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
         echo "WECHAT_WORK_PUSH=${WECHAT_WORK_PUSH}" >> $GITHUB_ENV
         echo "TELEGRAM_BOT=${TELEGRAM_BOT}" >> $GITHUB_ENV
+        #添加变量
+        echo "HOME=${GITHUB_WORKSPACE}/openwrt" >> $GITHUB_ENV
+        echo "WORKPATH=${GITHUB_WORKSPACE}/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
 
     - name: 初始化系统环境
       env:
@@ -84,7 +87,7 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
 
-        df -h
+        df -hT
 
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
@@ -116,24 +119,24 @@ jobs:
         cd openwrt
 
         echo "执行脚本"
-        if [ -f "build/${{matrix.target}}/$CUSTOM_SH" ]; then
+        if [ -f "${WORKPATH}/$CUSTOM_SH" ]; then
         (
-          chmod +x build/${{matrix.target}}/$CUSTOM_SH
-          /bin/bash "build/${{matrix.target}}/$CUSTOM_SH"
+          chmod +x ${WORKPATH}/$CUSTOM_SH
+          /bin/bash "${WORKPATH}/$CUSTOM_SH"
         )
         fi
 
         echo "复制文件..."
-        if [ -n "$(ls -A "build/${{matrix.target}}/files" 2>/dev/null)" ]; then
-         cp -rf build/${{matrix.target}}/files files
-         chmod -R 755 build/${{matrix.target}}/files/* ./
+        if [ -n "$(ls -A "${WORKPATH}/files" 2>/dev/null)" ]; then
+         cp -rf ${WORKPATH}/files files
+         chmod -R 755 ${WORKPATH}/files/* ./
         fi
-        if [ -n "$(ls -A "build/${{matrix.target}}/sources" 2>/dev/null)" ]; then
-         cp -Rf build/${{matrix.target}}/sources/* ./
+        if [ -n "$(ls -A "${WORKPATH}/sources" 2>/dev/null)" ]; then
+         cp -Rf ${WORKPATH}/sources/* ./
         fi
 
         echo "写入配置文件..."
-        mv build/${{matrix.target}}/$CONFIG_FILE .config
+        mv ${WORKPATH}/$CONFIG_FILE .config
         make defconfig
 
     - name: SSH远程连接服务器
@@ -143,9 +146,39 @@ jobs:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
-    - name: 输出配置文件
+    - name: 输出编译信息
       run: |
-        cd openwrt && cat .config
+        cd openwrt
+        echo " 系统空间      类型   总数  已用  可用 使用率"
+        df -hT $PWD
+
+        echo
+        echo "=========================================="
+
+        grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
+        grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
+        sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
+        sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
+        sed -i '/qbittorrent_static/d' Plug-in > /dev/null 2>&1
+        sed -i 's/=y/\ /g' Plug-in
+        awk '$0=NR$0' Plug-in > Plug-2
+        awk '{print "	" $0}' Plug-2 > Plug-in
+
+        echo
+        echo
+        echo "	      已选插件列表"
+        cat Plug-in || true
+        rm -rf {Plug-in,Plug-2}
+
+        echo
+        echo "=========================================="
+
+        echo
+        echo
+        echo "输出完整插件信息..."
+        echo
+        echo
+        cat .config
 
     - name: 下载固件包
       run: |

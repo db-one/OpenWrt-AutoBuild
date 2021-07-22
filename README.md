@@ -10,4 +10,4 @@
 - [ Lienol](https://github.com/Lienol/openwrt )
 - [ xiaorouji package](https://github.com/xiaorouji/openwrt-passwall)
 - [P3TERX](https://github.com/P3TERX/Actions-OpenWrt)
-- [281677160](https://github.com/281677160/build-openwrt)
+- [281677160](https://github.com/281677160/AutoBuild-OpenWrt)

@@ -44,9 +44,9 @@ sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-
 # sed -i 's#vpn#services#g' package/lean/luci-app-zerotier/luasrc/controller/zerotier.lua               # 修改zerotier到服务菜单
 # sed -i 's#vpn#services#g' package/lean/luci-app-zerotier/luasrc/view/zerotier/zerotier_status.htm               # 修改zerotier到服务菜单
 
-# 创建自定义配置文件 - Lienol_x86_64
+# 创建自定义配置文件
 
-cd build/Lienol_x86_64
+cd $WORKPATH
 touch ./.config
 
 #
@@ -278,8 +278,8 @@ EOF
 
 sed -i 's/^[ \t]*//g' ./.config
 
-# 返回工作目录
-cd ../..
+# 返回目录
+cd $HOME
 
 # 配置文件创建完成
 

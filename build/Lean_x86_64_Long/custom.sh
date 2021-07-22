@@ -37,9 +37,9 @@ sed -i 's#option database_generations 10#option database_generations 3#g' feeds/
 sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计数据存放默认位置
 sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               # wrtbwmon默认刷新时间更改为1秒
 
-#创建自定义配置文件 - Lean_x86_64_Long
+#创建自定义配置文件
 
-cd build/Lean_x86_64_Long
+cd $WORKPATH
 touch ./.config
 
 #
@@ -199,7 +199,8 @@ CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
 CONFIG_PACKAGE_luci-app-haproxy-tcp=n #Haproxy负载均衡
 CONFIG_PACKAGE_luci-app-diskman=n #磁盘管理磁盘信息
 CONFIG_PACKAGE_luci-app-transmission=n #TR离线下载
-CONFIG_PACKAGE_luci-app-qbittorrent=n #QB离线下载
+CONFIG_PACKAGE_luci-app-qbittorrent=n #qBittorrent离线下载
+CONFIG_PACKAGE_luci-app-qbittorrent_static=n #qBittorrent离线下载
 CONFIG_PACKAGE_luci-app-amule=n #电驴离线下载
 CONFIG_PACKAGE_luci-app-xlnetacc=n #迅雷快鸟
 CONFIG_PACKAGE_luci-app-zerotier=y #zerotier内网穿透
@@ -266,7 +267,7 @@ EOF
 
 sed -i 's/^[ \t]*//g' ./.config
 
-# 返回工作目录
-cd ../..
+# 返回目录
+cd $HOME
 
 # 配置文件创建完成
