@@ -185,7 +185,7 @@ EOF
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-adbyby-plus=y #adbyby去广告
 CONFIG_PACKAGE_luci-app-webadmin=y #Web管理页面设置
-CONFIG_PACKAGE_luci-app-ddns=y #DDNS服务
+CONFIG_PACKAGE_luci-app-ddns=n #DDNS服务
 CONFIG_DEFAULT_luci-app-vlmcsd=y #KMS激活服务器
 CONFIG_PACKAGE_luci-app-filetransfer=y #系统-文件传输
 CONFIG_PACKAGE_luci-app-autoreboot=n #定时重启
@@ -198,9 +198,8 @@ CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
 CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
 CONFIG_PACKAGE_luci-app-haproxy-tcp=n #Haproxy负载均衡
 CONFIG_PACKAGE_luci-app-diskman=n #磁盘管理磁盘信息
-CONFIG_PACKAGE_luci-app-transmission=n #TR离线下载
+CONFIG_PACKAGE_luci-app-transmission=n #Transmission离线下载
 CONFIG_PACKAGE_luci-app-qbittorrent=n #qBittorrent离线下载
-CONFIG_PACKAGE_luci-app-qbittorrent_static=n #qBittorrent离线下载
 CONFIG_PACKAGE_luci-app-amule=n #电驴离线下载
 CONFIG_PACKAGE_luci-app-xlnetacc=n #迅雷快鸟
 CONFIG_PACKAGE_luci-app-zerotier=y #zerotier内网穿透
@@ -263,7 +262,6 @@ EOF
 # 
 # ========================固件定制部分结束========================
 # 
-
 
 sed -i 's/^[ \t]*//g' ./.config
 
