@@ -167,7 +167,7 @@ jobs:
         echo
         echo
         echo "	      已选插件列表"
-        cat Plug-in || true
+        cat Plug-in
         rm -rf {Plug-in,Plug-2}
 
         echo
@@ -277,15 +277,17 @@ jobs:
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer cow --block 2621440 -s -p 64 --no-progress ./artifact/firmware/ 2>&1 | tee cowtransfer.log
-        echo "::warning file=奶牛快传（${{matrix.target}}）::$(cat cowtransfer.log | grep https)"
+        sed -i "s/Download Link/奶牛快传/g" cowtransfer.log
+        echo "::warning file=奶牛快传::$(cat cowtransfer.log | grep https)"
 
     - name: 上传固件到 WeTransfer
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true'
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer wet -s -p 16 --no-progress ./artifact/firmware/ 2>&1 | tee wetransfer.log
-        echo "::warning file=WeTransfer（${{matrix.target}}）::$(cat wetransfer.log | grep https)"
-    
+        sed -i "s/Download Link/WeTransfer/g" wetransfer.log
+        echo "::warning file=WeTransfer::$(cat wetransfer.log | grep https)"
+
     - name: 提取发布用的「奶牛快传」和「WeTransfer」的链接
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       run: |
@@ -297,13 +299,12 @@ jobs:
         echo "WETRANSFER_URL=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV 
 
     - name: 自动发布固件到 Releases
-      uses: softprops/action-gh-release@v1
+      uses: ncipollo/release-action@v1
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
       with:
         name: ${{ env.FILE_TIME1 }} 「 ${{ env.FIRMWARE_MESSAGE }} 」固件
-        tag_name: ${{ env.FILE_TIME2 }}-${{matrix.target}}
+        tag: ${{ env.FILE_TIME2 }}-${{matrix.target}}
+        token: ${{ secrets.GIT_USER_TOKEN }}
         body: |            
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
@@ -323,7 +324,7 @@ jobs:
 
             =========================================
             
-        files: ./artifact/firmware/*
+        artifacts: ./artifact/firmware/*
 
     - name: 删除运行记录
       uses: db-one/delete-workflow-runs@main
