@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [Lean_x86_64,Lienol_x86_64,Lean_x86_64_Long,Lienol_x86_64_Long]  #[Lean_x86_64,Lienol_x86_64,Lean_x86_64_Long,Lienol_x86_64_Long]
+        target: [Lean_x86_64,Lean_x86_64_Long]  #[Lean_x86_64,Lienol_x86_64,Lean_x86_64_Long,Lienol_x86_64_Long]
 
     steps:
     - name: 准备完成
