@@ -246,6 +246,7 @@ CONFIG_PACKAGE_wget=y
 CONFIG_PACKAGE_bash=y
 CONFIG_PACKAGE_node=y
 CONFIG_PACKAGE_kmod-tun=y
+CONFIG_PACKAGE_snmpd=y
 CONFIG_PACKAGE_libcap=y
 CONFIG_PACKAGE_libcap-bin=y
 CONFIG_PACKAGE_ip6tables-mod-nat=y
