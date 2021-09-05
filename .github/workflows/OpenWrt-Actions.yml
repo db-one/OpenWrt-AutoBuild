@@ -19,8 +19,8 @@ on:
 
 
 # 定时触发编译(每天早3点)
-#  schedule:
-#    - cron: 0 19 * * *
+  schedule:
+    - cron: 0 19 * * *
 
 # 点赞☆Star触发编译
 #  watch:
@@ -99,6 +99,12 @@ jobs:
         df -hT $PWD
         git clone -b $REPO_BRANCH --single-branch $REPO_URL openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: 缓存加速
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        prefix: ${{ github.workspace }}/openwrt
 
     - name: 更新时区、编译时间
       id: date
