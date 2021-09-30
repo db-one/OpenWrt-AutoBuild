@@ -318,20 +318,20 @@ jobs:
 
             🎈 编译时间：${{ env.FILE_TIME1 }}
 
-            🎉 [ ${{ env.FIRMWARE_MESSAGE }} ]固件下载
-            
-            ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-
-            💐 奶牛快传： ${{ env.COWTRANSFER_URL }}
-
-            ⛄ WeTransfer： ${{ env.WETRANSFER_URL }}
-
             ⏰ 编译用时：${{ env.BUILD_TIME }}
 
-            🌴 WeTransfer链接有效期为7天，奶牛快传为24小时，无需注册直接下载
+            🎉 [ ${{ env.FIRMWARE_MESSAGE }} ]固件下载
+
+            ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+
+            ➤ 奶牛快传： ${{ env.COWTRANSFER_URL }}
+
+            ➤ WeTransfer： ${{ env.WETRANSFER_URL }}
+
+               WeTransfer链接有效期为7天，奶牛快传为24小时，无需注册直接下载
 
             =========================================
-            
+
         artifacts: ./artifact/firmware/*
 
     - name: 删除运行记录
@@ -352,7 +352,7 @@ jobs:
     - name: 编译成功信息通知-企业微信
       if: steps.organizer.outputs.status == 'success' && env.WECHAT_WORK_PUSH == 'true'
       run: |
-        curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！%0a%0a🎈编译时间：${{ env.FILE_TIME1 }}%0a%0a🎉发布地址：${{ env.GITHUB_RELEASE }}%0a%0a💐奶牛快传：${{ env.COWTRANSFER_URL }}%0a%0a⛄WeTransfer：${{ env.WETRANSFER_URL }}%0a%0a⏰编译用时：${{ env.BUILD_TIME }}%0a%0a🌴固件已经编译完成🎈！！！" || true
+        curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！%0a%0a🎈编译时间：${{ env.FILE_TIME1 }}%0a%0a⏰编译用时：${{ env.BUILD_TIME }}%0a%0a🎉发布地址：${{ env.GITHUB_RELEASE }}%0a%0a💐奶牛快传：${{ env.COWTRANSFER_URL }}%0a%0a⛄WeTransfer：${{ env.WETRANSFER_URL }}%0a%0a🌴固件已经编译完成🎈！！！" || true
 
     - name: 编译成功信息通知-Telegram
       if: steps.organizer.outputs.status == 'success' && env.TELEGRAM_BOT == 'true'
@@ -361,13 +361,13 @@ jobs:
 
           🎈 编译时间：${{ env.FILE_TIME1 }}
 
+          ⏰ 编译用时：${{ env.BUILD_TIME }}
+
           🎉 发布地址：${{ env.GITHUB_RELEASE }}
 
           💐 奶牛快传：${{ env.COWTRANSFER_URL }}
 
           ⛄ WeTransfer：${{ env.WETRANSFER_URL }}
-
-          ⏰ 编译用时：${{ env.BUILD_TIME }}
 
           🌴 固件已经编译完成 🎈！！！" >/dev/null 2>&1 && echo "ok..."
 
