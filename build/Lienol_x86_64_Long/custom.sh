@@ -168,13 +168,14 @@ CONFIG_PACKAGE_kcptun-client=y
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_brook=y
 CONFIG_PACKAGE_trojan-go=y
+CONFIG_PACKAGE_xray-plugin=y
 CONFIG_PACKAGE_shadowsocks-rust-sslocal=y
 EOF
 
 # Turbo ACC 网络加速:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-turboacc=y
-#luci-app-turboacc依赖
+# luci-app-turboacc依赖
 CONFIG_PACKAGE_dnsproxy=y
 CONFIG_PACKAGE_dnsforwarder=y
 EOF
@@ -208,9 +209,6 @@ CONFIG_PACKAGE_luci-app-mwan3=n #多线多拨
 CONFIG_PACKAGE_luci-app-hd-idle=n #磁盘休眠
 CONFIG_PACKAGE_luci-app-zerotier=y #Zerotier内网穿透
 # CONFIG_PACKAGE_luci-app-sqm=n #SQM智能队列管理
-#
-# passwall相关(禁用):
-#
 #
 # VPN相关插件(禁用):
 #
