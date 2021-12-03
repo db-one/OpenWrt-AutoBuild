@@ -59,6 +59,7 @@ jobs:
         echo "CONFIG_FILE=${CONFIG_FILE}" >> $GITHUB_ENV
         echo "FIRMWARE_MESSAGE=${FIRMWARE_MESSAGE}" >> $GITHUB_ENV
         echo "CUSTOM_SH=${CUSTOM_SH}" >> $GITHUB_ENV
+        echo "CACHE_BUILD=${CACHE_BUILD}" >> $GITHUB_ENV
         echo "SSH_ACTIONS=${SSH_ACTIONS}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> $GITHUB_ENV
         echo "UPLOAD_QCOW2=${UPLOAD_QCOW2}" >> $GITHUB_ENV
@@ -102,6 +103,7 @@ jobs:
 
     - name: 缓存加速
       uses: klever1988/cachewrtbuild@main
+      if: env.CACHE_BUILD == 'true'
       with:
         ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt
