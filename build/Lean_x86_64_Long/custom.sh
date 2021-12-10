@@ -16,6 +16,7 @@ git clone https://github.com/db-one/dbone-packages.git -b 18.06 package/dbone-pa
 ./scripts/feeds update -a && ./scripts/feeds install -a
 
 # 删除部分默认包
+rm -rf package/lean/luci-app-qbittorrent
 rm -rf package/lean/luci-theme-argon
 rm -rf package/lean/v2ray-plugin
 rm -rf feeds/packages/net/haproxy
@@ -200,7 +201,6 @@ CONFIG_PACKAGE_luci-app-haproxy-tcp=n #Haproxy负载均衡
 CONFIG_PACKAGE_luci-app-diskman=n #磁盘管理磁盘信息
 CONFIG_PACKAGE_luci-app-transmission=n #Transmission离线下载
 CONFIG_PACKAGE_luci-app-qbittorrent=n #qBittorrent离线下载
-CONFIG_PACKAGE_luci-app-qbittorrent_dynamic=n #qBittorrent离线下载
 CONFIG_PACKAGE_luci-app-amule=n #电驴离线下载
 CONFIG_PACKAGE_luci-app-xlnetacc=n #迅雷快鸟
 CONFIG_PACKAGE_luci-app-zerotier=y #zerotier内网穿透
