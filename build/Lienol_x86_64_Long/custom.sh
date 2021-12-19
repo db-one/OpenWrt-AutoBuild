@@ -175,9 +175,6 @@ EOF
 # Turbo ACC 网络加速:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-turboacc=y
-# luci-app-turboacc依赖
-CONFIG_PACKAGE_dnsproxy=y
-CONFIG_PACKAGE_dnsforwarder=y
 EOF
 
 # 常用LuCI插件:
