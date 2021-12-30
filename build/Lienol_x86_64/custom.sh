@@ -180,7 +180,7 @@ EOF
 # 常用LuCI插件:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-adbyby-plus=y #adbyby去广告
-CONFIG_PACKAGE_luci-app-webadmin=y #Web管理页面设置
+CONFIG_PACKAGE_luci-app-webadmin=n #Web管理页面设置
 CONFIG_PACKAGE_luci-app-filetransfer=y #系统-文件传输
 CONFIG_PACKAGE_luci-app-autoreboot=n #定时重启
 CONFIG_PACKAGE_luci-app-nps=y #nps内网穿透
