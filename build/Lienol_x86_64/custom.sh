@@ -149,6 +149,7 @@ CONFIG_PACKAGE_luci-app-oaf=y #应用过滤
 # CONFIG_PACKAGE_luci-app-openclash=y #OpenClash客户端
 # CONFIG_PACKAGE_luci-app-serverchan=y #微信推送
 CONFIG_PACKAGE_luci-app-eqos=y #IP限速
+CONFIG_PACKAGE_luci-theme-neobird=y #Neobird 主题
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
 # CONFIG_PACKAGE_luci-app-ddnsto=y #小宝开发的DDNS.to内网穿透
