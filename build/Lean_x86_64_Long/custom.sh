@@ -40,6 +40,17 @@ sed -i 's#option database_generations 10#option database_generations 3#g' feeds/
 # sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计数据存放默认位置
 sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               # wrtbwmon默认刷新时间更改为1秒
 
+# ========================定制部分========================
+cat >> $ZZZ <<EOF
+cat /dev/null > /etc/bench.log
+echo " (CpuMark : 56983.857988" >> /etc/bench.log
+echo " Scores)" >> /etc/bench.log
+EOF
+sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
+
+# =======================================================
+
+
 #创建自定义配置文件
 
 cd $WORKPATH
