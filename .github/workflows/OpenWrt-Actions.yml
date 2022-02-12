@@ -306,7 +306,7 @@ jobs:
 
             🎉 [ ${{ env.FIRMWARE_MESSAGE }} ]固件下载
 
-            ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+            ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
 
             ➤ WeTransfer： ${{ env.WETRANSFER_URL }}
 
