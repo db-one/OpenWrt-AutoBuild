@@ -284,9 +284,9 @@ jobs:
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer wet -s -p 16 --no-progress ./artifact/firmware/ 2>&1 | tee wetransfer.log
+        echo "WETRANSFER_URL=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV
         sed -i "s/Download Link/WeTransfer/g" wetransfer.log
         echo "::warning file=WeTransfer::$(cat wetransfer.log | grep https)"
-        echo "WETRANSFER_URL=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV
 
     - name: 自动发布固件到 Releases
       uses: ncipollo/release-action@v1
