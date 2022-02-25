@@ -13,7 +13,7 @@ git clone https://github.com/db-one/dbone-packages.git -b 18.06 package/dbone-pa
 
 # 更新并安装源
 ./scripts/feeds clean
-./scripts/feeds update -a && ./scripts/feeds install -a
+./scripts/feeds update -a && ./scripts/feeds install -a -f
 
 # 删除部分默认包
 rm -rf feeds/luci/applications/luci-app-qbittorrent
