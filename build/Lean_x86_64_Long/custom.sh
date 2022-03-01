@@ -178,7 +178,6 @@ EOF
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-passwall=y
 CONFIG_PACKAGE_naiveproxy=y
-CONFIG_PACKAGE_kcptun-client=y
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_brook=y
 CONFIG_PACKAGE_trojan-go=y
