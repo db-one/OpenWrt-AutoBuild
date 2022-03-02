@@ -202,8 +202,8 @@ CONFIG_PACKAGE_luci-app-upnp=y #通用即插即用UPnP(端口自动转发)
 CONFIG_PACKAGE_luci-app-arpbind=n #IP/MAC绑定
 CONFIG_PACKAGE_luci-app-accesscontrol=y #上网时间控制
 CONFIG_PACKAGE_luci-app-wol=y #网络唤醒
-CONFIG_PACKAGE_luci-app-nps=y #nps内网穿透
-CONFIG_PACKAGE_luci-app-frpc=n #Frp内网穿透
+CONFIG_PACKAGE_luci-app-nps=n #nps内网穿透
+CONFIG_PACKAGE_luci-app-frpc=y #Frp内网穿透
 CONFIG_PACKAGE_luci-app-nlbwmon=y #宽带流量监控
 CONFIG_PACKAGE_luci-app-wrtbwmon=y #实时流量监测
 CONFIG_PACKAGE_luci-app-haproxy-tcp=n #Haproxy负载均衡
@@ -265,6 +265,7 @@ CONFIG_PACKAGE_libcap=y
 CONFIG_PACKAGE_libcap-bin=y
 CONFIG_PACKAGE_ip6tables-mod-nat=y
 CONFIG_PACKAGE_iptables-mod-extra=y
+CONFIG_PACKAGE_openssh-sftp-server=y
 EOF
 
 # 其他软件包:
