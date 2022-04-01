@@ -40,13 +40,25 @@ sed -i 's#option database_generations 10#option database_generations 3#g' feeds/
 sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               # wrtbwmon默认刷新时间更改为1秒
 
 # ========================定制部分========================
+#显示CpuMark分数
 sed -i '/coremark.sh/d' feeds/packages/utils/coremark/coremark
-cat >> $ZZZ <<EOF
+cat <<'EOF'> $ZZZ
 cat /dev/null > /etc/bench.log
 echo " (CpuMark : 56983.857988" >> /etc/bench.log
 echo " Scores)" >> /etc/bench.log
 EOF
 sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
+
+# 添加系统信息
+cat <<'EOF'> package/base-files/files/etc/profile
+# 添加系统信息
+[ -n "$FAILSAFE" -a -x /bin/bash ]  || {
+	for FILE in /etc/shell-motd.d/*.sh; do
+		[ -f "$FILE" ] && env -i bash "$FILE"
+	done
+	unset FILE
+}
+EOF
 # =======================================================
 
 

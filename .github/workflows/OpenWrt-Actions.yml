@@ -166,7 +166,7 @@ jobs:
         grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
         sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
         sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
-        sed -i '/qbittorrent_static/d' Plug-in > /dev/null 2>&1
+        sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1
         sed -i 's/=y/\ /g' Plug-in
         awk '$0=NR$0' Plug-in > Plug-2
         awk '{print "	" $0}' Plug-2 > Plug-in
