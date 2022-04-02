@@ -24,8 +24,8 @@ rm -rf feeds/packages/net/haproxy
 ZZZ="package/lean/default-settings/files/zzz-default-settings"
 #
 sed -i 's#192.168.1.1#10.0.0.1#g' package/base-files/files/bin/config_generate            # 定制默认IP
+sed -i 's#OpenWrt#OpenWrt-X86#g' package/base-files/files/bin/config_generate             # 修改默认名称为OpenWrt-X86
 sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' $ZZZ                                             # 取消系统默认密码
-sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt-X86'" $ZZZ       # 修改主机名称为OpenWrt-X86
 sed -i "s/OpenWrt /ONE build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ              # 增加自己个性名称
 # sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                     # 修改内核版本为4.19
 sed -i "/uci commit luci/i\uci set luci.main.mediaurlbase=/luci-static/neobird" $ZZZ        # 设置默认主题(如果编译可会自动修改默认主题的，有可能会失效)
@@ -41,8 +41,8 @@ sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-
 
 # ========================定制部分========================
 #去掉CpuMark跑数，直接显示分数
-cat <<'EOF'> $ZZZ
-sed -i '/coremark/d' /etc/crontabs/root
+sed -i '/coremark.sh/d' feeds/packages/utils/coremark/coremark
+cat >> $ZZZ <<'EOF'
 cat /dev/null > /etc/bench.log
 echo " (CpuMark : 56983.857988" >> /etc/bench.log
 echo " Scores)" >> /etc/bench.log
@@ -50,7 +50,8 @@ EOF
 sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
 
 # 添加系统信息
-cat <<'EOF'> package/base-files/files/etc/profile
+sed -i '/profile/d' package/base-files/files/lib/upgrade/keep.d/base-files-essential
+cat >> package/base-files/files/etc/profile <<'EOF'
 # 添加系统信息
 [ -n "$FAILSAFE" -a -x /bin/bash ]  || {
 	for FILE in /etc/shell-motd.d/*.sh; do
