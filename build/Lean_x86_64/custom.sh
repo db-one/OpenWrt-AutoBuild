@@ -21,10 +21,11 @@ rm -rf feeds/luci/themes/luci-theme-argon
 rm -rf feeds/packages/net/haproxy
 
 # 自定义定制选项
+NET="package/base-files/files/bin/config_generate"
 ZZZ="package/lean/default-settings/files/zzz-default-settings"
 #
-sed -i 's#192.168.1.1#10.0.0.1#g' package/base-files/files/bin/config_generate            # 定制默认IP
-sed -i 's#OpenWrt#OpenWrt-X86#g' package/base-files/files/bin/config_generate             # 修改默认名称为OpenWrt-X86
+sed -i 's#192.168.1.1#10.0.0.1#g' $NET                                                    # 定制默认IP
+sed -i 's#OpenWrt#OpenWrt-X86#g' $NET                                                     # 修改默认名称为OpenWrt-X86
 sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' $ZZZ                                             # 取消系统默认密码
 sed -i "s/OpenWrt /ONE build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ              # 增加自己个性名称
 # sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                     # 修改内核版本为4.19
@@ -50,7 +51,6 @@ EOF
 sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
 
 # 添加系统信息
-sed -i '/profile/d' package/base-files/files/lib/upgrade/keep.d/base-files-essential
 cat >> package/base-files/files/etc/profile <<'EOF'
 # 添加系统信息
 [ -n "$FAILSAFE" -a -x /bin/bash ]  || {
@@ -60,6 +60,11 @@ cat >> package/base-files/files/etc/profile <<'EOF'
 	unset FILE
 }
 EOF
+
+#添加旁路由IPV6模式
+num=`sed -n -e '/fixup IPv6 slave interface if parent is a bridge/=' $NET` && num=`expr $num + 10` && sed -i "${num}i set network.ipv6=interface \n set network.ipv6.proto='dhcpv6' \n set network.ipv6.ifname='@lan'" $NET
+FIRWALL="package/network/config/firewall/files/firewall.config"
+num=`sed -n -e "/'lan'/=" $FIRWALL` && num=`expr $num + 4` && sed -i "${num}i	option network 'lan ipv6'" $FIRWALL
 # =======================================================
 
 
