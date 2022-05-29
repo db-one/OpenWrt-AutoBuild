@@ -245,7 +245,7 @@ CONFIG_PACKAGE_luci-app-wireguard=n #wireguard端
 #
 # VPN相关插件(禁用):
 #
-CONFIG_PACKAGE_luci-app-v2ray-server=n #V2ray服务器
+CONFIG_PACKAGE_luci-app-v2ray-server=y #V2ray服务器
 CONFIG_PACKAGE_luci-app-pptp-server=n #PPTP VPN 服务器
 CONFIG_PACKAGE_luci-app-ipsec-vpnd=n #ipsec VPN服务
 CONFIG_PACKAGE_luci-app-openvpn-server=n #openvpn服务
