@@ -132,6 +132,10 @@ display "启动存储" "$boot_usage" "90" "1" "%" " of $boot_total"
 display "系统存储" "$root_usage" "90" "1" "%" " of $root_total"
 echo ""
 
+echo ""
+echo -e "------------------------------硬盘使用率---------------------------"
+#显示指定路径
+df -hT / /boot
 
 echo ""
 

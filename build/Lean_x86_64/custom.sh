@@ -48,6 +48,8 @@ cat /dev/null > /etc/bench.log
 echo " (CpuMark : 56983.857988" >> /etc/bench.log
 echo " Scores)" >> /etc/bench.log
 EOF
+
+# 修改退出命令到最后
 sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
 
 # 添加系统信息
@@ -59,6 +61,8 @@ cat >> package/base-files/files/etc/profile <<'EOF'
 	done
 	unset FILE
 }
+# 设置nano为默认编辑器
+export EDITOR="/usr/bin/nano"
 EOF
 
 #添加旁路由IPV6模式
