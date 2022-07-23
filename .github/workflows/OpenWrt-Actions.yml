@@ -167,6 +167,7 @@ jobs:
         sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
         sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
         sed -i '/Transparent/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
+        sed -i '/qbittorrent/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
         sed -i 's/=y/\ /g' Plug-in
         awk '$0=NR$0' Plug-in > Plug-2
         awk '{print "	" $0}' Plug-2 > Plug-in
