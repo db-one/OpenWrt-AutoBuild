@@ -38,15 +38,27 @@ sed -i 's@list listen_https@# list listen_https@g' package/network/services/uhtt
 sed -i 's#option commit_interval 24h#option commit_interval 10m#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计写入为10分钟
 sed -i 's#option database_generations 10#option database_generations 3#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计数据周期
 # sed -i 's#option database_directory /var/lib/nlbwmon#option database_directory /etc/config/nlbwmon_data#g' feeds/packages/net/nlbwmon/files/nlbwmon.config               # 修改流量统计数据存放默认位置
-sed -i 's#interval: 5#interval: 1#g' package/lean/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               # wrtbwmon默认刷新时间更改为1秒
+sed -i 's#interval: 5#interval: 1#g' feeds/luci/applications/luci-app-wrtbwmon/htdocs/luci-static/wrtbwmon/wrtbwmon.js               # wrtbwmon默认刷新时间更改为1秒
 
 # ========================定制部分========================
-#去掉CpuMark跑数，直接显示分数
-sed -i '/coremark.sh/d' feeds/packages/utils/coremark/coremark
-cat >> $ZZZ <<'EOF'
-cat /dev/null > /etc/bench.log
-echo " (CpuMark : 56983.857988" >> /etc/bench.log
-echo " Scores)" >> /etc/bench.log
+
+#设置旁路由IPV6模式
+cat >$ZZZ <<-EOF
+#uci set network.lan.gateway='192.168.2.1'                   # 旁路由设置 IPv4 网关（去掉uci前面的#生效）
+#uci set network.lan.broadcast='192.168.2.255'               # 旁路由设置 IPv4 广播（去掉uci前面的#生效）
+#uci set network.lan.dns='223.5.5.5 114.114.114.114'         # 旁路由设置 DNS(多个DNS要用空格分开)（去掉uci前面的#生效）
+uci set network.lan.delegate='1'                             # 去掉LAN口使用内置的 IPv6 管理(若用IPV6请把'0'改'1')
+uci set dhcp.@dnsmasq[0].filter_aaaa='0'                     # 禁止解析 IPv6 DNS记录(若用IPV6请把'1'改'0')
+uci set dhcp.lan.ignore='1'                                  # 旁路由关闭DHCP功能（去掉uci前面的#生效）
+#uci delete network.lan.type                                 # 旁路由去掉桥接模式（去掉uci前面的#生效）
+
+# 如果有用IPV6的话,可以使用以下命令创建IPV6客户端(LAN口)（去掉全部代码uci前面#号生效）
+uci set network.ipv6=interface
+uci set network.ipv6.proto='dhcpv6'
+uci set network.ipv6.ifname='@lan'
+uci set network.ipv6.reqaddress='try'
+uci set network.ipv6.reqprefix='auto'
+uci set firewall.@zone[0].network='lan ipv6'
 EOF
 
 # 修改退出命令到最后
@@ -65,10 +77,6 @@ cat >> package/base-files/files/etc/profile <<'EOF'
 export EDITOR="/usr/bin/nano"
 EOF
 
-#添加旁路由IPV6模式
-num=`sed -n -e '/fixup IPv6 slave interface if parent is a bridge/=' $NET` && num=`expr $num + 10` && sed -i "${num}i set network.ipv6=interface \n set network.ipv6.proto='dhcpv6' \n set network.ipv6.ifname='@lan'" $NET
-FIRWALL="package/network/config/firewall/files/firewall.config"
-num=`sed -n -e "/'lan'/=" $FIRWALL` && num=`expr $num + 4` && sed -i "${num}i	option network 'lan ipv6'" $FIRWALL
 # =======================================================
 
 

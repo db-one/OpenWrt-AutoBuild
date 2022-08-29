@@ -6,7 +6,8 @@
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 
-SHOW_IP_PATTERN="^[ewr].*|^br.*|^lt.*|^umts.*"
+#获取网卡IP地址类型
+SHOW_IP_PATTERN="^[ewrv].*|^br.*|^lt.*|^umts.*"
 
 
 # don't edit below here
@@ -135,6 +136,7 @@ echo ""
 echo ""
 echo -e "------------------------------硬盘使用率---------------------------"
 #显示指定路径
+echo " 系统空间              类型            总数      已用      可用   使用率  挂载点"
 df -hT / /boot
 
 echo ""

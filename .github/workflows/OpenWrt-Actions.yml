@@ -134,6 +134,10 @@ jobs:
         fi
 
         echo "复制文件..."
+        if [ -n "$(ls -A "${GITHUB_WORKSPACE}/openwrt/build/scripts/files" 2>/dev/null)" ]; then
+         cp -rf ${GITHUB_WORKSPACE}/openwrt/build/scripts/files files
+         chmod -R 755 ${HOME}/files/* ./
+        fi
         if [ -n "$(ls -A "${WORKPATH}/files" 2>/dev/null)" ]; then
          cp -rf ${WORKPATH}/files files
          chmod -R 755 ${WORKPATH}/files/* ./
@@ -147,7 +151,7 @@ jobs:
         make defconfig
 
     - name: SSH远程连接服务器
-      uses: P3TERX/ssh2actions@v1.0.0
+      uses: makebl/debugger-action@master
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -166,8 +170,8 @@ jobs:
         grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
         sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
         sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
-        sed -i '/Transparent/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
-        sed -i '/qbittorrent/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
+        sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
+        sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
         sed -i 's/=y/\ /g' Plug-in
         awk '$0=NR$0' Plug-in > Plug-2
         awk '{print "	" $0}' Plug-2 > Plug-in
@@ -188,7 +192,7 @@ jobs:
         echo
         cat .config
 
-    - name: 下载固件包
+    - name: 下载编译所需文件
       run: |
         cd openwrt && make download -j8
         find dl -size -1024c -exec ls -l {} \;
