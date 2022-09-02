@@ -43,7 +43,7 @@ sed -i 's#interval: 5#interval: 1#g' feeds/luci/applications/luci-app-wrtbwmon/h
 # ========================定制部分========================
 
 #设置旁路由IPV6模式
-cat >$ZZZ <<-EOF
+cat >> $ZZZ <<-EOF
 #uci set network.lan.gateway='192.168.2.1'                   # 旁路由设置 IPv4 网关（去掉uci前面的#生效）
 #uci set network.lan.broadcast='192.168.2.255'               # 旁路由设置 IPv4 广播（去掉uci前面的#生效）
 #uci set network.lan.dns='223.5.5.5 114.114.114.114'         # 旁路由设置 DNS(多个DNS要用空格分开)（去掉uci前面的#生效）
