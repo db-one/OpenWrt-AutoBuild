@@ -15,10 +15,28 @@ uci set luci.main.mediaurlbase='/luci-static/neobird' && uci commit luci
 # sed -ri "/option mediaurlbase/s#(/luci-static/)[^']+#\neobird#" /etc/config/luci
 # uci commit luci
 
-#去掉CpuMark跑数，直接显示分数
+# 去掉CpuMark跑数，直接显示分数
 sed -i '/coremark.sh/d' /etc/crontabs/root
 cat /dev/null > /etc/bench.log
 echo " (CpuMark : 56983.857988" >> /etc/bench.log
 echo " Scores)" >> /etc/bench.log
+
+# 添加系统信息
+grep "shell-motd" /etc/profile >/dev/null
+if [ $? -eq 1 ]; then
+echo '
+# 添加系统信息
+[ -n "$FAILSAFE" -a -x /bin/bash ]  || {
+	for FILE in /etc/shell-motd.d/*.sh; do
+		[ -f "$FILE" ] && env -i bash "$FILE"
+	done
+	unset FILE
+}
+
+# 设置nano为默认编辑器
+export EDITOR="/usr/bin/nano"
+
+' >> /etc/profile
+fi
 
 exit 0
