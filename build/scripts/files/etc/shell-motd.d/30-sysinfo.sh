@@ -6,10 +6,6 @@
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 
-#获取网卡IP地址类型
-SHOW_IP_PATTERN="^[ewrv].*|^br.*|^lt.*|^umts.*"
-
-
 # don't edit below here
 function display()
 {
@@ -33,6 +29,9 @@ function display()
 	fi
 } # display
 
+
+#SHOW_IP_PATTERN
+SHOW_IP_PATTERN="^[ewrv].*|^br.*|^lt.*|^umts.*"
 
 function get_ip_addresses()
 {
@@ -70,7 +69,6 @@ function storage_info()
 # query various systems and send some stuff to the background for overall faster execution.
 # Works only with ambienttemp and batteryinfo since A20 is slow enough :)
 ip_address=$(get_ip_addresses &)
-storage_info
 critical_load=$(( 1 + $(grep -c processor /proc/cpuinfo) / 2 ))
 
 # get uptime, logged in users and load in one take
@@ -124,13 +122,13 @@ display "系统负载" "${load%% *}" "${critical_load}" "0" "" "${load#* }"
 printf "运行时间:  \x1B[92m%s\x1B[0m\t\t" "$time"
 echo "" # fixed newline
 
-display "内存已用" "$memory_usage" "70" "0" "%" " of ${memory_total}MB"
-display "交换内存" "$swap_usage" "10" "0" "%" " of $swap_total""Mb"
+display "内存已用" "$memory_usage" "70" "0" "%" " 总空间： ${memory_total}MB"
+display "交换内存" "$swap_usage" "10" "0" "%" " 总空间： $swap_total""Mb"
 printf "IP  地址:  \x1B[92m%s\x1B[0m" "$ip_address"
 echo "" # fixed newline
 
-display "启动存储" "$boot_usage" "90" "1" "%" " of $boot_total"
-display "系统存储" "$root_usage" "90" "1" "%" " of $root_total"
+display "启动存储" "$boot_usage" "90" "1" "%" " 总空间： $boot_total"
+display "系统存储" "$root_usage" "90" "1" "%" " 总空间： $root_total"
 echo ""
 
 echo ""
