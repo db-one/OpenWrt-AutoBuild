@@ -38,8 +38,8 @@ env:
 
 jobs: 
   build:
-    runs-on: Ubuntu-20.04
-    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
 
     name: 编译 ${{matrix.target}}
     strategy:
