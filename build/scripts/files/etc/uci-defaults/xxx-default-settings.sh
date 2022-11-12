@@ -5,11 +5,15 @@ if [ -f /bin/bash ];then
   sed -i '/^root:/s#/bin/ash#/bin/bash#' /etc/passwd
 fi
 
-
+# 设置NTP时间服务器
 # uci add_list system.ntp.server=120.25.115.20
 # uci commit system
 
+# 设置默认主题
 uci set luci.main.mediaurlbase='/luci-static/neobird' && uci commit luci
+
+# 修改主机名称为OpenWrt-86
+# uci set system.@system[0].hostname='OpenWrt-86'
 
 # 此文件名注意ls 排序，下面也行
 # sed -ri "/option mediaurlbase/s#(/luci-static/)[^']+#\neobird#" /etc/config/luci

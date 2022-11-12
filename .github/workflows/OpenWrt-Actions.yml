@@ -111,7 +111,6 @@ jobs:
       id: date
       run: |
         sudo timedatectl set-timezone "$TZ"
-        echo "::set-output name=status::success"
         echo "FILE_TIME=$(date +"%m-%d %H.%M")" >> $GITHUB_ENV
         echo "FILE_TIME1=$(date "+%Y年%m月%d日-%H点%M分")" >> $GITHUB_ENV
         echo "FILE_TIME2=$(date "+%Y%m%d-%H%M")" >> $GITHUB_ENV
@@ -241,7 +240,6 @@ jobs:
         cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*qcow2*") ./artifact/pvekvm/ || true
         cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*vhdx*") ./artifact/hyperv/ || true
         cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*vmdk*") ./artifact/vmware/ || true
-        echo "::set-output name=status::success"
         echo "编译完成时间..."
         START_SECONDS=${{ env.START_SECONDS }}
         END_TIME=`date +'%Y-%m-%d %H:%M:%S'`
@@ -251,49 +249,49 @@ jobs:
         echo "BUILD_TIME=${HOUR}时${MIN}分${SEC}秒" >> $GITHUB_ENV
 
     - name: 上传固件文件
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
-      uses: actions/upload-artifact@v2
+      if: steps.compile.outcome == 'success' && env.UPLOAD_FIRMWARE == 'true'
+      uses: actions/upload-artifact@main
       with:
         name: OpenWrt_firmware_${{matrix.target}}_${{ env.FILE_TIME }}
         path: ./artifact/firmware/
 
     - name: 上传PVE/KVM镜像文件
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_QCOW2 == 'true'
-      uses: actions/upload-artifact@v2
+      if: steps.compile.outcome == 'success' && env.UPLOAD_QCOW2 == 'true'
+      uses: actions/upload-artifact@main
       with:
         name: OpenWrt_pvekvm_${{matrix.target}}_${{ env.FILE_TIME }}
         path: ./artifact/pvekvm/
 
     - name: 上传Hyper-V镜像文件
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VHDX == 'true'
-      uses: actions/upload-artifact@v2
+      if: steps.compile.outcome == 'success' && env.UPLOAD_VHDX == 'true'
+      uses: actions/upload-artifact@main
       with:
         name: OpenWrt_hyperv_${{matrix.target}}_${{ env.FILE_TIME }}
         path: ./artifact/hyperv/
 
     - name: 上传VMware镜像文件
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VMDK == 'true'
-      uses: actions/upload-artifact@v2
+      if: steps.compile.outcome == 'success' && env.UPLOAD_VMDK == 'true'
+      uses: actions/upload-artifact@main
       with:
         name: OpenWrt_vmware_${{matrix.target}}_${{ env.FILE_TIME }}
         path: ./artifact/vmware/
 
     - name: 上传插件包文件
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_IPK == 'true'
-      uses: actions/upload-artifact@v2
+      if: steps.compile.outcome == 'success' && env.UPLOAD_IPK == 'true'
+      uses: actions/upload-artifact@main
       with:
         name: OpenWrt_package_${{matrix.target}}_${{ env.FILE_TIME }}
         path: ./artifact/package/
 
     - name: 上传固件信息
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_CONFIG == 'true'
-      uses: actions/upload-artifact@v2
+      if: steps.compile.outcome == 'success' && env.UPLOAD_CONFIG == 'true'
+      uses: actions/upload-artifact@main
       with:
         name: OpenWrt_buildinfo_${{matrix.target}}_${{ env.FILE_TIME }}
         path: ./artifact/buildinfo/
 
     - name: 上传固件到 WeTransfer
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true'
+      if: steps.compile.outcome == 'success' && env.UPLOAD_WETRANSFER == 'true'
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer wet -s -p 16 --no-progress ./artifact/firmware/ 2>&1 | tee wetransfer.log
@@ -302,8 +300,8 @@ jobs:
         echo "::warning file=WeTransfer::$(cat wetransfer.log | grep https)"
 
     - name: 自动发布固件到 Releases
-      uses: ncipollo/release-action@v1
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
+      uses: ncipollo/release-action@main
+      if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true'
       with:
         name: ${{ env.FILE_TIME1 }} 「 ${{ env.FIRMWARE_MESSAGE }} 」固件
         tag: ${{ env.FILE_TIME2 }}-${{matrix.target}}
@@ -332,14 +330,14 @@ jobs:
         artifacts: ./artifact/firmware/*
 
     - name: 删除运行记录
-      uses: db-one/delete-workflow-runs@main
+      uses: Mattraks/delete-workflow-runs@v2
       with:
         retain_days: 30     #保留最后多少记录不删除
         keep_minimum_runs: 0
 
     - name: 删除自动发布的旧固件
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
+      uses: shidahuilang/delete-older-releases@main
+      if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true'
       with:
         keep_latest: 20         #保留多少个releases不删除
         delete_tags: true
@@ -347,12 +345,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
 
     - name: 编译成功信息通知-企业微信
-      if: steps.organizer.outputs.status == 'success' && env.WECHAT_WORK_PUSH == 'true'
+      if: steps.compile.outcome == 'success' && env.WECHAT_WORK_PUSH == 'true'
       run: |
         curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！%0a%0a🎈编译时间：${{ env.FILE_TIME1 }}%0a%0a🛠编译版本：${{ env.DISTRIB_REVISION }}%0a%0a⏰编译用时：${{ env.BUILD_TIME }}%0a%0a🎉发布地址：${{ env.GITHUB_RELEASE }}%0a%0a⛄WeTransfer：${{ env.WETRANSFER_URL }}%0a%0a🌴固件已经编译完成🎈！！！" || true
 
     - name: 编译成功信息通知-Telegram
-      if: steps.organizer.outputs.status == 'success' && env.TELEGRAM_BOT == 'true'
+      if: steps.compile.outcome == 'success' && env.TELEGRAM_BOT == 'true'
       run: |
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！
 
