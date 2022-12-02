@@ -51,9 +51,9 @@ cat >> $ZZZ <<-EOF
 # uci set network.lan.delegate='0'                             # 去掉LAN口使用内置的 IPv6 管理(若用IPV6请把'0'改'1')
 uci set dhcp.@dnsmasq[0].filter_aaaa='0'                     # 禁止解析 IPv6 DNS记录(若用IPV6请把'1'改'0')
 uci set dhcp.lan.ignore='1'                                  # 旁路由关闭DHCP功能
-# uci set dhcp.lan.dhcpv6=''                                 # 路由通告服务-禁用
-# uci set dhcp.lan.ra=''                                     # DHCPv6 服务-禁用
-# uci set dhcp.lan.ra_management=''                          # DHCPv6 模式-禁用
+uci set dhcp.lan.dhcpv6=''                                   # 路由通告服务-禁用
+uci set dhcp.lan.ra=''                                       # DHCPv6 服务-禁用
+uci set dhcp.lan.ra_management=''                            # DHCPv6 模式-禁用
 # uci delete network.lan.type                                # 旁路由桥接模式-禁用
 
 # 如果有用IPV6的话,可以使用以下命令创建IPV6客户端(LAN口)（去掉全部代码uci前面#号生效）
@@ -185,7 +185,7 @@ CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 # CONFIG_PACKAGE_luci-app-argon-config=y #argon主题设置
 CONFIG_PACKAGE_luci-theme-atmaterial_new=y #atmaterial 三合一主题
 CONFIG_PACKAGE_luci-theme-neobird=y #Neobird 主题
-CONFIG_PACKAGE_luci-app-rebootschedule=y #定时重启系统，网络
+CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
 # CONFIG_PACKAGE_luci-app-ddnsto=y #小宝开发的DDNS.to内网穿透
 # CONFIG_PACKAGE_ddnsto=y #DDNS.to内网穿透软件包
 EOF
