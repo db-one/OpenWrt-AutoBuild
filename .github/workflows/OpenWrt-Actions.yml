@@ -12,10 +12,11 @@ name: 编译OpenWrt固件
 on:
   workflow_dispatch:
     inputs:
-      ssh:
-        description: '编译OpenWrt固件-SSH远程：改为“ssh”打开SSH连接'
+      SSH_ACTION:
+        description: 'SSH远程配置固件'
         required: false
-        default: 'ssh-actions'
+        default: 'false'
+        type: boolean
 
 
 # 定时触发编译(1,2,5,6,8,10,12,15,16,18,20,22,25,26,28,30早3点)
@@ -38,7 +39,7 @@ env:
 
 jobs: 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
 
     name: 编译 ${{matrix.target}}
@@ -82,8 +83,9 @@ jobs:
         docker rmi `docker images -q`
         sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
         sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
-        sudo -E apt-get update
-        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libc6-dev-i386 libc6-dev libncurses5 libtinfo-dev libtinfo5 ncurses-doc python2.7 git-core wget curl rsync
+        sudo -E apt-get update -y
+        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig
+        sudo -E apt-get -y install xsltproc zip grep python3-pip python3-ply libc6-dev libncurses5 libtinfo-dev libtinfo5 ncurses-doc python2.7 git-core wget curl rsync
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
 
@@ -132,15 +134,17 @@ jobs:
         )
         fi
 
-        echo "复制文件..."
+        echo "复制脚本文件..."
         if [ -n "$(ls -A "${GITHUB_WORKSPACE}/openwrt/build/scripts/files" 2>/dev/null)" ]; then
-         cp -rf ${GITHUB_WORKSPACE}/openwrt/build/scripts/files files
+         cp -rf ${GITHUB_WORKSPACE}/openwrt/build/scripts/files/* files
          chmod -R 755 ${HOME}/files/* ./
         fi
+        echo "复制配置文件..."
         if [ -n "$(ls -A "${WORKPATH}/files" 2>/dev/null)" ]; then
-         cp -rf ${WORKPATH}/files files
+         cp -rf ${WORKPATH}/files/* files
          chmod -R 755 ${WORKPATH}/files/* ./
         fi
+        echo "复制源码文件..."
         if [ -n "$(ls -A "${WORKPATH}/sources" 2>/dev/null)" ]; then
          cp -Rf ${WORKPATH}/sources/* ./
         fi
@@ -150,8 +154,8 @@ jobs:
         make defconfig
 
     - name: SSH远程连接服务器
-      uses: makebl/debugger-action@master
-      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
+      uses: danshui-git/debugger-action@main
+      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.SSH_ACTION == 'true')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
