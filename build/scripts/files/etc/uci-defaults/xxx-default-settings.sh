@@ -5,6 +5,9 @@ if [ -f /bin/bash ];then
   sed -i '/^root:/s#/bin/ash#/bin/bash#' /etc/passwd
 fi
 
+# 修复OpenClash核心文件错误
+cp -rf /rom/etc/openclash/core/* /etc/openclash/core
+
 # 设置NTP时间服务器
 #uci add_list system.ntp.server='ntp.tencent.com'
 #uci add_list system.ntp.server='ntp1.aliyun.com'
