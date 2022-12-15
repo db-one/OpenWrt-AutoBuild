@@ -47,10 +47,10 @@ cat >> $ZZZ <<-EOF
 # 设置旁路由模式
 uci set network.lan.gateway='10.0.0.254'                     # 旁路由设置 IPv4 网关
 uci set network.lan.dns='223.5.5.5 223.6.6.6'                # 旁路由设置 DNS(多个DNS要用空格分开)
-# uci set network.lan.delegate='0'                             # 去掉LAN口使用内置的 IPv6 管理(若用IPV6请把'0'改'1')
-uci set dhcp.@dnsmasq[0].filter_aaaa='0'                     # 禁止解析 IPv6 DNS记录(若用IPV6请把'1'改'0')
+uci set network.lan.delegate='0'                             # 去掉LAN口使用内置的 IPv6 管理(若用IPV6请把'0'改'1')
+uci set dhcp.@dnsmasq[0].filter_aaaa='1'                     # 禁止解析 IPv6 DNS记录(若用IPV6请把'1'改'0')
 uci set dhcp.lan.ignore='1'                                  # 旁路由关闭DHCP功能
-# uci delete network.lan.type                                # 旁路由桥接模式-禁用
+uci delete network.lan.type                                  # 旁路由桥接模式-禁用
 
 # 旁路IPV6需要全部禁用
 uci set network.lan.ip6assign=''                             # IPV6分配长度-禁用
@@ -284,7 +284,7 @@ EOF
 
 # 常用LuCI插件:
 cat >> .config <<EOF
-CONFIG_PACKAGE_luci-app-adbyby-plus=y #adbyby去广告
+CONFIG_PACKAGE_luci-app-adbyby-plus=n #adbyby去广告
 CONFIG_PACKAGE_luci-app-webadmin=n #Web管理页面设置
 CONFIG_PACKAGE_luci-app-ddns=n #DDNS服务
 CONFIG_DEFAULT_luci-app-vlmcsd=y #KMS激活服务器
