@@ -133,7 +133,10 @@ rules:
 - DOMAIN-SUFFIX,voice.google.com,🚀 节点选择
 
 ## ==========游戏规则==========
+- DOMAIN-SUFFIX,epicgames.com,🎮 游戏平台
 - DOMAIN-SUFFIX,ol.epicgames.com,🎮 游戏平台
+- DOMAIN-SUFFIX,store.epicgames.com,🎮 游戏平台
+- DOMAIN-SUFFIX,www.epicgames.com,🎮 游戏平台
 - DOMAIN-SUFFIX,steamcontent.com,🎮 游戏平台
 - DOMAIN-SUFFIX,dl.steam.clngaa.com,🎮 游戏平台
 - DOMAIN-SUFFIX,dl.steam.ksyna.com,🎮 游戏平台
