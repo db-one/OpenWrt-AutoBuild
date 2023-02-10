@@ -116,7 +116,7 @@ if [ $? -eq 0 ]; then
   fi
   rm -rf $HOME/clash-core/clash-linux-amd64.tar.gz
 # 下载TUN内核
-  curl -fsSL https://api.github.com/repos/vernesong/OpenClash/contents/core-lateset/premium  -o premium.api
+  curl -H "Authorization: Bearer ${GIT_USER_TOKEN}" https://api.github.com/repos/vernesong/OpenClash/contents/core-lateset/premium -o premium.api
   TUN="$(grep -Eo "clash-linux-amd64-.*.gz" premium.api |grep -v 'v3' |awk 'NR==1')"
   wget -q https://raw.githubusercontent.com/vernesong/OpenClash/master/core-lateset/premium/$TUN
   if [[ $? -ne 0 ]];then
