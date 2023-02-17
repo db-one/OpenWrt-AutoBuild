@@ -173,6 +173,9 @@ rules:
 - DOMAIN-SUFFIX,api-ipv4.ip.sb,DIRECT
 ##http://members.3322.org/dyndns/getip
 - DOMAIN-SUFFIX,members.3322.org,DIRECT
+##icanhazip.com
+- DOMAIN-SUFFIX,icanhazip.com,DIRECT
+
 
 ##IP白名单/不走代理的IP/直连列表
 ##- IP-CIDR,127.0.0.0/8,DIRECT #匹配数据目标IP(直连)
