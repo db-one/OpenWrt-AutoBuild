@@ -163,7 +163,7 @@ rules:
 
 
 ##IP获取
-- DOMAIN-SUFFIX,api.cloudflare.com,DIRECT
+##- DOMAIN-SUFFIX,api.cloudflare.com,DIRECT
 - DOMAIN-SUFFIX,ip.cip.cc,DIRECT
 - DOMAIN-SUFFIX,ip.3322.net,DIRECT
 - DOMAIN-SUFFIX,myip.ipip.net,DIRECT
