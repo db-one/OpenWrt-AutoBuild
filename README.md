@@ -2,7 +2,8 @@
 
 #### 基于OpenWrt-Actions-Lean+Lienol-自动化在线编译脚本  
 
-  
+ ##### 固件更新下载:
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/db-one/OpenWrt-AutoBuild-Beta?style=for-the-badge&label=固件更新下载)](https://github.com/db-one/OpenWrt-AutoBuild-Beta/releases)
 
 ##### 源码和脚本来自
 
