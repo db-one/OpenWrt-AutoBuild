@@ -83,7 +83,6 @@ rules:
 - DOMAIN-SUFFIX,namecheap.com,🚀 节点选择
 - DOMAIN-SUFFIX,apkpure.com,🚀 节点选择
 - DOMAIN-SUFFIX,time.android.com,🚀 节点选择
-- DOMAIN-SUFFIX,heroku.com,🚀 节点选择
 - DOMAIN-SUFFIX,wangzi.uk,🚀 节点选择
 - DOMAIN-SUFFIX,telegra.ph,🚀 节点选择
 
@@ -163,7 +162,7 @@ rules:
 
 
 ##IP获取
-##- DOMAIN-SUFFIX,api.cloudflare.com,DIRECT
+- DOMAIN-SUFFIX,api.cloudflare.com,DIRECT
 - DOMAIN-SUFFIX,ip.cip.cc,DIRECT
 - DOMAIN-SUFFIX,ip.3322.net,DIRECT
 - DOMAIN-SUFFIX,myip.ipip.net,DIRECT

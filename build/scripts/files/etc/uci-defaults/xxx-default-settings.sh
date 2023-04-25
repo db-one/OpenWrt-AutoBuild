@@ -49,5 +49,4 @@ export EDITOR="/usr/bin/nano"
 ' >> /etc/profile
 fi
 
-
 exit 0
