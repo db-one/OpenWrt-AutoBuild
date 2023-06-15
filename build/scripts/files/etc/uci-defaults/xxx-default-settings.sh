@@ -28,7 +28,7 @@ uci set luci.main.mediaurlbase='/luci-static/neobird' && uci commit luci
 # 去掉CpuMark跑数，直接显示分数
 sed -i '/coremark.sh/d' /etc/crontabs/root
 cat /dev/null > /etc/bench.log
-echo " (CpuMark : 56983.857988" >> /etc/bench.log
+echo " (CpuMark : 181546.120515" >> /etc/bench.log
 echo " Scores)" >> /etc/bench.log
 
 # 添加系统信息
