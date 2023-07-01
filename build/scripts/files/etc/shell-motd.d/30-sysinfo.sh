@@ -83,7 +83,7 @@ case ${time} in
 	*:*) # 2-24 hours
 		time=$(awk -F" " '{print $3" 小时"}' <<<"${UptimeString}")
 		;;
-	*day) # days
+	*days) # days
 		days=$(awk -F" " '{print $3"天"}' <<<"${UptimeString}")
 		time=$(awk -F" " '{print $5}' <<<"${UptimeString}")
 		time="$days "$(awk -F":" '{print $1"小时 "$2"分钟"}' <<<"${time}")
