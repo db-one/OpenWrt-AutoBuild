@@ -106,7 +106,7 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 缓存加速
-      uses: klever1988/cachewrtbuild@main
+      uses: stupidloud/cachewrtbuild@main
       if: env.CACHE_BUILD == 'true'
       with:
         ccache: 'true'
