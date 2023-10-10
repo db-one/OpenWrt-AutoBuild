@@ -157,9 +157,12 @@ rules:
 
 ##域名白名单/不走代理的域名/直连列表
 ##- DOMAIN-SUFFIX,alipay.com,DIRECT #匹配域名后缀(直连)
-- DOMAIN-SUFFIX,alipay.com,DIRECT
-- DOMAIN-SUFFIX,aliexpress.com,DIRECT
-- DOMAIN-SUFFIX,speedtest.net,DIRECT
+##- DOMAIN-KEYWORD,google,DIRECT #匹配域名关键字(直连)
+- DOMAIN-KEYWORD,alipay,DIRECT
+- DOMAIN-KEYWORD,taobao,DIRECT
+- DOMAIN-KEYWORD,aliexpress,DIRECT
+- DOMAIN-KEYWORD,pinduoduo,DIRECT
+- DOMAIN-KEYWORD,speedtest,DIRECT
 
 
 ##IP获取
