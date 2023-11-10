@@ -12,12 +12,18 @@ name: 编译OpenWrt固件
 on:
   workflow_dispatch:
     inputs:
+
+      CACHE_BUILD:
+        description: '缓存加速'
+        required: false
+        default: 'true'
+        type: boolean
+
       SSH_ACTION:
         description: 'SSH远程配置固件'
         required: false
         default: 'false'
         type: boolean
-
 
 # 定时触发编译(1,2,5,6,8,10,12,15,16,18,20,22,25,26,28,30早3点)
   schedule:
@@ -39,7 +45,7 @@ env:
 
 jobs: 
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
 
     name: 编译 ${{matrix.target}}
@@ -68,7 +74,6 @@ jobs:
         echo "UPLOAD_VMDK=${UPLOAD_VMDK}" >> $GITHUB_ENV
         echo "UPLOAD_IPK=${UPLOAD_IPK}" >> $GITHUB_ENV
         echo "UPLOAD_CONFIG=${UPLOAD_CONFIG}" >> $GITHUB_ENV
-        echo "UPLOAD_WETRANSFER=${UPLOAD_WETRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
         echo "WECHAT_WORK_PUSH=${WECHAT_WORK_PUSH}" >> $GITHUB_ENV
         echo "TELEGRAM_BOT=${TELEGRAM_BOT}" >> $GITHUB_ENV
@@ -87,7 +92,7 @@ jobs:
         sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap* || true
         sudo -E apt -y full-upgrade
         sudo -E apt -y install ack antlr3 aria2 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python3 python3-pip libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        sudo -E apt-get -y install xsltproc zip grep python3-pip python3-ply libc6-dev libncurses5 libtinfo-dev libtinfo5 ncurses-doc python2.7 git-core wget curl rsync
+        #sudo -E apt-get -y install xsltproc zip grep python3-pip python3-ply libc6-dev libncurses5 libtinfo-dev libtinfo5 ncurses-doc python2.7 git-core wget curl rsync
         sudo -E systemctl daemon-reload
         sudo -E apt -y autoremove --purge
         sudo -E apt clean
@@ -121,7 +126,7 @@ jobs:
 
     - name: 缓存加速
       uses: stupidloud/cachewrtbuild@main
-      if: env.CACHE_BUILD == 'true'
+      if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
       with:
         ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt
@@ -205,6 +210,8 @@ jobs:
         echo "	    当前编译版本：$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')"
         echo "	    内核版本：$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
 
+        echo "	    编译时间：${{ env.FILE_TIME1 }}"
+
         echo
         echo "=========================================="
 
@@ -236,16 +243,13 @@ jobs:
 
     - name: 下载编译所需文件
       run: |
-        cd openwrt && make download -j8
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        cd openwrt && make download -j16
 
     - name: 开始编译固件
       id: compile
       run: |
         cd openwrt
-        echo -e "$(($(nproc)+1)) thread compile"
-        make -j$(($(nproc)+1)) || make -j1 V=s
+        make -j$(nproc) || make -j1 V=s
 
     - name: 检查空间使用情况
       run: |
@@ -325,15 +329,6 @@ jobs:
         name: OpenWrt_buildinfo_${{matrix.target}}_${{ env.FILE_TIME }}
         path: ./artifact/buildinfo/
 
-    - name: 上传固件到 WeTransfer
-      if: steps.compile.outcome == 'success' && env.UPLOAD_WETRANSFER == 'true'
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ./artifact/firmware/ 2>&1 | tee wetransfer.log
-        echo "WETRANSFER_URL=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV
-        sed -i "s/Download Link/WeTransfer/g" wetransfer.log
-        echo "::warning file=WeTransfer::$(cat wetransfer.log | grep https)"
-
     - name: 自动发布固件到 Releases
       uses: ncipollo/release-action@main
       if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true'
@@ -358,10 +353,6 @@ jobs:
 
             ━━━━━━━━━━━━━━━━━━━━
 
-            ➤ WeTransfer： ${{ env.WETRANSFER_URL }}
-
-               WeTransfer链接有效期为7天，无需注册直接下载
-
             =========================================
 
         artifacts: ./artifact/firmware/*
@@ -384,7 +375,7 @@ jobs:
     - name: 编译成功信息通知-企业微信
       if: steps.compile.outcome == 'success' && env.WECHAT_WORK_PUSH == 'true'
       run: |
-        curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！%0a%0a🎈编译时间：${{ env.FILE_TIME1 }}%0a%0a🛠编译版本：${{ env.DISTRIB_REVISION }}%0a%0a🖥内核版本：${{ env.KERNEL_PATCHVER }}%0a%0a⏰编译用时：${{ env.BUILD_TIME }}%0a%0a🎉发布地址：${{ env.GITHUB_RELEASE }}%0a%0a⛄WeTransfer：${{ env.WETRANSFER_URL }}%0a%0a🌴固件已经编译完成🎈！！！" || true
+        curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！%0a%0a🎈编译时间：${{ env.FILE_TIME1 }}%0a%0a🛠编译版本：${{ env.DISTRIB_REVISION }}%0a%0a🖥内核版本：${{ env.KERNEL_PATCHVER }}%0a%0a⏰编译用时：${{ env.BUILD_TIME }}%0a%0a🎉发布地址：${{ env.GITHUB_RELEASE }}%0a%0a🌴固件已经编译完成🎈！！！" || true
 
     - name: 编译成功信息通知-Telegram
       if: steps.compile.outcome == 'success' && env.TELEGRAM_BOT == 'true'
@@ -400,8 +391,6 @@ jobs:
           ⏰ 编译用时：${{ env.BUILD_TIME }}
 
           🎉 发布地址：${{ env.GITHUB_RELEASE }}
-
-          ⛄ WeTransfer：${{ env.WETRANSFER_URL }}
 
           🌴 固件已经编译完成 🎈！！！" >/dev/null 2>&1 && echo "ok..."
 

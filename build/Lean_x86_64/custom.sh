@@ -268,20 +268,18 @@ EOF
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-ssr-plus=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_SagerNet_Core is not set
-# CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_V2ray_Plugin is not set
 EOF
 
 # Passwall插件:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-passwall=y
+CONFIG_PACKAGE_luci-app-passwall2=y
 # CONFIG_PACKAGE_naiveproxy=y
 CONFIG_PACKAGE_chinadns-ng=y
 # CONFIG_PACKAGE_brook=y
 CONFIG_PACKAGE_trojan-go=y
 CONFIG_PACKAGE_xray-plugin=y
 CONFIG_PACKAGE_shadowsocks-rust-sslocal=y
-# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray_Plugin is not set
-# CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_V2ray_Plugin is not set
 EOF
 
 # Turbo ACC 网络加速:
