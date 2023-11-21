@@ -90,6 +90,11 @@ rules:
 # ==========微软TTS规则==========
 - DOMAIN-SUFFIX,eastus.tts.speech.microsoft.com,🚀 节点选择
 
+# ==========微软New Bing规则==========
+- DOMAIN-SUFFIX,bing.com,🚀 节点选择
+- DOMAIN-SUFFIX,bingapis.com,🚀 节点选择
+- DOMAIN-SUFFIX,edge.microsoft.com,🚀 节点选择
+
 # ==========TMM==========
 - DOMAIN-SUFFIX,tmdb.org,🚀 节点选择
 - DOMAIN-SUFFIX,themoviedb.org,🚀 节点选择
