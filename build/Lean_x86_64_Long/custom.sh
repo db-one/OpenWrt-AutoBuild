@@ -18,7 +18,6 @@ git clone https://github.com/db-one/dbone-packages.git -b 18.06 package/dbone-pa
 # 删除部分默认包
 rm -rf feeds/luci/applications/luci-app-qbittorrent
 rm -rf feeds/luci/themes/luci-theme-argon
-rm -rf feeds/packages/net/haproxy
 rm -rf package/lean/autocore
 
 # 自定义定制选项

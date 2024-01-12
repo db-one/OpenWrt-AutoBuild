@@ -183,6 +183,15 @@ rules:
 - DOMAIN-SUFFIX,members.3322.org,DIRECT
 ##icanhazip.com
 - DOMAIN-SUFFIX,icanhazip.com,DIRECT
+##cip.cc
+- DOMAIN-SUFFIX,cip.cc,DIRECT
+
+
+## DNS
+- DOMAIN-SUFFIX,cloudflare-dns.com,🚀 节点选择
+- DOMAIN-SUFFIX,dns.google,🚀 节点选择
+- DOMAIN-SUFFIX,dns.adguard.com,🚀 节点选择
+- DOMAIN-SUFFIX,doh.opendns.com,🚀 节点选择
 
 
 ##IP白名单/不走代理的IP/直连列表
