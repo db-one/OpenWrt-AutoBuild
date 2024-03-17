@@ -168,6 +168,7 @@ rules:
 - DOMAIN-KEYWORD,aliexpress,DIRECT
 - DOMAIN-KEYWORD,pinduoduo,DIRECT
 - DOMAIN-KEYWORD,speedtest,DIRECT
+- DOMAIN-KEYWORD,mxnas,DIRECT
 
 
 ##IP获取
