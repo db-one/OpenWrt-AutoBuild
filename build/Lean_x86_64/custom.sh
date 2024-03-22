@@ -59,7 +59,7 @@ uci set network.lan.dns='223.5.5.5 119.29.29.29'            # 旁路由设置 DN
 uci set dhcp.lan.ignore='1'                                  # 旁路由关闭DHCP功能
 uci delete network.lan.type                                  # 旁路由桥接模式-禁用
 uci set network.lan.delegate='0'                             # 去掉LAN口使用内置的 IPv6 管理(若用IPV6请把'0'改'1')
-uci set dhcp.@dnsmasq[0].filter_aaaa='1'                     # 禁止解析 IPv6 DNS记录(若用IPV6请把'1'改'0')
+uci set dhcp.@dnsmasq[0].filter_aaaa='0'                     # 禁止解析 IPv6 DNS记录(若用IPV6请把'1'改'0')
 
 # 旁路IPV6需要全部禁用
 uci set network.lan.ip6assign=''                             # IPV6分配长度-禁用
@@ -70,7 +70,7 @@ uci set dhcp.lan.ra_management=''                            # DHCPv6 模式-禁
 # 如果有用IPV6的话,可以使用以下命令创建IPV6客户端(LAN口)（去掉全部代码uci前面#号生效）
 uci set network.ipv6=interface
 uci set network.ipv6.proto='dhcpv6'
-uci set network.ipv6.ifname='eth0'
+uci set network.ipv6.ifname='@lan'
 uci set network.ipv6.reqaddress='try'
 uci set network.ipv6.reqprefix='auto'
 uci set firewall.@zone[0].network='lan ipv6'
