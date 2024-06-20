@@ -191,7 +191,7 @@ jobs:
         make defconfig
 
     - name: SSH远程连接服务器
-      uses: danshui-git/debugger-action@main
+      uses: db-one/debugger-action@main
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.SSH_ACTION == 'true')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
