@@ -16,7 +16,7 @@ cp -rf /rom/etc/openclash/core/* /etc/openclash/core
 # uci commit system
 
 # 设置默认主题
-uci set luci.main.mediaurlbase='/luci-static/neobird' && uci commit luci
+uci set luci.main.mediaurlbase='/luci-static/argon' && uci commit luci
 
 # 修改主机名称为OpenWrt-86
 # uci set system.@system[0].hostname='OpenWrt-86'
