@@ -11,7 +11,7 @@
 cat feeds.conf.default
 
 # 添加第三方软件包
-git clone https://github.com/db-one/dbone-packages.git -b 19.07 package/dbone-packages
+git clone https://github.com/db-one/dbone-packages.git -b 23.05 package/dbone-packages
 
 # 更新并安装源
 ./scripts/feeds clean
@@ -312,6 +312,7 @@ EOF
 # LuCI主题:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-theme-argon=y
+CONFIG_PACKAGE_luci-theme-edge=n
 EOF
 
 # 常用软件包:
