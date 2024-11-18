@@ -194,6 +194,8 @@ rules:
 - DOMAIN-SUFFIX,dns.adguard.com,🚀 节点选择
 - DOMAIN-SUFFIX,doh.opendns.com,🚀 节点选择
 
+# 大灰狼书源订阅
+- DOMAIN-SUFFIX,api.2280.eu.org,DIRECT
 
 ##IP白名单/不走代理的IP/直连列表
 ##- IP-CIDR,127.0.0.0/8,DIRECT #匹配数据目标IP(直连)
