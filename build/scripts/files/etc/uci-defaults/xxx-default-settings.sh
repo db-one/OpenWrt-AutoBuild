@@ -15,14 +15,14 @@ cp -rf /rom/etc/openclash/core/* /etc/openclash/core
 #uci add_list system.ntp.server='cn.ntp.org.cn'
 # uci commit system
 
+# 修改主机名称为 OpenWrt-86
+# uci set system.@system[0].hostname='OpenWrt-86'
+
 # 设置默认主题
 uci set luci.main.mediaurlbase='/luci-static/argon' && uci commit luci
 
-# 修改主机名称为OpenWrt-86
-# uci set system.@system[0].hostname='OpenWrt-86'
-
 # 此文件名注意ls 排序，下面也行
-# sed -ri "/option mediaurlbase/s#(/luci-static/)[^']+#\neobird#" /etc/config/luci
+# sed -ri "/option mediaurlbase/s#(/luci-static/)[^']+#\argon#" /etc/config/luci
 # uci commit luci
 
 # 去掉CpuMark跑数，直接显示分数
