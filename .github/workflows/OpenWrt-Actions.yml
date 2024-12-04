@@ -36,7 +36,7 @@ on:
 
 env: 
   TZ: Asia/Shanghai
-  GIT_USER_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+  MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
   WECHAT_WORK_URL: ${{ secrets.WECHAT_WORK_URL }}
   WECHAT_WORK_TOKEN: ${{ secrets.WECHAT_WORK_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -251,7 +251,7 @@ jobs:
         echo "输出完整插件信息..."
         echo
         echo
-        cat .config
+        # cat .config
 
     - name: 下载编译所需文件
       run: |
@@ -347,7 +347,7 @@ jobs:
       with:
         name: ${{ env.FILE_TIME1 }} 「 ${{ env.FIRMWARE_MESSAGE }} 」
         tag: ${{ env.FILE_TIME2 }}-${{matrix.target}}-${{ env.DISTRIB_REVISION }}
-        token: ${{ secrets.GIT_USER_TOKEN }}
+        token: ${{ secrets.MY_GITHUB_TOKEN }}
         body: |            
             ★  源码 : ${{ env.REPO_URL }}
             ★  分支 : ${{ env.REPO_BRANCH }}
@@ -372,6 +372,8 @@ jobs:
     - name: 删除运行记录
       uses: Mattraks/delete-workflow-runs@v2
       with:
+        token: ${{ secrets.MY_GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
         retain_days: 30     #保留最后多少记录不删除
         keep_minimum_runs: 0
 
@@ -382,7 +384,7 @@ jobs:
         keep_latest: 20         #保留多少个releases不删除
         delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
 
     - name: 编译成功信息通知-企业微信
       if: steps.compile.outcome == 'success' && env.WECHAT_WORK_PUSH == 'true'
