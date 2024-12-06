@@ -1,0 +1,204 @@
+script:
+##  shortcuts:
+##    Notice: The core timezone is UTC
+##    CST 20:00-24:00 = time.now().hour > 12 and time.now().hour < 16
+##    内核时区为UTC,故以下time.now()函数的取值需要根据本地时区进行转换
+##    北京时间(CST) 20:00-24:00 = time.now().hour > 12 and time.now().hour < 16
+##    quic: network == 'udp' and dst_port == 443 and (geoip(resolve_ip(host)) != 'CN' or geoip(dst_ip) != 'CN')
+##    time-limit: in_cidr(src_ip,'192.168.1.2/32') and time.now().hour < 20 or time.now().hour > 21
+##    time-limit: src_ip == '192.168.1.2' and time.now().hour < 20 or time.now().hour > 21
+
+##  code: |
+##    def main(ctx, metadata):
+##        directkeywordlist = ["baidu"]
+##        for directkeyword in directkeywordlist:
+##          if directkeyword in metadata["host"]:
+##            ctx.log('[Script] matched keyword %s use direct' % directkeyword)
+##            return "DIRECT"
+
+rules:
+##- SCRIPT,quic,REJECT #shortcuts rule
+##- SCRIPT,time-limit,REJECT #shortcuts rule
+
+##- PROCESS-NAME,curl,DIRECT #匹配路由自身进程(curl直连)
+##- DOMAIN-SUFFIX,google.com,Proxy #匹配域名后缀(交由Proxy代理服务器组)
+##- DOMAIN-KEYWORD,google,Proxy #匹配域名关键字(交由Proxy代理服务器组)
+##- DOMAIN,google.com,Proxy #匹配域名(交由Proxy代理服务器组)
+##- DOMAIN-SUFFIX,ad.com,REJECT #匹配域名后缀(拒绝)
+##- IP-CIDR,127.0.0.0/8,DIRECT #匹配数据目标IP(直连)
+##- SRC-IP-CIDR,192.168.1.201/32,DIRECT #匹配数据发起IP(直连)
+##- DST-PORT,80,DIRECT #匹配数据目标端口(直连)
+##- SRC-PORT,7777,DIRECT #匹配数据源端口(直连)
+
+##排序在上的规则优先生效,如添加（去除规则前的#号）：
+##IP段：192.168.1.2-192.168.1.200 直连
+##- SRC-IP-CIDR,192.168.1.2/31,DIRECT
+##- SRC-IP-CIDR,192.168.1.4/30,DIRECT
+##- SRC-IP-CIDR,192.168.1.8/29,DIRECT
+##- SRC-IP-CIDR,192.168.1.16/28,DIRECT
+##- SRC-IP-CIDR,192.168.1.32/27,DIRECT
+##- SRC-IP-CIDR,192.168.1.64/26,DIRECT
+##- SRC-IP-CIDR,192.168.1.128/26,DIRECT
+##- SRC-IP-CIDR,192.168.1.192/29,DIRECT
+##- SRC-IP-CIDR,192.168.1.200/32,DIRECT
+
+##IP段：192.168.1.202-192.168.1.255 直连
+##- SRC-IP-CIDR,192.168.1.202/31,DIRECT
+##- SRC-IP-CIDR,192.168.1.204/30,DIRECT
+##- SRC-IP-CIDR,192.168.1.208/28,DIRECT
+##- SRC-IP-CIDR,192.168.1.224/27,DIRECT
+
+##此时IP为192.168.1.1和192.168.1.201的客户端流量走代理（策略），其余客户端不走代理
+##因为Fake-IP模式下，IP地址为192.168.1.1的路由器自身流量可走代理（策略），所以需要排除
+
+##仅设置路由器自身直连：
+##- SRC-IP-CIDR,192.168.1.1/32,DIRECT
+##- SRC-IP-CIDR,198.18.0.1/32,DIRECT
+
+##DDNS
+##- DOMAIN-SUFFIX,checkip.dyndns.org,DIRECT
+##- DOMAIN-SUFFIX,checkipv6.dyndns.org,DIRECT
+##- DOMAIN-SUFFIX,checkip.synology.com,DIRECT
+##- DOMAIN-SUFFIX,ifconfig.co,DIRECT
+##- DOMAIN-SUFFIX,api.myip.com,DIRECT
+##- DOMAIN-SUFFIX,ip-api.com,DIRECT
+##- DOMAIN-SUFFIX,ipapi.co,DIRECT
+##- DOMAIN-SUFFIX,ip6.seeip.org,DIRECT
+##- DOMAIN-SUFFIX,members.3322.org,DIRECT
+
+##在线IP段转CIDR地址：http://ip2cidr.com
+
+
+
+##########################################################################################
+##########################################################################################
+
+
+##域名黑名单/强制走代理的域名/代理列表
+##- DOMAIN-SUFFIX,google.com,Proxy #匹配域名后缀(交由Proxy代理服务器组)
+# ==========自定义规则==========
+- DOMAIN-SUFFIX,api.telegram.org,🚀 节点选择
+- DOMAIN-SUFFIX,rizonesoft.com,🚀 节点选择
+- DOMAIN-SUFFIX,cordcloud.one,🚀 节点选择
+- DOMAIN-SUFFIX,namecheap.com,🚀 节点选择
+- DOMAIN-SUFFIX,555dianying.cc,🚀 节点选择
+- DOMAIN-SUFFIX,apkpure.com,🚀 节点选择
+- DOMAIN-SUFFIX,time.android.com,🚀 节点选择
+- DOMAIN-SUFFIX,wangzi.uk,🚀 节点选择
+- DOMAIN-SUFFIX,telegra.ph,🚀 节点选择
+
+# ==========微软TTS规则==========
+- DOMAIN-SUFFIX,eastus.tts.speech.microsoft.com,🚀 节点选择
+
+# ==========微软New Bing规则==========
+- DOMAIN-SUFFIX,bing.com,🚀 节点选择
+- DOMAIN-SUFFIX,bingapis.com,🚀 节点选择
+- DOMAIN-SUFFIX,edge.microsoft.com,🚀 节点选择
+
+# ==========TMM==========
+- DOMAIN-SUFFIX,tmdb.org,🚀 节点选择
+- DOMAIN-SUFFIX,themoviedb.org,🚀 节点选择
+
+# ==========Docker规则==========
+- DOMAIN-SUFFIX,gcr.io,🚀 节点选择
+- DOMAIN-SUFFIX,quay.io,🚀 节点选择
+- DOMAIN-SUFFIX,ghcr.io,🚀 节点选择
+- DOMAIN-SUFFIX,k8s.gcr.io,🚀 节点选择
+- DOMAIN-SUFFIX,docker.io,🚀 节点选择
+- DOMAIN-SUFFIX,docker.com,🚀 节点选择
+
+# ==========GitHub==========
+- DOMAIN-SUFFIX,github.io,🚀 节点选择
+- DOMAIN-SUFFIX,github.com,🚀 节点选择
+- DOMAIN-SUFFIX,githubstatus.com,🚀 节点选择
+- DOMAIN-SUFFIX,githubassets.com,🚀 节点选择
+- DOMAIN-SUFFIX,github.community,🚀 节点选择
+- DOMAIN-SUFFIX,github.map.fastly.net,🚀 节点选择
+- DOMAIN-SUFFIX,githubusercontent.com,🚀 节点选择
+- DOMAIN-SUFFIX,github-com.s3.amazonaws.com,🚀 节点选择
+- DOMAIN-SUFFIX,github.global.ssl.fastly.net,🚀 节点选择
+- DOMAIN-SUFFIX,github-cloud.s3.amazonaws.com,🚀 节点选择
+- DOMAIN-SUFFIX,github-production-user-asset-6210df.s3.amazonaws.com,🚀 节点选择
+- DOMAIN-SUFFIX,github-production-release-asset-2e65be.s3.amazonaws.com,🚀 节点选择
+- DOMAIN-SUFFIX,github-production-repository-file-5c1aeb.s3.amazonaws.com,🚀 节点选择
+
+# ==========谷歌规则==========
+- DOMAIN-SUFFIX,youtube.com,🚀 节点选择
+- DOMAIN-SUFFIX,google.com,🚀 节点选择
+- DOMAIN-SUFFIX,google.com.hk,🚀 节点选择
+- DOMAIN-SUFFIX,hegoogle.com.sgroku,🚀 节点选择
+- DOMAIN-SUFFIX,google.com.tw,🚀 节点选择
+- DOMAIN-SUFFIX,googleapis.com,🚀 节点选择
+- DOMAIN-SUFFIX,googleapis.cn,🚀 节点选择
+- DOMAIN-SUFFIX,googletagmanager.com,🚀 节点选择
+- DOMAIN-SUFFIX,googleusercontent.com,🚀 节点选择
+- DOMAIN-SUFFIX,googlevideo.com,🚀 节点选择
+- DOMAIN-SUFFIX,www.google.com,🚀 节点选择
+- DOMAIN-SUFFIX,translate.google.com,🚀 节点选择
+- DOMAIN-SUFFIX,voice.google.com,🚀 节点选择
+
+## ==========游戏规则==========
+- DOMAIN-SUFFIX,epicgames.com,🎮 游戏平台
+- DOMAIN-SUFFIX,ol.epicgames.com,🎮 游戏平台
+- DOMAIN-SUFFIX,store.epicgames.com,🎮 游戏平台
+- DOMAIN-SUFFIX,www.epicgames.com,🎮 游戏平台
+- DOMAIN-SUFFIX,steamcontent.com,🎮 游戏平台
+- DOMAIN-SUFFIX,dl.steam.clngaa.com,🎮 游戏平台
+- DOMAIN-SUFFIX,dl.steam.ksyna.com,🎮 游戏平台
+- DOMAIN-SUFFIX,st.dl.bscstorage.net,🎮 游戏平台
+- DOMAIN-SUFFIX,st.dl.eccdnx.com,🎮 游戏平台
+- DOMAIN-SUFFIX,st.dl.pinyuncloud.com,🎮 游戏平台
+- DOMAIN-SUFFIX,test.steampowered.com,🎮 游戏平台
+- DOMAIN-SUFFIX,media.steampowered.com,🎮 游戏平台
+- DOMAIN-SUFFIX,cdn.cloudflare.steamstatic.com,🎮 游戏平台
+- DOMAIN-SUFFIX,cdn.akamai.steamstatic.com,🎮 游戏平台
+- DOMAIN-SUFFIX,steampowered.com,🎮 游戏平台
+- DOMAIN-SUFFIX,store.steampowered.com,🎮 游戏平台
+- DOMAIN-SUFFIX,cdn.mileweb.cs.steampowered.com.8686c.com,🎮 游戏平台
+- DOMAIN-SUFFIX,cdn-ws.content.steamchina.com,🎮 游戏平台
+- DOMAIN-SUFFIX,cdn-qc.content.steamchina.com,🎮 游戏平台
+- DOMAIN-SUFFIX,cdn-ali.content.steamchina.com,🎮 游戏平台
+- DOMAIN-SUFFIX,epicgames-download1-1251447533.file.myqcloud.com,🎮 游戏平台
+
+##域名白名单/不走代理的域名/直连列表
+##- DOMAIN-SUFFIX,alipay.com,DIRECT #匹配域名后缀(直连)
+##- DOMAIN-KEYWORD,google,DIRECT #匹配域名关键字(直连)
+- DOMAIN-KEYWORD,alipay,DIRECT
+- DOMAIN-KEYWORD,taobao,DIRECT
+- DOMAIN-KEYWORD,aliexpress,DIRECT
+- DOMAIN-KEYWORD,pinduoduo,DIRECT
+- DOMAIN-KEYWORD,speedtest,DIRECT
+- DOMAIN-KEYWORD,mxnas,DIRECT
+
+
+##IP获取
+- DOMAIN-SUFFIX,api.cloudflare.com,DIRECT
+- DOMAIN-SUFFIX,ip.cip.cc,DIRECT
+- DOMAIN-SUFFIX,ip.3322.net,DIRECT
+- DOMAIN-SUFFIX,myip.ipip.net,DIRECT
+##https://api.ip.sb/ip
+- DOMAIN-SUFFIX,api.ip.sb,DIRECT
+##https://api-ipv4.ip.sb/ip
+- DOMAIN-SUFFIX,api-ipv4.ip.sb,DIRECT
+##http://members.3322.org/dyndns/getip
+- DOMAIN-SUFFIX,members.3322.org,DIRECT
+##icanhazip.com
+- DOMAIN-SUFFIX,icanhazip.com,DIRECT
+##cip.cc
+- DOMAIN-SUFFIX,cip.cc,DIRECT
+
+
+## DNS
+- DOMAIN-SUFFIX,cloudflare-dns.com,🚀 节点选择
+- DOMAIN-SUFFIX,dns.google,🚀 节点选择
+- DOMAIN-SUFFIX,dns.adguard.com,🚀 节点选择
+- DOMAIN-SUFFIX,doh.opendns.com,🚀 节点选择
+
+##IP白名单/不走代理的IP/直连列表
+##- IP-CIDR,127.0.0.0/8,DIRECT #匹配数据目标IP(直连)
+## VPN DDNS服务
+- IP-CIDR,130.158.75.0/24,DIRECT
+- IP-CIDR,130.158.6.0/24,DIRECT
+
+##########################################################################################
+##########################################################################################
