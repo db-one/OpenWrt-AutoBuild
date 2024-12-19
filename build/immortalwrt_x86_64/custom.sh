@@ -18,6 +18,7 @@ git clone https://github.com/db-one/dbone-packages.git -b 23.05 package/dbone-pa
 rm -rf feeds/luci/applications/luci-app-qbittorrent
 rm -rf feeds/luci/applications/luci-app-openclash
 rm -rf feeds/luci/themes/luci-theme-argon
+rm -rf package/dbone-packages/passwall/packages/v2ray-geoview
 
 # 自定义定制选项
 NET="package/base-files/files/bin/config_generate"
