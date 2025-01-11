@@ -55,13 +55,22 @@ sed -i '/exit 0/i\ethtool -s eth0 speed 10000 duplex full' package/base-files/fi
 # ●●●●●●●●●●●●●●●●●●●●●●●●定制部分●●●●●●●●●●●●●●●●●●●●●●●● #
 
 cat >> $ZZZ <<-EOF
-# 设置旁路由模式
+cat >> $ZZZ <<-EOF
+# 设置网络-旁路由模式
 uci set network.lan.gateway='10.0.0.254'                     # 旁路由设置 IPv4 网关
 uci set network.lan.dns='223.5.5.5 119.29.29.29'            # 旁路由设置 DNS(多个DNS要用空格分开)
 uci set dhcp.lan.ignore='1'                                  # 旁路由关闭DHCP功能
 uci delete network.lan.type                                  # 旁路由桥接模式-禁用
 uci set network.lan.delegate='0'                             # 去掉LAN口使用内置的 IPv6 管理(若用IPV6请把'0'改'1')
 uci set dhcp.@dnsmasq[0].filter_aaaa='0'                     # 禁止解析 IPv6 DNS记录(若用IPV6请把'1'改'0')
+
+# 设置防火墙-旁路由模式
+uci set firewall.@defaults[0].syn_flood='0'                  # 禁用 SYN-flood 防御
+uci set firewall.@defaults[0].flow_offloading='0'           # 禁用基于软件的NAT分载
+uci set firewall.@defaults[0].flow_offloading_hw='0'       # 禁用基于硬件的NAT分载
+uci set firewall.@defaults[0].fullcone='1'                   # 启用 FullCone NAT
+uci set firewall.@defaults[0].fullcone6='1'                  # 启用 FullCone NAT6
+uci set firewall.@zone[0].masq='1'                             # 启用LAN口 IP 动态伪装
 
 # 旁路IPV6需要全部禁用
 uci set network.lan.ip6assign=''                             # IPV6分配长度-禁用
