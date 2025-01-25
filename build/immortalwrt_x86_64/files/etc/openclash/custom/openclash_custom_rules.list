@@ -91,9 +91,9 @@ rules:
 - DOMAIN-SUFFIX,eastus.tts.speech.microsoft.com,🚀 节点选择
 
 # ==========微软New Bing规则==========
-- DOMAIN-SUFFIX,bing.com,🚀 节点选择
-- DOMAIN-SUFFIX,bingapis.com,🚀 节点选择
-- DOMAIN-SUFFIX,edge.microsoft.com,🚀 节点选择
+- DOMAIN-SUFFIX,bing.com,💬 OpenAi
+- DOMAIN-SUFFIX,bingapis.com,💬 OpenAi
+- DOMAIN-SUFFIX,edge.microsoft.com,💬 OpenAi
 
 # ==========TMM==========
 - DOMAIN-SUFFIX,tmdb.org,🚀 节点选择
@@ -123,19 +123,19 @@ rules:
 - DOMAIN-SUFFIX,github-production-repository-file-5c1aeb.s3.amazonaws.com,🚀 节点选择
 
 # ==========谷歌规则==========
-- DOMAIN-SUFFIX,youtube.com,🚀 节点选择
-- DOMAIN-SUFFIX,google.com,🚀 节点选择
-- DOMAIN-SUFFIX,google.com.hk,🚀 节点选择
-- DOMAIN-SUFFIX,hegoogle.com.sgroku,🚀 节点选择
-- DOMAIN-SUFFIX,google.com.tw,🚀 节点选择
-- DOMAIN-SUFFIX,googleapis.com,🚀 节点选择
-- DOMAIN-SUFFIX,googleapis.cn,🚀 节点选择
-- DOMAIN-SUFFIX,googletagmanager.com,🚀 节点选择
-- DOMAIN-SUFFIX,googleusercontent.com,🚀 节点选择
-- DOMAIN-SUFFIX,googlevideo.com,🚀 节点选择
-- DOMAIN-SUFFIX,www.google.com,🚀 节点选择
-- DOMAIN-SUFFIX,translate.google.com,🚀 节点选择
-- DOMAIN-SUFFIX,voice.google.com,🚀 节点选择
+- DOMAIN-SUFFIX,youtube.com,📹 油管视频
+- DOMAIN-SUFFIX,google.com,📹 油管视频
+- DOMAIN-SUFFIX,google.com.hk,📹 油管视频
+- DOMAIN-SUFFIX,hegoogle.com.sgroku,📹 油管视频
+- DOMAIN-SUFFIX,google.com.tw,📹 油管视频
+- DOMAIN-SUFFIX,googleapis.com,📹 油管视频
+- DOMAIN-SUFFIX,googleapis.cn,📹 油管视频
+- DOMAIN-SUFFIX,googletagmanager.com,📹 油管视频
+- DOMAIN-SUFFIX,googleusercontent.com,📹 油管视频
+- DOMAIN-SUFFIX,googlevideo.com,📹 油管视频
+- DOMAIN-SUFFIX,www.google.com,📹 油管视频
+- DOMAIN-SUFFIX,translate.google.com,📹 油管视频
+- DOMAIN-SUFFIX,voice.google.com,📹 油管视频
 
 ## ==========游戏规则==========
 - DOMAIN-SUFFIX,epicgames.com,🎮 游戏平台

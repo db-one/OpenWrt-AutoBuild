@@ -13,6 +13,16 @@ on:
   workflow_dispatch:
     inputs:
 
+      MODEL:
+        required: true
+        description: 选择需要编译的固件
+        type: choice
+        default: immortalwrt_x86_64
+        options:
+          - Lean_x86_64
+          - Lean_x86_64_Long
+          - immortalwrt_x86_64
+
       CACHE_BUILD:
         description: '缓存加速'
         required: false
@@ -26,8 +36,8 @@ on:
         type: boolean
 
 # 定时触发编译(1,10,20早3点)
-  schedule:
-    - cron: 0 17 1,9,19 * *
+#  schedule:
+#    - cron: 0 17 1,9,19 * *
 
 # 点赞☆Star触发编译
 #  watch:
@@ -52,7 +62,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [Lean_x86_64,Lean_x86_64_Long,immortalwrt_x86_64]  #[Lean_x86_64,Lean_x86_64_Long,immortalwrt_x86_64]
+        target: ${{ fromJSON(
+          github.event_name == 'schedule' && '["Lean_x86_64","Lean_x86_64_Long","immortalwrt_x86_64","immortalwrt_ax6600"]' || 
+          format('["{0}"]', github.event.inputs.MODEL )
+          )}}
 
     steps:
     - name: 检查文件
