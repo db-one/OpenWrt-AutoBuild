@@ -26,10 +26,10 @@ uci set luci.main.mediaurlbase='/luci-static/argon' && uci commit luci
 # uci commit luci
 
 # 去掉CpuMark跑数，直接显示分数
-sed -i '/coremark.sh/d' /etc/crontabs/root
-cat /dev/null > /etc/bench.log
-echo " (CpuMark : 191219.823122" >> /etc/bench.log
-echo " Scores)" >> /etc/bench.log
+#sed -i '/coremark.sh/d' /etc/crontabs/root
+#cat /dev/null > /etc/bench.log
+#echo " (CpuMark : 191219.823122" >> /etc/bench.log
+#echo " Scores)" >> /etc/bench.log
 
 # 添加系统信息
 grep "shell-motd" /etc/profile >/dev/null

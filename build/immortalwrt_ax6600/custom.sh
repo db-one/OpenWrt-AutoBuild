@@ -35,23 +35,20 @@ fi
 
 #
 sed -i "s#192.168.1.1#10.0.0.1#g" $NET                                                     # 定制默认IP
-# sed -i "s#ImmortalWrt#ImmortalWrt-X86#g" $NET                                          # 修改默认名称为 ImmortalWrt-X86
-# sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' $ZZZ                                          # 取消系统默认密码
+sed -i "s#ImmortalWrt#AX6600#g" $NET                                          # 修改默认名称为 AX6600
 echo "uci set luci.main.mediaurlbase=/luci-static/argon" >> $ZZZ                      # 设置默认主题(如果编译可会自动修改默认主题的，有可能会失效)
-# sed -i 's#localtime  = os.date()#localtime  = os.date("%Y年%m月%d日") .. " " .. translate(os.date("%A")) .. " " .. os.date("%X")#g' package/lean/autocore/files/*/index.htm               # 修改默认时间格式
 
 # ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● #
 # sed -i "/_('Firmware Version')/s/\(_('Firmware Version'), *\)/\1(\"ONE build $(TZ=UTC-8 date "+%Y.%m.%d") \" + /" feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js              # 增加自己个性名称
-# sed -i "s@list listen_https@# list listen_https@g" package/network/services/uhttpd/files/uhttpd.config               # 停止监听443端口
-# sed -i '/exit 0/i\ethtool -s eth0 speed 2500 duplex full' package/base-files/files//etc/rc.local               # 强制显示2500M和全双工（默认PVE下VirtIO不识别） ImmortalWrt固件内不显示端口状态，可以关闭
 
 # ●●●●●●●●●●●●●●●●●●●●●●●●定制部分●●●●●●●●●●●●●●●●●●●●●●●● #
 
 # ========================性能跑分========================
+
 echo "rm -f /etc/uci-defaults/xxx-coremark" >> "$ZZZ"
 cat >> $ZZZ <<EOF
 cat /dev/null > /etc/bench.log
-echo " (CpuMark : 191219.823122" >> /etc/bench.log
+echo " (CpuMark : 23907.846120" >> /etc/bench.log
 echo " Scores)" >> /etc/bench.log
 EOF
 
@@ -67,7 +64,7 @@ uci set network.lan.delegate='0'                             # 去掉LAN口使�
 uci set dhcp.@dnsmasq[0].filter_aaaa='0'                     # 禁止解析 IPv6 DNS记录(若用IPV6请把'1'改'0')
 
 # 设置防火墙-旁路由模式
-uci set firewall.@defaults[0].syn_flood='0'                  # 禁用 SYN-flood 防御
+uci set firewall.@defaults[0].synflood_protect='0'          # 禁用 SYN-flood 防御
 uci set firewall.@defaults[0].flow_offloading='0'           # 禁用基于软件的NAT分载
 uci set firewall.@defaults[0].flow_offloading_hw='0'       # 禁用基于硬件的NAT分载
 uci set firewall.@defaults[0].fullcone='0'                   # 禁用 FullCone NAT
@@ -88,9 +85,16 @@ uci set network.ipv6.reqaddress='try'
 uci set network.ipv6.reqprefix='auto'
 uci set firewall.@zone[0].network='lan ipv6'
 
+# 配置Dropbear SSH服务
+uci delete dropbear.main.RootPasswordAuth
+uci set dropbear.main.enable='1'
+uci set dropbear.main.Interface='lan'
+
 uci commit dhcp
 uci commit network
 uci commit firewall
+uci commit dropbear
+/etc/init.d/dropbear restart
 
 EOF
 
@@ -185,160 +189,169 @@ touch ./.config
 # 无论你想要对固件进行怎样的定制, 都需要且只需要修改 EOF 回环内的内容.
 # 
 
-# 编译x64固件:
+# 编译 雅典娜 AX6600 固件:
 cat >> .config <<EOF
-CONFIG_TARGET_x86=y
-CONFIG_TARGET_x86_64=y
-CONFIG_TARGET_x86_64_Generic=y
-EOF
+# TARGET config
+CONFIG_TARGET_qualcommax=y
+CONFIG_TARGET_qualcommax_ipq60xx=y
+CONFIG_TARGET_MULTI_PROFILE=y
+CONFIG_TARGET_PER_DEVICE_ROOTFS=y
+CONFIG_TARGET_DEVICE_qualcommax_ipq60xx_DEVICE_jdcloud_re-cs-02=y
+CONFIG_TARGET_DEVICE_PACKAGES_qualcommax_ipq60xx_DEVICE_jdcloud_re-cs-02="ipq-wifi-jdcloud_re-cs-02 ath11k-firmware-qcn9074 kmod-ath11k-pci luci-app-athena-led luci-i18n-athena-led-zh-cn"
+CONFIG_TARGET_ROOTFS_INITRAMFS=n
 
-# 设置固件大小:
-cat >> .config <<EOF
-CONFIG_TARGET_KERNEL_PARTSIZE=16
-CONFIG_TARGET_ROOTFS_PARTSIZE=360
-EOF
+# Compile
+CONFIG_USE_APK=n
+CONFIG_DEVEL=y
+CONFIG_CCACHE=y
+CONFIG_TARGET_OPTIONS=y
+CONFIG_TARGET_OPTIMIZATION="-O2 -pipe -mcpu=cortex-a53+crc+crypto"
 
-# 固件压缩:
-cat >> .config <<EOF
-CONFIG_TARGET_IMAGES_GZIP=y
-EOF
+# BUSYBOX
+CONFIG_BUSYBOX_CUSTOM=y
+CONFIG_BUSYBOX_CONFIG_TELNET=y
 
-# 编译UEFI固件:
-cat >> .config <<EOF
-CONFIG_EFI_IMAGES=y
-EOF
+# Swap
+CONFIG_PACKAGE_zram-swap=n
 
-# IPv6支持:
-cat >> .config <<EOF
-CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
-CONFIG_PACKAGE_ipv6helper=y
-EOF
+# NSS
+CONFIG_IPQ_MEM_PROFILE_256=y
+CONFIG_ATH11K_MEM_PROFILE_512M=y
+CONFIG_NSS_MEM_PROFILE_HIGH=y
+CONFIG_NSS_FIRMWARE_VERSION_12_2=y
+CONFIG_PACKAGE_sqm-scripts-nss=y
+CONFIG_PACKAGE_kmod-qca-mcs=y
+CONFIG_KERNEL_SKB_RECYCLER=y
+CONFIG_PACKAGE_kmod-ath11k-pci=m
+CONFIG_NSS_DRV_WIFI_MESH_ENABLE=n
+CONFIG_PACKAGE_MAC80211_MESH=n
+CONFIG_ATH11K_NSS_MESH_SUPPORT=n
 
-# 编译PVE/KVM、Hyper-V、VMware镜像以及镜像填充
-cat >> .config <<EOF
-CONFIG_QCOW2_IMAGES=y
-CONFIG_VHDX_IMAGES=y
-CONFIG_VMDK_IMAGES=y
-CONFIG_TARGET_IMAGES_PAD=y
-EOF
+# Proto
+CONFIG_PACKAGE_proto-bonding=y
+CONFIG_PACKAGE_luci-proto-quectel=y
+CONFIG_PACKAGE_luci-proto-wireguard=n
+CONFIG_PACKAGE_luci-proto-relay=y
 
-# 多文件系统支持:
-# cat >> .config <<EOF
-# CONFIG_PACKAGE_kmod-fs-nfs=y
-# CONFIG_PACKAGE_kmod-fs-nfs-common=y
-# CONFIG_PACKAGE_kmod-fs-nfs-v3=y
-# CONFIG_PACKAGE_kmod-fs-nfs-v4=y
-# CONFIG_PACKAGE_kmod-fs-ntfs=y
-# CONFIG_PACKAGE_kmod-fs-squashfs=y
-# EOF
+# Kernel modules
+CONFIG_PACKAGE_kmod-fs-exfat=y
+CONFIG_PACKAGE_kmod-fs-ntfs3=y
+CONFIG_PACKAGE_kmod-fs-vfat=y
+CONFIG_PACKAGE_kmod-nft-queue=y
+CONFIG_PACKAGE_kmod-tls=y
+CONFIG_PACKAGE_kmod-tun=y
 
-# USB3.0支持:
-# cat >> .config <<EOF
-# CONFIG_PACKAGE_kmod-usb-ohci=y
-# CONFIG_PACKAGE_kmod-usb-ohci-pci=y
-# CONFIG_PACKAGE_kmod-usb2=y
-# CONFIG_PACKAGE_kmod-usb2-pci=y
-# CONFIG_PACKAGE_kmod-usb3=y
-# EOF
+#  USB Support
+CONFIG_PACKAGE_kmod-usb-acm=y
+CONFIG_PACKAGE_kmod-usb-ehci=y
+CONFIG_PACKAGE_kmod-usb-net-huawei-cdc-ncm=y
+CONFIG_PACKAGE_kmod-usb-net-rndis=y
+CONFIG_PACKAGE_kmod-usb-net-asix-ax88179=y
+CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
+CONFIG_PACKAGE_kmod-usb-net-sierrawireless=y
+CONFIG_PACKAGE_kmod-usb-ohci=y
+CONFIG_PACKAGE_kmod-usb-serial-qualcomm=y
+CONFIG_PACKAGE_kmod-usb-storage=y
+CONFIG_PACKAGE_kmod-usb2=y
 
-# 多线多拨:
-# cat >> .config <<EOF
-# CONFIG_PACKAGE_luci-app-syncdial=y #多拨虚拟WAN
-# CONFIG_PACKAGE_luci-app-mwan3=y #MWAN负载均衡
-# CONFIG_PACKAGE_luci-app-mwan3helper=n #MWAN3分流助手
-# EOF
+#  docker kernel dependencies
+CONFIG_PACKAGE_kmod-br-netfilter=y
+CONFIG_PACKAGE_kmod-ip6tables=y
+CONFIG_PACKAGE_kmod-ipt-conntrack=y
+CONFIG_PACKAGE_kmod-ipt-extra=y
+CONFIG_PACKAGE_kmod-ipt-nat=y
+CONFIG_PACKAGE_kmod-ipt-nat6=y
+CONFIG_PACKAGE_kmod-ipt-physdev=y
+CONFIG_PACKAGE_kmod-nf-ipt6=y
+CONFIG_PACKAGE_kmod-nf-ipvs=y
+CONFIG_PACKAGE_kmod-nf-nat6=y
+CONFIG_PACKAGE_kmod-dummy=y
+CONFIG_PACKAGE_kmod-veth=y
 
-# 第三方插件选择:
-cat >> .config <<EOF
-# CONFIG_PACKAGE_luci-app-oaf=y #应用过滤
-CONFIG_PACKAGE_luci-app-openclash=y #OpenClash客户端
-CONFIG_PACKAGE_luci-app-mihomo=y #mihomo 客户端
-# CONFIG_PACKAGE_luci-app-serverchan=y #微信推送
-# CONFIG_PACKAGE_luci-app-eqos=y #IP限速
-# CONFIG_PACKAGE_luci-app-control-weburl=y #网址过滤
-# CONFIG_PACKAGE_luci-app-smartdns=y #smartdns服务器
-# CONFIG_PACKAGE_luci-app-adguardhome=y #ADguardhome
-CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
-# CONFIG_PACKAGE_luci-app-argon-config=y #argon主题设置
-# CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
-# CONFIG_PACKAGE_luci-app-ddnsto=y #小宝开发的DDNS.to内网穿透
-# CONFIG_PACKAGE_ddnsto=y #DDNS.to内网穿透软件包
-EOF
+# Libraries
+CONFIG_PACKAGE_luci-lib-ipkg=y
+CONFIG_PACKAGE_libopenssl-legacy=y
 
-# ShadowsocksR插件:
-cat >> .config <<EOF
-CONFIG_PACKAGE_luci-app-ssr-plus=y
-# CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_SagerNet_Core is not set
-EOF
-
-# Passwall插件:
-cat >> .config <<EOF
-CONFIG_PACKAGE_luci-app-passwall=y
-# CONFIG_PACKAGE_luci-app-passwall2=y
-# CONFIG_PACKAGE_naiveproxy=y
-CONFIG_PACKAGE_chinadns-ng=y
-# CONFIG_PACKAGE_brook=y
-CONFIG_PACKAGE_trojan-go=y
-CONFIG_PACKAGE_xray-plugin=y
-CONFIG_PACKAGE_shadowsocks-rust-sslocal=y
-EOF
-
-# 常用LuCI插件:
-cat >> .config <<EOF
-CONFIG_PACKAGE_luci-app-accesscontrol=n #上网时间控制
-CONFIG_PACKAGE_luci-app-filetransfer=y #文件传输
-CONFIG_PACKAGE_luci-app-frpc=y #Frpc客户端
-CONFIG_PACKAGE_luci-app-upnp=n #UPNP服务器
-CONFIG_PACKAGE_luci-app-vlmcsd=n #KMS激活服务器
-CONFIG_PACKAGE_luci-app-nlbwmon=n #宽带流量监控
-CONFIG_PACKAGE_luci-app-wol=n #网络唤醒
-#
-# VPN相关插件(禁用):
-#
-CONFIG_PACKAGE_luci-app-v2ray-server=y #V2ray服务器
-CONFIG_PACKAGE_luci-app-ipsec-vpnd=n #ipsec VPN服务
-CONFIG_PACKAGE_luci-app-openvpn-server=n #openvpn服务
-CONFIG_PACKAGE_luci-app-softethervpn=n #SoftEtherVPN服务器
-#
-# 文件共享相关(禁用):
-#
-CONFIG_PACKAGE_luci-app-minidlna=n #miniDLNA服务
-CONFIG_PACKAGE_luci-app-vsftpd=n #FTP 服务器
-CONFIG_PACKAGE_luci-app-samba=n #网络共享
-CONFIG_PACKAGE_autosamba=n #网络共享
-EOF
-
-# LuCI主题:
-cat >> .config <<EOF
-CONFIG_PACKAGE_luci-theme-argon=y
-CONFIG_PACKAGE_luci-theme-edge=n
-EOF
-
-# 常用软件包:
-cat >> .config <<EOF
-CONFIG_PACKAGE_curl=y
+# Package
 CONFIG_PACKAGE_htop=y
 CONFIG_PACKAGE_nano=y
-# CONFIG_PACKAGE_screen=y
-# CONFIG_PACKAGE_tree=y
-# CONFIG_PACKAGE_vim-fuller=y
+CONFIG_PACKAGE_curl=y
 CONFIG_PACKAGE_wget-ssl=y
 CONFIG_PACKAGE_bash=y
-CONFIG_PACKAGE_kmod-tun=y
 CONFIG_PACKAGE_snmpd=y
-CONFIG_PACKAGE_libcap=y
-CONFIG_PACKAGE_libcap-bin=y
-CONFIG_PACKAGE_ip6tables-mod-nat=y
-CONFIG_PACKAGE_iptables-mod-extra=y
-CONFIG_PACKAGE_vsftpd=y
+CONFIG_PACKAGE_fuse-utils=y
 CONFIG_PACKAGE_openssh-sftp-server=y
-CONFIG_PACKAGE_qemu-ga=y
-CONFIG_PACKAGE_autocore-x86=y
-EOF
+CONFIG_PACKAGE_tcpdump=y
+CONFIG_PACKAGE_sgdisk=y
+CONFIG_PACKAGE_openssl-util=y
+CONFIG_PACKAGE_resize2fs=y
+CONFIG_PACKAGE_qrencode=y
+CONFIG_PACKAGE_smartmontools-drivedb=y
+CONFIG_PACKAGE_usbutils=y
+CONFIG_PACKAGE_default-settings=y
+CONFIG_PACKAGE_default-settings-chn=y
 
-# 其他软件包:
-cat >> .config <<EOF
-CONFIG_HAS_FPU=y
+#  Coremark
+CONFIG_PACKAGE_coremark=y
+CONFIG_COREMARK_OPTIMIZE_O3=y
+CONFIG_COREMARK_ENABLE_MULTITHREADING=y
+CONFIG_COREMARK_NUMBER_OF_THREADS=6
+
+#  docker dependencies
+CONFIG_PACKAGE_iptables-mod-extra=y
+CONFIG_PACKAGE_ip6tables-nft=y
+CONFIG_PACKAGE_ip6tables-mod-fullconenat=y
+CONFIG_PACKAGE_iptables-mod-fullconenat=y
+CONFIG_PACKAGE_libip4tc=y
+CONFIG_PACKAGE_libip6tc=y
+
+#  mwan3 dependencies
+CONFIG_PACKAGE_iptables-mod-conntrack-extra=y
+
+# LuCI主题:
+CONFIG_PACKAGE_luci-theme-argon=y
+
+# Enable Luci App
+CONFIG_PACKAGE_luci-app-adguardhome=n
+CONFIG_PACKAGE_luci-app-adguardhome_INCLUDE_binary=n
+CONFIG_PACKAGE_luci-app-autoreboot=y
+CONFIG_PACKAGE_luci-app-diskman=n
+CONFIG_PACKAGE_luci-app-dockerman=n
+CONFIG_PACKAGE_luci-app-istorex=y
+CONFIG_PACKAGE_luci-app-lucky=n
+CONFIG_PACKAGE_luci-app-mosdns=n
+CONFIG_PACKAGE_luci-app-samba4=n
+CONFIG_PACKAGE_luci-app-smartdns=n
+CONFIG_PACKAGE_luci-app-sqm=n
+CONFIG_PACKAGE_luci-app-ttyd=n
+CONFIG_PACKAGE_luci-app-upnp=y
+CONFIG_PACKAGE_luci-app-vlmcsd=n
+CONFIG_PACKAGE_luci-app-wol=n
+CONFIG_PACKAGE_luci-app-zerotier=n
+CONFIG_PACKAGE_luci-app-athena-led=m
+CONFIG_PACKAGE_luci-i18n-athena-led-zh-cn=m
+CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
+CONFIG_PACKAGE_luci-app-filetransfer=y #文件传输
+
+# Proxy
+#  OpenClash
+CONFIG_PACKAGE_luci-app-openclash=n #OpenClash客户端
+
+#  mihomo 客户端
+CONFIG_PACKAGE_luci-app-mihomo=n #mihomo 客户端
+
+#  HomeProxy
+CONFIG_PACKAGE_luci-app-homeproxy=n
+
+#  Passwall
+CONFIG_PACKAGE_luci-app-passwall=n
+# CONFIG_PACKAGE_luci-app-passwall2=n
+# CONFIG_PACKAGE_naiveproxy=n
+CONFIG_PACKAGE_chinadns-ng=n
+# CONFIG_PACKAGE_brook=n
+CONFIG_PACKAGE_trojan-go=n
+CONFIG_PACKAGE_xray-plugin=n
+CONFIG_PACKAGE_shadowsocks-rust-sslocal=n
 EOF
 
 

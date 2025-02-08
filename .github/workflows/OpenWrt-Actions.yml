@@ -22,6 +22,7 @@ on:
           - Lean_x86_64
           - Lean_x86_64_Long
           - immortalwrt_x86_64
+          - immortalwrt_ax6600
 
       CACHE_BUILD:
         description: '缓存加速'
@@ -68,7 +69,7 @@ jobs:
           )}}
 
     steps:
-    - name: 检查文件
+    - name: Checkout 仓库
       uses: actions/checkout@v4
 
     - name: 检测脚本设置
@@ -275,11 +276,11 @@ jobs:
         echo "输出完整插件信息..."
         echo
         echo
-        # cat .config
+        cat .config
 
     - name: 下载编译所需文件
       run: |
-        cd openwrt && make download -j16
+        cd openwrt && make download -j4
 
     - name: 开始编译固件
       id: compile
@@ -307,11 +308,12 @@ jobs:
         mkdir -p ./artifact/vmware
         mkdir -p ./artifact/package
         mkdir -p ./artifact/buildinfo
-        cp -rf openwrt/.config ./artifact/buildinfo/${{matrix.target}}.config
+        cp -rf openwrt/.config ./artifact/buildinfo/${{matrix.target}}.config || true
         rm -rf $(find openwrt/bin/targets/ -type d -name "packages")
-        cp -rf $(find openwrt/bin/packages/ -type f -name "*.ipk") ./artifact/package/
-        cp -rf $(find openwrt/bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
-        cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*img*") ./artifact/firmware/
+        cp -rf $(find openwrt/bin/packages/ -type f -name "*.ipk") ./artifact/package/ || true
+        cp -rf $(find openwrt/bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/ || true        
+        # cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*img*") ./artifact/firmware/
+        cp -rf $(find openwrt/bin/targets/ -type f \( -name "*squashfs*efi*img*" -o -name "*squashfs*sysupgrade*bin*" \) ) ./artifact/firmware/
         cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*qcow2*") ./artifact/pvekvm/ || true
         cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*vhdx*") ./artifact/hyperv/ || true
         cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*vmdk*") ./artifact/vmware/ || true

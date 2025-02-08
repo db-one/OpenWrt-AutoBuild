@@ -58,11 +58,6 @@ function storage_info()
 	root_usage=$(awk '/\// {print $(NF-1)}' <<<${RootInfo} | sed 's/%//g')
 	root_total=$(awk '/\// {print $(NF-4)}' <<<${RootInfo})
 
-	# storage info
-	BootInfo=$(df -h /boot)
-	boot_usage=$(awk '/\// {print $(NF-1)}' <<<${BootInfo} | sed 's/%//g')
-	boot_total=$(awk '/\// {print $(NF-4)}' <<<${BootInfo})
-
 } # storage_info
 
 
@@ -105,12 +100,11 @@ cpuinfox=$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)
 cpuinfo=`echo $cpuinfox | sed 's/.*G*./& 核心x/g' | sed -r 's/^(..)(.*)/\2\1/'`
 
 # chassis vendor
-chassis_vendor=`cat /sys/class/dmi/id/chassis_vendor`
-product_version=`cat /sys/class/dmi/id/product_version`
+chassis_vendor=`cat /tmp/sysinfo/model`
 
 
 # display info
-printf "制 造 商:  \x1B[92m%s\x1B[0m" "$chassis_vendor $product_version"
+printf "制 造 商:  \x1B[92m%s\x1B[0m" "$chassis_vendor"
 echo ""
 
 printf "处 理 器:  \x1B[92m%s\x1B[0m" "$cpuinfo"
@@ -128,7 +122,6 @@ display "交换内存" "$swap_usage" "10" "0" "%" " 总空间： $swap_total""Mb
 printf "IP  地址:  \x1B[92m%s\x1B[0m" "$ip_address"
 echo "" # fixed newline
 
-display "启动存储" "$boot_usage" "90" "1" "%" " 总空间： $boot_total"
 display "系统存储" "$root_usage" "90" "1" "%" " 总空间： $root_total"
 echo ""
 
@@ -136,7 +129,7 @@ echo ""
 echo -e "------------------------------硬盘使用率---------------------------"
 #显示指定路径
 echo " 系统空间              类型            总数      已用      可用   使用率  挂载点"
-df -hT / /boot
+df -hT /
 
 echo ""
 
