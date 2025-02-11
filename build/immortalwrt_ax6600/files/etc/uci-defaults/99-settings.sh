@@ -1,6 +1,18 @@
 
 #!/bin/bash
 
+# 设置屏幕定时开关
+sed -i '/athena_led/d' /etc/crontabs/root
+echo '30 6 * * * /etc/init.d/athena_led start && logger "开启屏幕显示"' >> /etc/crontabs/root
+echo '0 22 * * * /etc/init.d/athena_led stop && logger "关闭屏幕显示"' >> /etc/crontabs/root
+crontab /etc/crontabs/root
+# 设置屏幕配置
+uci set athena_led.config.enable="1"
+uci set athena_led.config.lightLevel="3"
+uci set athena_led.config.option="timeBlink"
+uci commit athena_led
+/etc/init.d/athena_led restart
+
 # 软件源设置
 cat << EOF > "/etc/opkg/distfeeds.conf"
 src/gz openwrt_base https://downloads.immortalwrt.org/releases/24.10-SNAPSHOT/packages/aarch64_cortex-a53/base/

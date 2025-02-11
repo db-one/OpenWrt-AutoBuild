@@ -39,7 +39,8 @@ sed -i "s#ImmortalWrt#AX6600#g" $NET                                          # 
 echo "uci set luci.main.mediaurlbase=/luci-static/argon" >> $ZZZ                      # 设置默认主题(如果编译可会自动修改默认主题的，有可能会失效)
 
 # ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● #
-# sed -i "/_('Firmware Version')/s/\(_('Firmware Version'), *\)/\1(\"ONE build $(TZ=UTC-8 date "+%Y.%m.%d") \" + /" feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js              # 增加自己个性名称
+
+BUILDTIME=$(TZ=UTC-8 date "+%Y.%m.%d") && sed -i "s/\(_('Firmware Version'), *\)/\1 ('ONE build $BUILDTIME ') + /" feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js              # 增加自己个性名称
 
 # ●●●●●●●●●●●●●●●●●●●●●●●●定制部分●●●●●●●●●●●●●●●●●●●●●●●● #
 
@@ -86,7 +87,8 @@ uci set network.ipv6.reqprefix='auto'
 uci set firewall.@zone[0].network='lan ipv6'
 
 # 配置Dropbear SSH服务
-uci delete dropbear.main.RootPasswordAuth
+uci del dropbear.main.RootPasswordAuth
+uci del dropbear.main.DirectInterface
 uci set dropbear.main.enable='1'
 uci set dropbear.main.Interface='lan'
 
@@ -146,7 +148,10 @@ fi
 # =======================================================
 
 # 修改退出命令到最后
-sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
+sed -i '/exit 0/d' $ZZZ
+echo "exit 0" >> $ZZZ
+echo "查看 default-settings 文件"
+cat $ZZZ
 
 # ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● #
 
@@ -338,7 +343,7 @@ CONFIG_PACKAGE_luci-app-filetransfer=y #文件传输
 CONFIG_PACKAGE_luci-app-openclash=n #OpenClash客户端
 
 #  mihomo 客户端
-CONFIG_PACKAGE_luci-app-mihomo=n #mihomo 客户端
+CONFIG_PACKAGE_luci-app-nikki=n #nikki 客户端
 
 #  HomeProxy
 CONFIG_PACKAGE_luci-app-homeproxy=n
