@@ -23,7 +23,8 @@ src/gz openwrt_telephony https://downloads.immortalwrt.org/releases/24.10-SNAPSH
 EOF
 
 # 指示灯定义
-cat >> "/etc/config/system" << 'EOF'
+if ! grep -q "option name 'LAN'" /etc/config/system; then
+    cat >> "/etc/config/system" << 'EOF'
 config led
 	option name 'LAN'
 	option sysfs 'green:status'
@@ -35,7 +36,8 @@ config led
 config led
 	option name 'Red load'
 	option sysfs 'red:status'
-	option trigger 'heartbeat'
+	option trigger 'none'
+	option default '0'
 
 config led
 	option sysfs 'blue:status'
@@ -43,6 +45,7 @@ config led
 	option name 'Blue Off'
 	option default '0'
 EOF
+fi
 
 # ================ WIFI设置 =======================================
 
