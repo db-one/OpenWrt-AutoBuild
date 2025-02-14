@@ -34,15 +34,15 @@ config led
 	list mode 'rx'
 
 config led
-	option name 'Red load'
+	option name 'Red Off'
 	option sysfs 'red:status'
 	option trigger 'none'
 	option default '0'
 
 config led
+	option name 'Blue Off'
 	option sysfs 'blue:status'
 	option trigger 'none'
-	option name 'Blue Off'
 	option default '0'
 EOF
 fi

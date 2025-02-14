@@ -23,15 +23,6 @@ rm -rf package/dbone-packages/passwall/packages/v2ray-geoview
 # 自定义定制选项
 NET="package/base-files/files/bin/config_generate"
 ZZZ="package/emortal/default-settings/files/99-default-settings"
-# 读取内核版本
-KERNEL_PATCHVER=$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')
-KERNEL_TESTING_PATCHVER=$(cat target/linux/x86/Makefile|grep KERNEL_TESTING_PATCHVER | sed 's/^.\{25\}//g')
-if [[ $KERNEL_TESTING_PATCHVER > $KERNEL_PATCHVER ]]; then
-  sed -i "s/$KERNEL_PATCHVER/$KERNEL_TESTING_PATCHVER/g" target/linux/x86/Makefile        # 修改内核版本为最新
-  echo "内核版本已更新为 $KERNEL_TESTING_PATCHVER"
-else
-  echo "内核版本不需要更新"
-fi
 
 #
 sed -i "s#192.168.1.1#10.0.0.1#g" $NET                                                     # 定制默认IP
