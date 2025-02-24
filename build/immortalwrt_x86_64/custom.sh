@@ -271,7 +271,7 @@ CONFIG_PACKAGE_chinadns-ng=y
 # CONFIG_PACKAGE_brook=y
 CONFIG_PACKAGE_trojan-go=y
 CONFIG_PACKAGE_xray-plugin=y
-CONFIG_PACKAGE_shadowsocks-rust-sslocal=y
+CONFIG_PACKAGE_shadowsocks-rust-sslocal=n
 EOF
 
 # 常用LuCI插件:
