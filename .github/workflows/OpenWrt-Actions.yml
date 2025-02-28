@@ -105,13 +105,13 @@ jobs:
         sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap* || true
         sudo -E apt full-upgrade -y
         sudo -E apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
-                   bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib \
+                   bzip2 ccache clang cmake cpio curl device-tree-compiler ecj flex gawk gcc-multilib \
                    g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1 libc6-i386 libelf-dev \
-                   libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libpython3-dev \
-                   libreadline-dev libssl-dev libtool libyaml-dev libz-dev lld llvm lrzsz mkisofs msmtp nano \
-                   ninja-build p7zip p7zip-full patch pkgconf python3 python3-pip python3-ply python3-docutils \
+                   libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses-dev \
+                   libreadline-dev libssl-dev libpython3-dev libtool libyaml-dev libz-dev lld llvm lrzsz msmtp \
+                   ninja-build p7zip p7zip-full patch pkgconf python3 python3 python3-ply python3-docutils \
                    python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs \
-                   upx-ucl unzip vim wget xmlto xxd zlib1g-dev zstd libfuse-dev genisoimage python3-setuptools || true
+                   upx-ucl unzip vim wget xmlto xxd zlib1g-dev zstd libfuse-dev gettext genisoimage python3-setuptools || true
         sudo -E systemctl daemon-reload
         sudo -E apt -y autoremove --purge
         sudo -E apt clean
@@ -327,42 +327,42 @@ jobs:
 
     - name: 上传固件文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_FIRMWARE == 'true'
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_firmware_${{ env.FILE_TIME }}
         path: ./artifact/firmware/
 
     - name: 上传PVE/KVM镜像文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_QCOW2 == 'true'
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_pvekvm_${{ env.FILE_TIME }}
         path: ./artifact/pvekvm/
 
     - name: 上传Hyper-V镜像文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_VHDX == 'true'
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_hyperv_${{ env.FILE_TIME }}
         path: ./artifact/hyperv/
 
     - name: 上传VMware镜像文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_VMDK == 'true'
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_vmware_${{ env.FILE_TIME }}
         path: ./artifact/vmware/
 
     - name: 上传插件包文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_IPK == 'true'
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_package_${{ env.FILE_TIME }}
         path: ./artifact/package/
 
     - name: 上传固件信息
       if: steps.compile.outcome == 'success' && env.UPLOAD_CONFIG == 'true'
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_buildinfo_${{ env.FILE_TIME }}
         path: ./artifact/buildinfo/

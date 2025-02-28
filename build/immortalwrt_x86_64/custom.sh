@@ -20,6 +20,9 @@ rm -rf feeds/luci/applications/luci-app-openclash
 rm -rf feeds/luci/themes/luci-theme-argon
 rm -rf package/dbone-packages/passwall/packages/v2ray-geoview
 
+# 修复rust错误
+sed -i '/download-ci-llvm/d' feeds/packages/lang/rust/Makefile
+
 # 自定义定制选项
 NET="package/base-files/files/bin/config_generate"
 ZZZ="package/emortal/default-settings/files/99-default-settings"
