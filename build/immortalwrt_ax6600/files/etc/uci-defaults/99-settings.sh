@@ -42,8 +42,9 @@ config led
 config led
 	option name 'Blue Off'
 	option sysfs 'blue:status'
-	option trigger 'none'
-	option default '0'
+	option trigger 'timer'
+	option delayon '100'
+	option delayoff '1500'
 EOF
 fi
 
@@ -73,7 +74,7 @@ configure_wifi() {
 set wireless.radio${radio}.channel="${channel}"
 set wireless.radio${radio}.htmode="${htmode}"
 set wireless.radio${radio}.mu_beamformer='1'
-set wireless.radio${radio}.country='US'
+set wireless.radio${radio}.country='CN'
 set wireless.radio${radio}.txpower="${txpower}"
 set wireless.radio${radio}.cell_density='0'
 set wireless.radio${radio}.disabled='0'
