@@ -91,9 +91,9 @@ rules:
 - DOMAIN-SUFFIX,eastus.tts.speech.microsoft.com,🚀 节点选择
 
 # ==========微软New Bing规则==========
-- DOMAIN-SUFFIX,bing.com,🚀 节点选择
-- DOMAIN-SUFFIX,bingapis.com,🚀 节点选择
-- DOMAIN-SUFFIX,edge.microsoft.com,🚀 节点选择
+- DOMAIN-SUFFIX,bing.com,💬 OpenAi
+- DOMAIN-SUFFIX,bingapis.com,💬 OpenAi
+- DOMAIN-SUFFIX,edge.microsoft.com,💬 OpenAi
 
 # ==========TMM==========
 - DOMAIN-SUFFIX,tmdb.org,🚀 节点选择
