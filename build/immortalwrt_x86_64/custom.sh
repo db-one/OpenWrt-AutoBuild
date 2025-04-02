@@ -312,6 +312,7 @@ CONFIG_PACKAGE_htop=y
 CONFIG_PACKAGE_nano=y
 # CONFIG_PACKAGE_screen=y
 # CONFIG_PACKAGE_tree=y
+CONFIG_PACKAGE_uhttpd=y
 # CONFIG_PACKAGE_vim-fuller=y
 CONFIG_PACKAGE_wget-ssl=y
 CONFIG_PACKAGE_bash=y
@@ -324,7 +325,7 @@ CONFIG_PACKAGE_iptables-mod-extra=y
 CONFIG_PACKAGE_vsftpd=y
 CONFIG_PACKAGE_openssh-sftp-server=y
 CONFIG_PACKAGE_qemu-ga=y
-CONFIG_PACKAGE_autocore-x86=y
+CONFIG_PACKAGE_autocore=y
 EOF
 
 # 其他软件包:

@@ -248,6 +248,7 @@ jobs:
 
         echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
         echo "	    内核版本：$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
+        echo "	    源码分支：${{ env.REPO_BRANCH }}
 
         echo "	    编译时间：${{ env.FILE_TIME1 }}"
 
