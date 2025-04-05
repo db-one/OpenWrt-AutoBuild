@@ -144,12 +144,30 @@ jobs:
         docker-images: true
         swap-storage: true
 
+    - name: 创建模拟物理磁盘
+      run: |
+        mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
+        root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
+        sudo truncate -s "${mnt_size}"G /mnt/mnt.img
+        sudo truncate -s "${root_size}"G /root.img
+        sudo losetup /dev/loop6 /mnt/mnt.img
+        sudo losetup /dev/loop7 /root.img
+        sudo pvcreate /dev/loop6
+        sudo pvcreate /dev/loop7
+        sudo vgcreate github /dev/loop6 /dev/loop7
+        sudo lvcreate -n runner -l 100%FREE github
+        sudo mkfs.xfs /dev/github/runner
+        sudo mkdir -p /github-builder
+        sudo mount /dev/github/runner /github-builder
+        sudo chown -R $USER:$GROUPS /github-builder
+        df -Th
+
     - name: 下载${{matrix.target}}源码
-      working-directory: /workdir
+      working-directory: /github-builder
       run: |
         df -hT $PWD
         git clone -b $REPO_BRANCH --single-branch $REPO_URL openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        ln -sf /github-builder/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 缓存加速
       uses: stupidloud/cachewrtbuild@main
@@ -248,7 +266,7 @@ jobs:
 
         echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
         echo "	    内核版本：$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
-        echo "	    源码分支：${{ env.REPO_BRANCH }}
+        echo "	    源码分支：${{ env.REPO_BRANCH }}"
 
         echo "	    编译时间：${{ env.FILE_TIME1 }}"
 
@@ -305,21 +323,21 @@ jobs:
     - name: 整理固件文件
       id: organizer
       run: |
-        mkdir -p /dev/shm/artifact/firmware
-        mkdir -p /dev/shm/artifact/pvekvm
-        mkdir -p /dev/shm/artifact/hyperv
-        mkdir -p /dev/shm/artifact/vmware
-        mkdir -p /dev/shm/artifact/package
-        mkdir -p /dev/shm/artifact/buildinfo
-        cp -rf openwrt/.config /dev/shm/artifact/buildinfo/${{matrix.target}}.config || true
+        mkdir -p ./artifact/firmware
+        mkdir -p ./artifact/pvekvm
+        mkdir -p ./artifact/hyperv
+        mkdir -p ./artifact/vmware
+        mkdir -p ./artifact/package
+        mkdir -p ./artifact/buildinfo
+        cp -rf openwrt/.config ./artifact/buildinfo/${{matrix.target}}.config || true
         rm -rf $(find openwrt/bin/targets/ -type d -name "packages")
-        cp -rf $(find openwrt/bin/packages/ -type f -name "*.ipk") /dev/shm/artifact/package/ || true
-        cp -rf $(find openwrt/bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") /dev/shm/artifact/buildinfo/ || true        
-        # cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*img*") /dev/shm/artifact/firmware/
-        cp -rf $(find openwrt/bin/targets/ -type f \( -name "*squashfs*efi*img*" -o -name "*squashfs*sysupgrade*bin*" -o -name "*squashfs*factory*bin*" \) ) /dev/shm/artifact/firmware/
-        cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*qcow2*") /dev/shm/artifact/pvekvm/ || true
-        cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*vhdx*") /dev/shm/artifact/hyperv/ || true
-        cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*vmdk*") /dev/shm/artifact/vmware/ || true
+        cp -rf $(find openwrt/bin/packages/ -type f -name "*.ipk") ./artifact/package/ || true
+        cp -rf $(find openwrt/bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/ || true        
+        # cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*img*") ./artifact/firmware/
+        cp -rf $(find openwrt/bin/targets/ -type f \( -name "*squashfs*efi*img*" -o -name "*squashfs*sysupgrade*bin*" -o -name "*squashfs*factory*bin*" \) ) ./artifact/firmware/
+        cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*qcow2*") ./artifact/pvekvm/ || true
+        cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*vhdx*") ./artifact/hyperv/ || true
+        cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*vmdk*") ./artifact/vmware/ || true
         echo "编译完成时间..."
         START_SECONDS=${{ env.START_SECONDS }}
         END_TIME=`date +'%Y-%m-%d %H:%M:%S'`
@@ -333,42 +351,42 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_firmware_${{ env.FILE_TIME }}
-        path: /dev/shm/artifact/firmware/
+        path: ./artifact/firmware/
 
     - name: 上传PVE/KVM镜像文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_QCOW2 == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_pvekvm_${{ env.FILE_TIME }}
-        path: /dev/shm/artifact/pvekvm/
+        path: ./artifact/pvekvm/
 
     - name: 上传Hyper-V镜像文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_VHDX == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_hyperv_${{ env.FILE_TIME }}
-        path: /dev/shm/artifact/hyperv/
+        path: ./artifact/hyperv/
 
     - name: 上传VMware镜像文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_VMDK == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_vmware_${{ env.FILE_TIME }}
-        path: /dev/shm/artifact/vmware/
+        path: ./artifact/vmware/
 
     - name: 上传插件包文件
       if: steps.compile.outcome == 'success' && env.UPLOAD_IPK == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_package_${{ env.FILE_TIME }}
-        path: /dev/shm/artifact/package/
+        path: ./artifact/package/
 
     - name: 上传固件信息
       if: steps.compile.outcome == 'success' && env.UPLOAD_CONFIG == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.target}}_OpenWrt_buildinfo_${{ env.FILE_TIME }}
-        path: /dev/shm/artifact/buildinfo/
+        path: ./artifact/buildinfo/
 
     - name: 自动发布固件到 Releases
       uses: ncipollo/release-action@main
@@ -394,7 +412,7 @@ jobs:
 
             =========================================
 
-        artifacts: /dev/shm/artifact/firmware/*
+        artifacts: ./artifact/firmware/*
 
     - name: 删除运行记录
       uses: Mattraks/delete-workflow-runs@v2
