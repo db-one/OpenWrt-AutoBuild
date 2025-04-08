@@ -99,7 +99,7 @@ EOC
 #            接口顺序    信道     HT频宽      功率      SSID               密码            加密方式
 configure_wifi 0      149     'HE80'      22     'JDC_Guest'       '123456789'     'sae-mixed'
 configure_wifi 1      6       'HE40'      22     'MX-SmartHome'    '123456789'     'psk2+ccmp'
-configure_wifi 2      48      'HE160'     23     'AX6600_5G'       '123456789'     'sae-mixed'
+configure_wifi 2      44      'HE160'     23     'AX6600_5G'       '123456789'     'sae-mixed'
 
 # 添加 radio1 的第二个接口
 uci set wireless.wifinet3=wifi-iface
