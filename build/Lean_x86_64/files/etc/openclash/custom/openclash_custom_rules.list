@@ -91,9 +91,9 @@ rules:
 - DOMAIN-SUFFIX,eastus.tts.speech.microsoft.com,🚀 节点选择
 
 # ==========微软New Bing规则==========
-- DOMAIN-SUFFIX,bing.com,💬 OpenAi
-- DOMAIN-SUFFIX,bingapis.com,💬 OpenAi
-- DOMAIN-SUFFIX,edge.microsoft.com,💬 OpenAi
+- DOMAIN-SUFFIX,bing.com,💬 Ai平台
+- DOMAIN-SUFFIX,bingapis.com,💬 Ai平台
+- DOMAIN-SUFFIX,edge.microsoft.com,💬 Ai平台
 
 # ==========TMM==========
 - DOMAIN-SUFFIX,tmdb.org,🚀 节点选择
@@ -170,9 +170,9 @@ rules:
 - DOMAIN-KEYWORD,speedtest,DIRECT
 - DOMAIN-KEYWORD,mxnas,DIRECT
 
-
+#域名解析
+- DOMAIN-SUFFIX,api.cloudflare.com,🚀 节点选择
 ##IP获取
-- DOMAIN-SUFFIX,api.cloudflare.com,DIRECT
 - DOMAIN-SUFFIX,ip.cip.cc,DIRECT
 - DOMAIN-SUFFIX,ip.3322.net,DIRECT
 - DOMAIN-SUFFIX,myip.ipip.net,DIRECT
