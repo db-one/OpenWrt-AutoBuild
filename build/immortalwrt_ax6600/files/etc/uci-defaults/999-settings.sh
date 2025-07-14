@@ -50,9 +50,6 @@ fi
 
 # ================ WIFI设置 =======================================
 
-# 删除默认WIFI脚本
-rm -f /etc/uci-defaults/990_set-wireless.sh
-
 # 检查初始配置文件
 if ! grep -q "option ssid 'ImmortalWrt'" /etc/config/wireless; then
     echo "检测到 /etc/config/wireless 文件不包含 ImmortalWrt 的 SSID，跳过配置"
