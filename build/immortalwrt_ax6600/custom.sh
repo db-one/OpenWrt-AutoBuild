@@ -325,8 +325,8 @@ CONFIG_PACKAGE_luci-app-upnp=y
 CONFIG_PACKAGE_luci-app-vlmcsd=n
 CONFIG_PACKAGE_luci-app-wol=n
 CONFIG_PACKAGE_luci-app-zerotier=n
-CONFIG_PACKAGE_luci-app-athena-led=m
-CONFIG_PACKAGE_luci-i18n-athena-led-zh-cn=m
+CONFIG_PACKAGE_luci-app-athena-led=y
+CONFIG_PACKAGE_luci-i18n-athena-led-zh-cn=y
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-app-filetransfer=y #文件传输
 

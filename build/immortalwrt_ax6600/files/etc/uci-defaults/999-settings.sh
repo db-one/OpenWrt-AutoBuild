@@ -3,8 +3,8 @@
 
 # 设置屏幕定时开关
 sed -i '/athena_led/d' /etc/crontabs/root
-echo '30 6 * * * uci set athena_led.config.lightLevel="3" && uci commit athena_led && /etc/init.d/athena_led restart && logger "屏幕亮度设置"' >> /etc/crontabs/root
-echo '0 22 * * * uci set athena_led.config.lightLevel="1" && uci commit athena_led && /etc/init.d/athena_led restart && logger "屏幕亮度设置"' >> /etc/crontabs/root
+echo '30 6 * * * uci set athena_led.config.lightLevel="3" && uci commit athena_led && /etc/init.d/athena_led reload && logger "屏幕亮度设置"' >> /etc/crontabs/root
+echo '0 22 * * * uci set athena_led.config.lightLevel="1" && uci commit athena_led && /etc/init.d/athena_led reload && logger "屏幕亮度设置"' >> /etc/crontabs/root
 crontab /etc/crontabs/root
 # 设置屏幕配置
 uci set athena_led.config.enable="1"
