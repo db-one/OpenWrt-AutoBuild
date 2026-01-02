@@ -94,7 +94,7 @@ EOC
 
 # 配置无线接口
 #            接口顺序    信道     HT频宽      功率      SSID               密码            加密方式
-configure_wifi 0      149     'HE80'      25     'JDC_Guest'       '123456789'     'sae-mixed'
+configure_wifi 0      149     'HE80'      24     'JDC_Guest'       '123456789'     'sae-mixed'
 configure_wifi 1      6       'HE40'      25     'MX-SmartHome'    '123456789'     'psk2+ccmp'
 configure_wifi 2      44      'HE160'     25     'AX6600_5G'       '123456789'     'sae-mixed'
 

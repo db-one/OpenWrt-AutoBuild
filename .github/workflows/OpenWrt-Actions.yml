@@ -30,12 +30,6 @@ on:
         default: 'true'
         type: boolean
 
-      SSH_ACTION:
-        description: 'SSH远程配置固件'
-        required: false
-        default: 'false'
-        type: boolean
-
 # 定时触发编译(1,5,10,15,20,25,30早3点)
   schedule:
     - cron: 0 17 4,9,14,19,24,31 * *
@@ -52,7 +46,7 @@ env:
   WECHAT_WORK_TOKEN: ${{ secrets.WECHAT_WORK_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-  GITHUB_RELEASE: https://github.com/db-one/OpenWrt-AutoBuild/releases
+  GITHUB_RELEASE: "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases"
 
 jobs: 
   build:
@@ -81,7 +75,6 @@ jobs:
         echo "FIRMWARE_MESSAGE=${FIRMWARE_MESSAGE}" >> $GITHUB_ENV
         echo "CUSTOM_SH=${CUSTOM_SH}" >> $GITHUB_ENV
         echo "CACHE_BUILD=${CACHE_BUILD}" >> $GITHUB_ENV
-        echo "SSH_ACTIONS=${SSH_ACTIONS}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> $GITHUB_ENV
         echo "UPLOAD_QCOW2=${UPLOAD_QCOW2}" >> $GITHUB_ENV
         echo "UPLOAD_VHDX=${UPLOAD_VHDX}" >> $GITHUB_ENV
@@ -232,12 +225,11 @@ jobs:
         mv ${WORKPATH}/$CONFIG_FILE .config
         make defconfig
 
-    - name: SSH远程连接服务器
-      uses: db-one/debugger-action@main
-      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.SSH_ACTION == 'true')
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        echo "GitHub Action 移除国内下载源"
+        PROJECT_MIRRORS_FILE="$BUILD_DIR/scripts/projectsmirrors.json"
+        if [ -f "$PROJECT_MIRRORS_FILE" ]; then
+            sed -i '/.cn\//d; /tencent/d; /aliyun/d' "$PROJECT_MIRRORS_FILE"
+        fi
 
     - name: 输出编译信息
       run: |
