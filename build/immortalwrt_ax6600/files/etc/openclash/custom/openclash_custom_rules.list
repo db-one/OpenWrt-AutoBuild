@@ -94,6 +94,7 @@ rules:
 - DOMAIN-SUFFIX,bing.com,💬 Ai平台
 - DOMAIN-SUFFIX,bingapis.com,💬 Ai平台
 - DOMAIN-SUFFIX,edge.microsoft.com,💬 Ai平台
+- DOMAIN-SUFFIX,copilot.microsoft.com,💬 Ai平台
 
 # ==========TMM==========
 - DOMAIN-SUFFIX,tmdb.org,🚀 节点选择

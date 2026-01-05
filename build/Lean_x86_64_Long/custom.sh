@@ -10,17 +10,20 @@
 # sed -i 's@## src-git luci@src-git luci@g' feeds.conf.default # 启用23.05Luci
 cat feeds.conf.default
 
+# 更新源
+# ./scripts/feeds clean
+./scripts/feeds update
+
 # 添加第三方软件包
 git clone https://github.com/db-one/dbone-packages.git -b 23.05 package/dbone-packages
-
-# 更新并安装源
-./scripts/feeds clean
-./scripts/feeds update -a && ./scripts/feeds install -a -f
 
 # 删除部分默认包
 rm -rf feeds/luci/applications/luci-app-qbittorrent
 rm -rf feeds/luci/applications/luci-app-openclash
 rm -rf feeds/luci/themes/luci-theme-argon
+
+# 安装源
+./scripts/feeds install -a -f
 
 # 自定义定制选项
 NET="package/base-files/luci2/bin/config_generate"

@@ -4,21 +4,25 @@
 # 安装额外依赖软件包
 # sudo -E apt-get -y install rename
 
-# 更新feeds文件
-cat feeds.conf.default
+# 更新源
+# ./scripts/feeds clean
+./scripts/feeds update
 
 # 添加第三方软件包
 git clone https://github.com/db-one/dbone-packages.git -b 23.05 package/dbone-packages
 
-# 更新并安装源
-# ./scripts/feeds clean
-./scripts/feeds update -a && ./scripts/feeds install -a -f
-
 # 删除部分默认包
 rm -rf feeds/luci/applications/luci-app-qbittorrent
 rm -rf feeds/luci/applications/luci-app-openclash
+rm -rf feeds/luci/applications/luci-app-attendedsysupgrade
 rm -rf feeds/luci/themes/luci-theme-argon
 rm -rf package/dbone-packages/passwall/packages/v2ray-geoview
+
+# 安装源
+./scripts/feeds install -a -f
+
+#移除 luci-app-attendedsysupgrade 依赖
+sed -i "/attendedsysupgrade/d" $(find ./feeds/luci/collections/ -type f -name "Makefile")
 
 # 自定义定制选项
 NET="package/base-files/files/bin/config_generate"
@@ -256,6 +260,12 @@ CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 # CONFIG_PACKAGE_ddnsto=y #DDNS.to内网穿透软件包
 EOF
 
+# # istorex首页插件:
+cat >> .config <<EOF
+CONFIG_PACKAGE_luci-app-istorex=y
+CONFIG_PACKAGE_luci-app-quickstart=y
+EOF
+
 # ShadowsocksR插件:
 cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-ssr-plus=y
@@ -276,6 +286,8 @@ EOF
 
 # 常用LuCI插件:
 cat >> .config <<EOF
+CONFIG_PACKAGE_luci-app-firewall=y
+CONFIG_PACKAGE_luci-app-package-manager=y
 CONFIG_PACKAGE_luci-app-accesscontrol=n #上网时间控制
 CONFIG_PACKAGE_luci-app-filetransfer=y #文件传输
 CONFIG_PACKAGE_luci-app-frpc=y #Frpc客户端
