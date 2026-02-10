@@ -5,6 +5,12 @@ if [ -f /bin/bash ];then
   sed -i '/^root:/s#/bin/ash#/bin/bash#' /etc/passwd
 fi
 
+# 允许SSH以root用户和空密码登陆
+sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config
+echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+/etc/init.d/sshd restart
+
 # 修复OpenClash核心文件错误
 cp -rf /rom/etc/openclash/core/* /etc/openclash/core
 

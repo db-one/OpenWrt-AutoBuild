@@ -36,6 +36,10 @@ on:
         description: '调试模式，只配置环境不编译'
         type: boolean
         default: false
+      Custom_Commands:
+        description: '临时调试命令 (手动输入要执行的 Shell 命令)'
+        type: string
+        default: ''
 
 # 定时触发编译(1,5,10,15,20,25,30早3点)
   schedule:
@@ -129,28 +133,21 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-          sudo -E apt-mark hold grub-efi-amd64-signed
-          sudo -E apt update -y
-          sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap* || true
-          sudo -E apt full-upgrade -y
-          sudo -E apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
-                   bzip2 ccache clang cmake cpio curl device-tree-compiler ecj flex gawk gcc-multilib \
-                   g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1 libc6-i386 libelf-dev \
-                   libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses-dev \
-                   libreadline-dev libssl-dev libpython3-dev libtool libyaml-dev libz-dev lld llvm lrzsz msmtp \
-                   ninja-build p7zip p7zip-full patch pkgconf python3 python3 python3-ply python3-docutils \
-                   python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs \
-                   upx-ucl unzip vim wget xmlto xxd zlib1g-dev zstd libfuse-dev gettext genisoimage python3-setuptools || true
+          sudo -E apt -yqq purge firefox
+          sudo -E apt -yqq update
+          sudo -E apt -yqq full-upgrade
+          sudo -E apt -yqq autoremove --purge
+          sudo -E apt -yqq autoclean
+          sudo -E apt -yqq clean
+          sudo -E apt -yqq install dos2unix python3-netifaces libfuse-dev
+          sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
+          
           sudo -E systemctl daemon-reload
           sudo -E apt -y autoremove --purge
           sudo -E apt clean
 
       - name: 编译前准备
         run: |
-          sudo -E apt-get -y install xsltproc zip grep python3-pip python3-ply libc6-dev libtinfo-dev libtinfo5 ncurses-doc \
-                    python2 git-core wget curl rsync dos2unix fakeroot jq libc6-dev-i386 libncurses5-dev libncursesw5 \
-                    libncursesw5-dev quilt python3-distutils file g++ || true
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
           sudo timedatectl set-timezone "$TZ"
@@ -159,6 +156,7 @@ jobs:
           df -hT $PWD
 
       - name: 释放Ubuntu磁盘空间
+        if: env.BUILD_MOD == 'false'
         uses: jlumbroso/free-disk-space@main
         with:
           # this might remove tools that are actually needed,
@@ -262,11 +260,11 @@ jobs:
           mv ${WORKPATH}/$CONFIG_FILE .config
           make defconfig
 
-          echo "GitHub Action 移除国内下载源"
-          PROJECT_MIRRORS_FILE="scripts/projectsmirrors.json"
-          if [ -f "$PROJECT_MIRRORS_FILE" ]; then
-              sed -i '/.cn\//d; /tencent/d; /aliyun/d' "$PROJECT_MIRRORS_FILE"
-          fi
+          # echo "GitHub Action 移除国内下载源"
+          # PROJECT_MIRRORS_FILE="scripts/projectsmirrors.json"
+          # if [ -f "$PROJECT_MIRRORS_FILE" ]; then
+          #     sed -i '/.cn\//d; /tencent/d; /aliyun/d' "$PROJECT_MIRRORS_FILE"
+          # fi
 
       - name: 输出编译信息
         run: |
@@ -331,12 +329,34 @@ jobs:
           echo "输出完整插件信息..."
           echo
           echo
+          echo "==== 配置开始 ===="
           cat .config
+          echo "==== 配置结束 ===="
+
+      - name: 准备上传文件
+        run: |
+          mkdir -p ./upload_tmp
+          cp openwrt/.config ./upload_tmp/${{matrix.target}}.config
+          cp openwrt/tmp/.packageinfo ./upload_tmp/${{matrix.target}}.packageinfo
+
+      - name: 上传插件列表和依赖归递文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.target}}_OpenWrt_packageinfo_${{ env.FILE_TIME }}
+          path: ./upload_tmp/
+
+      - name: 执行临时调试命令
+        if: github.event.inputs.Custom_Commands != ''
+        run: |
+          cd openwrt
+          echo "==== 开始执行自定义调试命令 ===="
+          ${{ github.event.inputs.Custom_Commands }}
+          echo "==== 自定义命令执行完毕 ===="
 
       - name: 下载编译所需文件
         run: |
           if [[ "${BUILD_MOD}" == "true" ]]; then
-            curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=Github%0a%0aActions%0a%0a调试模式运行已完成，请检查运行结果..." || true && curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=Github Actions 调试模式运行已完成，请检查运行结果..." >/dev/null 2>&1 && echo "ok..."
+            curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=Github%20Actions%20调试模式运行已完成，请检查运行结果..." || true && curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=Github Actions 调试模式运行已完成，请检查运行结果..." >/dev/null 2>&1 && echo "ok..."
             echo "当前处于调试模式，环境配置已完成，跳过编译步骤。"
             exit 0
           fi
@@ -344,6 +364,7 @@ jobs:
 
       - name: 开始编译固件
         id: compile
+        if: env.BUILD_MOD == 'false'
         run: |
           cd openwrt
           make -j$(($(nproc) + 1)) || make -j1 V=s
@@ -355,9 +376,9 @@ jobs:
           echo "======================="
           df -hT
           echo "======================="
-          du -h --max-depth=1 openwrt/ --exclude=build_dir --exclude=bin
-          du -h --max-depth=1 openwrt/build_dir
-          du -h --max-depth=1 openwrt/bin
+          du -h --max-depth=1 openwrt/ --exclude=build_dir --exclude=bin || true
+          du -h --max-depth=1 openwrt/build_dir || true
+          du -h --max-depth=1 openwrt/bin || true
 
       - name: 整理固件文件
         id: organizer
@@ -369,10 +390,9 @@ jobs:
           mkdir -p ./artifact/vmware
           mkdir -p ./artifact/package
           mkdir -p ./artifact/buildinfo
-          cp -rf openwrt/.config ./artifact/buildinfo/${{matrix.target}}.config || true
           rm -rf $(find openwrt/bin/targets/ -type d -name "packages")
           cp -rf $(find openwrt/bin/packages/ -type f -name "*.ipk") ./artifact/package/ || true
-          cp -rf $(find openwrt/bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/ || true        
+          cp -rf $(find openwrt/bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/ || true
           # cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*img*") ./artifact/firmware/
           cp -rf $(find openwrt/bin/targets/ -type f \( -name "*squashfs*efi*img*" -o -name "*squashfs*sysupgrade*bin*" -o -name "*squashfs*factory*bin*" \) ) ./artifact/firmware/
           cp -rf $(find openwrt/bin/targets/ -type f -name "*squashfs*efi*qcow2*") ./artifact/pvekvm/ || true

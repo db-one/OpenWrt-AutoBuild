@@ -99,6 +99,60 @@ EOF
 
 # =======================================================
 
+# 移除对uhttpd的依赖
+sed -i '/luci-light/d' feeds/luci/collections/luci/Makefile
+# 设置 Nginx 默认配置
+nginx_config_path="feeds/packages/net/nginx-util/files/nginx.config"
+# 使用 cat 和 heredoc 覆盖写入 nginx.config 文件
+cat > "$nginx_config_path" <<'EOF'
+config main 'global'
+        option uci_enable 'true'
+
+config server '_lan'
+        list listen '443 ssl default_server'
+        list listen '[::]:443 ssl default_server'
+        option server_name '_lan'
+        list include 'restrict_locally'
+        list include 'conf.d/*.locations'
+        option uci_manage_ssl 'self-signed'
+        option ssl_certificate '/etc/nginx/conf.d/_lan.crt'
+        option ssl_certificate_key '/etc/nginx/conf.d/_lan.key'
+        option ssl_session_cache 'shared:SSL:32k'
+        option ssl_session_timeout '64m'
+        option access_log 'off; # logd openwrt'
+
+config server 'http_only'
+        list listen '80'
+        list listen '[::]:80'
+        option server_name 'http_only'
+        list include 'conf.d/*.locations'
+        option access_log 'off; # logd openwrt'
+EOF
+
+
+nginx_template="feeds/packages/net/nginx-util/files/uci.conf.template"
+if [ -f "$nginx_template" ]; then
+  # 检查是否已存在配置，避免重复添加
+  if ! grep -q "client_body_in_file_only clean;" "$nginx_template"; then
+    sed -i "/client_max_body_size 128M;/a\\
+        client_body_in_file_only clean;\\
+        client_body_temp_path /mnt/tmp;" "$nginx_template"
+  fi
+fi
+
+luci_support_script="feeds/packages/net/nginx/files-luci-support/60_nginx-luci-support"
+if [ -f "$luci_support_script" ]; then
+  # 检查是否已经为 ubus location 应用了修复
+  if ! grep -q "client_body_in_file_only off;" "$luci_support_script"; then
+    echo "正在为 Nginx ubus location 配置应用修复..."
+    sed -i "/ubus_parallel_req 2;/a\\
+        client_body_in_file_only off;\\
+        client_max_body_size 1M;" "$luci_support_script"
+  fi
+fi
+sed -i 's|install_cron_job(CRON_C.*);|// &|' feeds/packages/net/nginx-util/src/nginx-ssl-util.hpp
+sed -i 's/remove_cron_job(CRON_CHECK);/// &/' feeds/packages/net/nginx-util/src/nginx-ssl-util.hpp
+
 # 检查 OpenClash 是否启用编译
 if grep -qE '^(CONFIG_PACKAGE_luci-app-openclash=n|# CONFIG_PACKAGE_luci-app-openclash=)' "${WORKPATH}/$CUSTOM_SH"; then
   # OpenClash 未启用，不执行任何操作
@@ -231,7 +285,7 @@ CONFIG_ATH11K_NSS_MESH_SUPPORT=n
 
 # Proto
 CONFIG_PACKAGE_proto-bonding=y
-CONFIG_PACKAGE_luci-proto-quectel=y
+CONFIG_PACKAGE_luci-proto-quectel=n
 CONFIG_PACKAGE_luci-proto-wireguard=n
 CONFIG_PACKAGE_luci-proto-relay=y
 
@@ -288,7 +342,6 @@ CONFIG_PACKAGE_sgdisk=y
 CONFIG_PACKAGE_openssl-util=y
 CONFIG_PACKAGE_resize2fs=y
 CONFIG_PACKAGE_qrencode=y
-CONFIG_PACKAGE_smartmontools-drivedb=y
 CONFIG_PACKAGE_usbutils=y
 CONFIG_PACKAGE_default-settings=y
 CONFIG_PACKAGE_default-settings-chn=y
@@ -357,6 +410,21 @@ CONFIG_PACKAGE_chinadns-ng=n
 CONFIG_PACKAGE_trojan-go=n
 CONFIG_PACKAGE_xray-plugin=n
 CONFIG_PACKAGE_shadowsocks-rust-sslocal=n
+
+# 禁用默认的 Dropbear
+CONFIG_PACKAGE_dropbear=n
+
+# 启用 OpenSSH-Server
+CONFIG_PACKAGE_openssh-server=y # 安装 OpenSSH 服务
+CONFIG_PACKAGE_openssh-sftp-server=y # 安装 SFTP 支持
+
+# 禁用 uhttpd ，替换 nginx
+CONFIG_PACKAGE_luci-light=n
+CONFIG_PACKAGE_uhttpd=n
+CONFIG_PACKAGE_uhttpd-mod-ubus=n
+CONFIG_PACKAGE_luci-nginx=y
+CONFIG_PACKAGE_nginx-util=y
+
 EOF
 
 
