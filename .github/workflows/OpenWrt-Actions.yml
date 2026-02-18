@@ -221,11 +221,19 @@ jobs:
           cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
           cd openwrt
 
-          echo "执行脚本"
+          echo "执行单项脚本"
           if [ -f "${WORKPATH}/$CUSTOM_SH" ]; then
           (
             chmod +x ${WORKPATH}/$CUSTOM_SH
             /bin/bash "${WORKPATH}/$CUSTOM_SH"
+          )
+          fi
+
+          echo "执行全局脚本"
+          if [ -f "${GITHUB_WORKSPACE}/openwrt/build/$CUSTOM_SH" ]; then
+          (
+            chmod +x ${GITHUB_WORKSPACE}/openwrt/build/$CUSTOM_SH
+            /bin/bash "${GITHUB_WORKSPACE}/openwrt/build/$CUSTOM_SH"
           )
           fi
 
@@ -353,13 +361,17 @@ jobs:
           ${{ github.event.inputs.Custom_Commands }}
           echo "==== 自定义命令执行完毕 ===="
 
-      - name: 下载编译所需文件
+      - name: 调试结束
         run: |
           if [[ "${BUILD_MOD}" == "true" ]]; then
             curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=Github%20Actions%20调试模式运行已完成，请检查运行结果..." || true && curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=Github Actions 调试模式运行已完成，请检查运行结果..." >/dev/null 2>&1 && echo "ok..."
             echo "当前处于调试模式，环境配置已完成，跳过编译步骤。"
             exit 0
           fi
+
+      - name: 下载编译所需文件
+        if: env.BUILD_MOD == 'false'
+        run: |
           cd openwrt && make download -j$(($(nproc) * 2))
 
       - name: 开始编译固件

@@ -96,109 +96,11 @@ uci commit firewall
 
 EOF
 
-# =======================================================
-
-# 移除对uhttpd的依赖
-sed -i '/luci-light/d' feeds/luci/collections/luci/Makefile
-# 设置 Nginx 默认配置
-nginx_config_path="feeds/packages/net/nginx-util/files/nginx.config"
-# 使用 cat 和 heredoc 覆盖写入 nginx.config 文件
-cat > "$nginx_config_path" <<'EOF'
-config main 'global'
-        option uci_enable 'true'
-
-config server '_lan'
-        list listen '443 ssl default_server'
-        list listen '[::]:443 ssl default_server'
-        option server_name '_lan'
-        list include 'restrict_locally'
-        list include 'conf.d/*.locations'
-        option uci_manage_ssl 'self-signed'
-        option ssl_certificate '/etc/nginx/conf.d/_lan.crt'
-        option ssl_certificate_key '/etc/nginx/conf.d/_lan.key'
-        option ssl_session_cache 'shared:SSL:32k'
-        option ssl_session_timeout '64m'
-        option access_log 'off; # logd openwrt'
-
-config server 'http_only'
-        list listen '80'
-        list listen '[::]:80'
-        option server_name 'http_only'
-        list include 'conf.d/*.locations'
-        option access_log 'off; # logd openwrt'
-EOF
-
-
-nginx_template="feeds/packages/net/nginx-util/files/uci.conf.template"
-if [ -f "$nginx_template" ]; then
-  # 检查是否已存在配置，避免重复添加
-  if ! grep -q "client_body_in_file_only clean;" "$nginx_template"; then
-    sed -i "/client_max_body_size 128M;/a\\
-        client_body_in_file_only clean;\\
-        client_body_temp_path /mnt/tmp;" "$nginx_template"
-  fi
-fi
-
-luci_support_script="feeds/packages/net/nginx/files-luci-support/60_nginx-luci-support"
-if [ -f "$luci_support_script" ]; then
-  # 检查是否已经为 ubus location 应用了修复
-  if ! grep -q "client_body_in_file_only off;" "$luci_support_script"; then
-    echo "正在为 Nginx ubus location 配置应用修复..."
-    sed -i "/ubus_parallel_req 2;/a\\
-        client_body_in_file_only off;\\
-        client_max_body_size 1M;" "$luci_support_script"
-  fi
-fi
-sed -i 's|install_cron_job(CRON_C.*);|// &|' feeds/packages/net/nginx-util/src/nginx-ssl-util.hpp
-sed -i 's/remove_cron_job(CRON_CHECK);/// &/' feeds/packages/net/nginx-util/src/nginx-ssl-util.hpp
-
-# 检查 OpenClash 是否启用编译
-if grep -qE '^(CONFIG_PACKAGE_luci-app-openclash=n|# CONFIG_PACKAGE_luci-app-openclash=)' "${WORKPATH}/$CUSTOM_SH"; then
-  # OpenClash 未启用，不执行任何操作
-  echo "OpenClash 未启用编译"
-  echo 'rm -rf /etc/openclash' >> $ZZZ
-else
-  # OpenClash 已启用，执行配置
-  if grep -q "CONFIG_PACKAGE_luci-app-openclash=y" "${WORKPATH}/$CUSTOM_SH"; then
-    # 判断系统架构
-    arch=$(uname -m)  # 获取系统架构
-    case "$arch" in
-      x86_64)
-        arch="amd64"
-        ;;
-      aarch64|arm64)
-        arch="arm64"
-        ;;
-    esac
-    # OpenClash Meta 开始配置内核
-    echo "正在执行：为OpenClash下载内核"
-    mkdir -p $HOME/clash-core
-    mkdir -p $HOME/files/etc/openclash/core
-    cd $HOME/clash-core
-    # 下载Meta内核
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-$arch.tar.gz
-    if [[ $? -ne 0 ]];then
-      wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-$arch.tar.gz
-    else
-      echo "OpenClash Meta内核压缩包下载成功，开始解压文件"
-    fi
-    tar -zxvf clash-linux-$arch.tar.gz
-    if [[ -f "$HOME/clash-core/clash" ]]; then
-      mv -f $HOME/clash-core/clash $HOME/files/etc/openclash/core/clash_meta
-      chmod +x $HOME/files/etc/openclash/core/clash_meta
-      echo "OpenClash Meta内核配置成功"
-    else
-      echo "OpenClash Meta内核配置失败"
-    fi
-    rm -rf $HOME/clash-core/clash-linux-$arch.tar.gz
-    rm -rf $HOME/clash-core
-  fi
-fi
-
-# =======================================================
-
 # 修改退出命令到最后
 cd $HOME && sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
+
+# ================ 网络设置 =======================================
+
 
 # ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● #
 
