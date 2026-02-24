@@ -55,8 +55,8 @@ if [ -f "$luci_support_script" ]; then
 fi
 
 echo 删除证书定时更新计划任务
-sed -i 's|install_cron_job(CRON_C.*);|// &|' feeds/packages/net/nginx-util/src/nginx-ssl-util.hpp
-sed -i 's/remove_cron_job(CRON_CHECK);/// &/' feeds/packages/net/nginx-util/src/nginx-ssl-util.hpp
+sed -i 's#install_cron_job(CRON_C.*);#// &#' feeds/packages/net/nginx-util/src/nginx-ssl-util.hpp
+sed -i 's#remove_cron_job(CRON_CHECK);#// &#' feeds/packages/net/nginx-util/src/nginx-ssl-util.hpp
 
 # 检查 OpenClash 是否启用编译
 if grep -qE '^(CONFIG_PACKAGE_luci-app-openclash=n|# CONFIG_PACKAGE_luci-app-openclash=)' "${WORKPATH}/$CUSTOM_SH"; then

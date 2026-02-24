@@ -32,6 +32,10 @@ on:
         description: '缓存加速'
         type: boolean
         default: true
+      Build_SSH:
+        description: '开启SSH调试模式'
+        type: boolean
+        default: false
       Build_Mod:
         description: '调试模式，只配置环境不编译'
         type: boolean
@@ -89,6 +93,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       CACHE_BUILD: ${{ github.event.inputs.CACHE_BUILD || 'true' }}
+      BUILD_SSH: ${{ github.event.inputs.Build_SSH || 'false' }}
       BUILD_MOD: ${{ github.event.inputs.Build_Mod || 'false' }}
     if: needs.build-openwrt.outputs.selected_models != '[]' && (github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id)
     strategy:
@@ -102,7 +107,9 @@ jobs:
         run: |
           echo "正在编译目标设备: ${{ matrix.target }}"
           echo "是否开启缓存: ${CACHE_BUILD}"
+          echo "是否开启SSH: ${BUILD_SSH}"
           echo "是否为调试模式: ${BUILD_MOD}"
+          echo "调试命令: ${{ github.event.inputs.Custom_Commands }}"
 
       - name: Checkout 仓库
         uses: actions/checkout@v4
@@ -230,10 +237,10 @@ jobs:
           fi
 
           echo "执行全局脚本"
-          if [ -f "${GITHUB_WORKSPACE}/openwrt/build/$CUSTOM_SH" ]; then
+          if [ -f "${GITHUB_WORKSPACE}/openwrt/build/custom.sh" ]; then
           (
-            chmod +x ${GITHUB_WORKSPACE}/openwrt/build/$CUSTOM_SH
-            /bin/bash "${GITHUB_WORKSPACE}/openwrt/build/$CUSTOM_SH"
+            chmod +x ${GITHUB_WORKSPACE}/openwrt/build/custom.sh
+            /bin/bash "${GITHUB_WORKSPACE}/openwrt/build/custom.sh"
           )
           fi
 
@@ -360,6 +367,13 @@ jobs:
           echo "==== 开始执行自定义调试命令 ===="
           ${{ github.event.inputs.Custom_Commands }}
           echo "==== 自定义命令执行完毕 ===="
+
+      - name: SSH远程调试
+        if: env.Build_SSH == 'true'
+        timeout-minutes: 35
+        run: |
+          chmod +x ${GITHUB_WORKSPACE}/openwrt/build/debug-ssh.sh
+          /bin/bash "${GITHUB_WORKSPACE}/openwrt/build/debug-ssh.sh"
 
       - name: 调试结束
         run: |
