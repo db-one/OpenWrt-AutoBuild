@@ -370,7 +370,7 @@ jobs:
 
       - name: SSH远程调试
         if: env.Build_SSH == 'true'
-        timeout-minutes: 35
+        timeout-minutes: 32
         run: |
           chmod +x ${GITHUB_WORKSPACE}/openwrt/build/debug-ssh.sh
           /bin/bash "${GITHUB_WORKSPACE}/openwrt/build/debug-ssh.sh"
