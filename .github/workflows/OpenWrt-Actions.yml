@@ -32,7 +32,7 @@ on:
         description: '缓存加速'
         type: boolean
         default: true
-      Build_SSH:
+      BUILD_SSH:
         description: '开启SSH调试模式'
         type: boolean
         default: false
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       CACHE_BUILD: ${{ github.event.inputs.CACHE_BUILD || 'true' }}
-      BUILD_SSH: ${{ github.event.inputs.Build_SSH || 'false' }}
+      BUILD_SSH: ${{ github.event.inputs.BUILD_SSH || 'false' }}
       BUILD_MOD: ${{ github.event.inputs.Build_Mod || 'false' }}
     if: needs.build-openwrt.outputs.selected_models != '[]' && (github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id)
     strategy:
@@ -129,6 +129,7 @@ jobs:
           echo "UPLOAD_VMDK=${UPLOAD_VMDK}" >> $GITHUB_ENV
           echo "UPLOAD_IPK=${UPLOAD_IPK}" >> $GITHUB_ENV
           echo "UPLOAD_CONFIG=${UPLOAD_CONFIG}" >> $GITHUB_ENV
+          echo "UPLOAD_ISO=${UPLOAD_ISO}" >> $GITHUB_ENV
           echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
           echo "WECHAT_WORK_PUSH=${WECHAT_WORK_PUSH}" >> $GITHUB_ENV
           echo "TELEGRAM_BOT=${TELEGRAM_BOT}" >> $GITHUB_ENV
@@ -369,11 +370,12 @@ jobs:
           echo "==== 自定义命令执行完毕 ===="
 
       - name: SSH远程调试
-        if: env.Build_SSH == 'true'
+        if: env.BUILD_SSH == 'true'
         timeout-minutes: 32
         run: |
           chmod +x ${GITHUB_WORKSPACE}/openwrt/build/debug-ssh.sh
           /bin/bash "${GITHUB_WORKSPACE}/openwrt/build/debug-ssh.sh"
+
 
       - name: 调试结束
         run: |
@@ -474,7 +476,48 @@ jobs:
           name: ${{matrix.target}}_OpenWrt_buildinfo_${{ env.FILE_TIME }}
           path: ./artifact/buildinfo/
 
-      - name: 自动发布固件到 Releases
+      - name: 同步 img-installer 项目准备制作 ISO
+        if: env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
+        run: |
+          echo "检测到当前编译目标为 x86-64 架构，正在同步 ISO 打包工具..."
+          git clone https://github.com/wukongdaily/img-installer.git
+          chmod +x img-installer/custom.sh
+          chmod +x img-installer/supportFiles/custom/build.sh
+          chmod +x img-installer/autobuild/autobuild.sh
+
+      - name: 制作专属一键刷机 ISO
+        if: env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
+        run: |
+          # 直接去 ./artifact/firmware/ 目录下匹配带 efi 且以 .img 或 .img.gz 结尾的固件
+          firmware_file=$(ls ./artifact/firmware/*efi*.img* 2>/dev/null | head -n 1)
+          
+          # 创建临时目录，复制固件
+          mkdir -p ./tmp_iso_build
+          cp -f "$firmware_file" ./tmp_iso_build/target_firmware.img.gz
+          
+          echo "📦 正在使用临时固件副本 [ ./tmp_iso_build/target_firmware.img.gz ] 封装进 ISO..."
+          cd img-installer
+          
+          # 打包ISO镜像
+          bash autobuild/autobuild.sh "../tmp_iso_build/target_firmware.img.gz"
+          
+          # 重命名 ISO 镜像，防止多任务混淆
+          mv output/custom-installer-x86_64.iso output/${{ matrix.target }}-installer-x86_64.iso
+          echo "✅ ISO 制作成功: output/${{ matrix.target }}-installer-x86_64.iso"
+          
+          # 清理临时目录
+          rm -rf ../tmp_iso_build
+
+      - name: 上传ISO固件文件
+        if: env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.target}}_OpenWrt_iso_${{ env.FILE_TIME }}
+          path: img-installer/output/*-installer-x86_64.iso
+          # 💡 增加防错：如果万一没找到文件，忽略它而不是让编译红叉挂掉
+          if-no-files-found: ignore
+
+      - name: 自动发布固件及各自的 ISO 到 Releases
         uses: ncipollo/release-action@main
         if: env.BUILD_MOD == 'false' && env.UPLOAD_RELEASE == 'true'
         with:
@@ -497,9 +540,54 @@ jobs:
 
               ━━━━━━━━━━━━━━━━━━━━
 
-              🎉 [ ${{ env.FIRMWARE_MESSAGE }} ]固件下载
+              🎉 [ ${{ env.FIRMWARE_MESSAGE }} ] 固件及 ISO 镜像下载
+                 (提示：非 x86_64 架构固件不包含 ISO 镜像)
 
-          artifacts: ./artifact/firmware/*
+          artifacts: |
+            ./artifact/firmware/*
+            img-installer/output/*-installer-x86_64.iso
+
+          # 当找不到 ISO 文件时，不让构建失败，继续发布其他文件
+          artifactErrorsFailBuild: false
+
+      - name: 自动生成并保存固件与 ISO 下载直链
+        if: env.BUILD_MOD == 'false' && env.UPLOAD_RELEASE == 'true' && always()
+        run: |
+          echo "==== 正在计算最终下载链接 ===="
+          
+          # 拼接基础 Release 下载根路径
+          base_url="${{ env.GITHUB_RELEASE }}/download/${{ env.FILE_TIME2 }}-${{ matrix.target }}"
+          
+          # 创建或清空用于后续通知的链接文件
+          echo "   📥 本次编译直链下载: " > ./artifact/download_links.txt
+          
+          # 抓取当前编译出的固件文件名
+          full_path=$(ls ./artifact/firmware/*efi*.img* 2>/dev/null | head -n 1)
+          if [ -n "$full_path" ]; then
+            firmware_name=$(basename "$full_path")
+            firmware_download_url="${base_url}/${firmware_name}"
+            
+            echo "🔗 固件直链: $firmware_download_url"
+            echo "* 📦 固件下载: $firmware_download_url" >> ./artifact/download_links.txt
+          else
+            echo "⚠️ 未能抓取到固件文件名。"
+          fi
+          
+          # 如果是 x86 架构，才去拼接并打印 ISO 的直链
+          if [[ "${{ matrix.target }}" =~ "x86" ]]; then
+            iso_download_url="${base_url}/${{ matrix.target }}-installer-x86_64.iso"
+            
+            echo "🔗 专属ISO直链: $iso_download_url"
+            echo "* 💿 刷机ISO下载: $iso_download_url" >> ./artifact/download_links.txt
+          fi
+          
+          echo "========================================"
+          echo "链接已写入 ./artifact/download_links.txt"
+          
+          # 写入下载地址到变量
+          echo "DOWNLOAD_LINKS<<EOF" >> $GITHUB_ENV
+          cat ./artifact/download_links.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: 删除运行记录
         uses: Mattraks/delete-workflow-runs@v2
@@ -520,36 +608,42 @@ jobs:
       - name: 编译成功信息通知-企业微信
         if: env.BUILD_MOD == 'false' && env.WECHAT_WORK_PUSH == 'true'
         run: |
-          curl "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}&message=\
-          您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！%0a%0a\
-          🎈编译时间：${{ env.FILE_TIME1 }}%0a%0a\
-          🖥内核版本：${{ env.KERNEL_PATCHVER }}%0a%0a\
-          ⏰编译用时：${{ env.BUILD_TIME }}%0a%0a\
-          🎉发布地址：${{ env.GITHUB_RELEASE }}%0a%0a\
-          🌴固件已经编译完成🎈！！！" || true
+          # 构造消息内容
+          WECHAT_MSG="您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！
+          
+          🎈 编译时间：${{ env.FILE_TIME1 }}
+          🖥 内核版本：${{ env.KERNEL_PATCHVER }}
+          ⏰ 编译用时：${{ env.BUILD_TIME }}
+          
+          🌴 固件已经编译完成 🎈！！！"
+
+          curl -s "http://${{ secrets.WECHAT_WORK_URL }}/push?token=${{ secrets.WECHAT_WORK_TOKEN }}" \
+            --data-urlencode "message=$WECHAT_MSG" || true
 
       - name: 编译成功信息通知-Telegram
         if: env.BUILD_MOD == 'false' && env.TELEGRAM_BOT == 'true'
         run: |
-          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=
+          # 构造消息内容
+          TG_MSG="您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！
 
-             您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！
+          🖥 内核版本：${{ env.KERNEL_PATCHVER }}
+          
+          🎈 编译时间：${{ env.FILE_TIME1 }}
+          
+          ⏰ 编译用时：${{ env.BUILD_TIME }}
+          
+          🎉 发布地址：${{ env.GITHUB_RELEASE }}/tag/${{ env.FILE_TIME2 }}-${{ matrix.target }}
 
-            🖥 内核版本：${{ env.KERNEL_PATCHVER }}
+          ${{ env.DOWNLOAD_LINKS }}
 
-            🎈 编译时间：${{ env.FILE_TIME1 }}
+          📦 包含插件列表：
+          ${{ env.PACKAGED_PLUGINS }}
 
-            ⏰ 编译用时：${{ env.BUILD_TIME }}
+          🌴 固件已经编译完成 🎈！！！"
 
-            🎉 发布地址：${{ env.GITHUB_RELEASE }}
-
-            📦 包含插件列表：
-
-            ${{ env.PACKAGED_PLUGINS }}
-
-            🌴 固件已经编译完成 🎈！！！
-
-            " >/dev/null 2>&1 && echo "ok..."
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --data-urlencode "text=$TG_MSG" >/dev/null 2>&1 && echo "Telegram 通知发送成功！"
 
 
 

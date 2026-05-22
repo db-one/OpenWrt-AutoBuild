@@ -327,6 +327,12 @@ CONFIG_PACKAGE_uhttpd-mod-ubus=n
 CONFIG_PACKAGE_luci-nginx=y
 CONFIG_PACKAGE_nginx-util=y
 
+# 禁用旧版 kmod-ipt-fullconenat
+# CONFIG_PACKAGE_kmod-ipt-fullconenat is not set
+# CONFIG_PACKAGE_kmod-nf-ipt is not set
+# CONFIG_PACKAGE_kmod-nf-ipt6 is not set
+# CONFIG_PACKAGE_kmod-ipt-core is not set
+
 EOF
 
 

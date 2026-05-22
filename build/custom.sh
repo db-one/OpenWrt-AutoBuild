@@ -81,10 +81,10 @@ else
     mkdir -p $HOME/clash-core
     mkdir -p $HOME/files/etc/openclash/core
     cd $HOME/clash-core
-    # 下载Meta内核
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-$arch.tar.gz
+    # 下载Meta Smart内核
+    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/smart/clash-linux-$arch.tar.gz
     if [[ $? -ne 0 ]];then
-      wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-$arch.tar.gz
+      wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/smart/clash-linux-$arch.tar.gz
     else
       echo "OpenClash Meta内核压缩包下载成功，开始解压文件"
     fi
@@ -102,6 +102,9 @@ else
   # 返回工作目录
   cd $HOME
 fi
+
+# 切换为 Smart 内核
+sed -i "/config openclash 'config'/a \	option core_type 'Smart'" package/dbone-packages/luci-app-openclash/root/etc/config/openclash
 
 # 写入 proxy-server-nameserver 参数
 sed -i '/ruby_edit "$CONFIG_FILE" "\[.dns.\]\[.proxy-server-nameserver.\]"/a\    ruby_edit "$CONFIG_FILE" "['\''dns'\''\]['\''proxy-server-nameserver'\'']" "['\''https://doh.pub/dns-query'\'','\''https://dns.alidns.com/dns-query'\'','\''https://223.5.5.5:443/dns-query'\'','\''https://dns.cloudflare.com/dns-query'\'','\''https://dns.google/dns-query'\'']"' package/dbone-packages/luci-app-openclash/root/etc/openclash/custom/openclash_custom_overwrite.sh
