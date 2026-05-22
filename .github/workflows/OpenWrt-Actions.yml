@@ -112,7 +112,7 @@ jobs:
           echo "调试命令: ${{ github.event.inputs.Custom_Commands }}"
 
       - name: Checkout 仓库
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 检测脚本设置
         run: |
