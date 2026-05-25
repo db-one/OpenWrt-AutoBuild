@@ -104,7 +104,7 @@ else
 fi
 
 # 切换为 Smart 内核
-sed -i "/config openclash 'config'/a \	option core_type 'Smart'" package/dbone-packages/luci-app-openclash/root/etc/config/openclash
+sed -i "s/option smart_enable '0'/option smart_enable '1'/g" package/dbone-packages/luci-app-openclash/root/etc/config/openclash
 
 # 写入 proxy-server-nameserver 参数
 sed -i '/ruby_edit "$CONFIG_FILE" "\[.dns.\]\[.proxy-server-nameserver.\]"/a\    ruby_edit "$CONFIG_FILE" "['\''dns'\''\]['\''proxy-server-nameserver'\'']" "['\''https://doh.pub/dns-query'\'','\''https://dns.alidns.com/dns-query'\'','\''https://223.5.5.5:443/dns-query'\'','\''https://dns.cloudflare.com/dns-query'\'','\''https://dns.google/dns-query'\'']"' package/dbone-packages/luci-app-openclash/root/etc/openclash/custom/openclash_custom_overwrite.sh

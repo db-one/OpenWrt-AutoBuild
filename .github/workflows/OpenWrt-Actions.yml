@@ -435,49 +435,49 @@ jobs:
           echo "BUILD_TIME=${HOUR}时${MIN}分${SEC}秒" >> $GITHUB_ENV
 
       - name: 上传固件文件
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_FIRMWARE == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_FIRMWARE == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.target}}_OpenWrt_firmware_${{ env.FILE_TIME }}
           path: ./artifact/firmware/
 
       - name: 上传PVE/KVM镜像文件
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_QCOW2 == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_QCOW2 == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.target}}_OpenWrt_pvekvm_${{ env.FILE_TIME }}
           path: ./artifact/pvekvm/
 
       - name: 上传Hyper-V镜像文件
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_VHDX == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_VHDX == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.target}}_OpenWrt_hyperv_${{ env.FILE_TIME }}
           path: ./artifact/hyperv/
 
       - name: 上传VMware镜像文件
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_VMDK == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_VMDK == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.target}}_OpenWrt_vmware_${{ env.FILE_TIME }}
           path: ./artifact/vmware/
 
       - name: 上传插件包文件
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_IPK == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_IPK == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.target}}_OpenWrt_package_${{ env.FILE_TIME }}
           path: ./artifact/package/
 
       - name: 上传固件信息
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_CONFIG == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_CONFIG == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.target}}_OpenWrt_buildinfo_${{ env.FILE_TIME }}
           path: ./artifact/buildinfo/
 
       - name: 同步 img-installer 项目准备制作 ISO
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
         run: |
           echo "检测到当前编译目标为 x86-64 架构，正在同步 ISO 打包工具..."
           git clone https://github.com/wukongdaily/img-installer.git
@@ -486,7 +486,7 @@ jobs:
           chmod +x img-installer/autobuild/autobuild.sh
 
       - name: 制作专属一键刷机 ISO
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
         run: |
           # 直接去 ./artifact/firmware/ 目录下匹配带 efi 且以 .img 或 .img.gz 结尾的固件
           firmware_file=$(ls ./artifact/firmware/*efi*.img* 2>/dev/null | head -n 1)
@@ -509,17 +509,15 @@ jobs:
           rm -rf ../tmp_iso_build
 
       - name: 上传ISO固件文件
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
         uses: actions/upload-artifact@v4
         with:
-          name: ${{matrix.target}}_OpenWrt_iso_${{ env.FILE_TIME }}
+          name: ${{matrix.target}}_OpenWrt_ISO_${{ env.FILE_TIME }}
           path: img-installer/output/*-installer-x86_64.iso
-          # 💡 增加防错：如果万一没找到文件，忽略它而不是让编译红叉挂掉
-          if-no-files-found: ignore
 
       - name: 自动发布固件及各自的 ISO 到 Releases
         uses: ncipollo/release-action@main
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_RELEASE == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_RELEASE == 'true'
         with:
           name: ${{ env.FILE_TIME1 }} 「 ${{ env.FIRMWARE_MESSAGE }} 」
           tag: ${{ env.FILE_TIME2 }}-${{matrix.target}}
@@ -551,7 +549,7 @@ jobs:
           artifactErrorsFailBuild: false
 
       - name: 自动生成并保存固件与 ISO 下载直链
-        if: env.BUILD_MOD == 'false' && env.UPLOAD_RELEASE == 'true' && always()
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_RELEASE == 'true' && always()
         run: |
           echo "==== 正在计算最终下载链接 ===="
           
@@ -606,7 +604,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
 
       - name: 编译成功信息通知-企业微信
-        if: env.BUILD_MOD == 'false' && env.WECHAT_WORK_PUSH == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.WECHAT_WORK_PUSH == 'true'
         run: |
           # 构造消息内容
           WECHAT_MSG="您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！
@@ -621,7 +619,7 @@ jobs:
             --data-urlencode "message=$WECHAT_MSG" || true
 
       - name: 编译成功信息通知-Telegram
-        if: env.BUILD_MOD == 'false' && env.TELEGRAM_BOT == 'true'
+        if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.TELEGRAM_BOT == 'true'
         run: |
           # 构造消息内容
           TG_MSG="您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！
