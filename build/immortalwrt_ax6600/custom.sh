@@ -287,7 +287,8 @@ CONFIG_PACKAGE_luci-app-zerotier=n
 CONFIG_PACKAGE_luci-app-athena-led=y
 CONFIG_PACKAGE_luci-i18n-athena-led-zh-cn=y
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
-CONFIG_PACKAGE_luci-app-filetransfer=y #文件传输
+CONFIG_PACKAGE_luci-app-filetransfer=n #文件传输
+CONFIG_PACKAGE_luci-app-quickfile=y #quickfile文件管理器
 
 # istorex插件
 CONFIG_PACKAGE_luci-app-istorex=y

@@ -145,8 +145,8 @@ EOF
 
 # 设置固件大小:
 cat >> .config <<EOF
-CONFIG_TARGET_KERNEL_PARTSIZE=16
-CONFIG_TARGET_ROOTFS_PARTSIZE=512
+CONFIG_TARGET_KERNEL_PARTSIZE=32
+CONFIG_TARGET_ROOTFS_PARTSIZE=900
 EOF
 
 # 固件压缩:
@@ -265,7 +265,8 @@ cat >> .config <<EOF
 CONFIG_PACKAGE_luci-app-firewall=y
 CONFIG_PACKAGE_luci-app-package-manager=y
 CONFIG_PACKAGE_luci-app-accesscontrol=n #上网时间控制
-CONFIG_PACKAGE_luci-app-filetransfer=y #文件传输
+CONFIG_PACKAGE_luci-app-filetransfer=n #文件传输
+CONFIG_PACKAGE_luci-app-quickfile=y #quickfile文件管理器
 CONFIG_PACKAGE_luci-app-frpc=y #Frpc客户端
 CONFIG_PACKAGE_luci-app-upnp=n #UPNP服务器
 CONFIG_PACKAGE_luci-app-vlmcsd=n #KMS激活服务器

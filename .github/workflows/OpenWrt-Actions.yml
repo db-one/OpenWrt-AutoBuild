@@ -356,7 +356,7 @@ jobs:
           cp openwrt/tmp/.packageinfo ./upload_tmp/${{matrix.target}}.packageinfo
 
       - name: 上传插件列表和依赖归递文件
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.target}}_OpenWrt_packageinfo_${{ env.FILE_TIME }}
           path: ./upload_tmp/
@@ -436,42 +436,42 @@ jobs:
 
       - name: 上传固件文件
         if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_FIRMWARE == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.target}}_OpenWrt_firmware_${{ env.FILE_TIME }}
           path: ./artifact/firmware/
 
       - name: 上传PVE/KVM镜像文件
         if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_QCOW2 == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.target}}_OpenWrt_pvekvm_${{ env.FILE_TIME }}
           path: ./artifact/pvekvm/
 
       - name: 上传Hyper-V镜像文件
         if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_VHDX == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.target}}_OpenWrt_hyperv_${{ env.FILE_TIME }}
           path: ./artifact/hyperv/
 
       - name: 上传VMware镜像文件
         if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_VMDK == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.target}}_OpenWrt_vmware_${{ env.FILE_TIME }}
           path: ./artifact/vmware/
 
       - name: 上传插件包文件
         if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_IPK == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.target}}_OpenWrt_package_${{ env.FILE_TIME }}
           path: ./artifact/package/
 
       - name: 上传固件信息
         if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_CONFIG == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.target}}_OpenWrt_buildinfo_${{ env.FILE_TIME }}
           path: ./artifact/buildinfo/
@@ -510,7 +510,7 @@ jobs:
 
       - name: 上传ISO固件文件
         if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.UPLOAD_ISO == 'true' && (contains(matrix.target, 'x86_64') || contains(matrix.target, 'x86-64'))
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{matrix.target}}_OpenWrt_ISO_${{ env.FILE_TIME }}
           path: img-installer/output/*-installer-x86_64.iso
@@ -596,12 +596,12 @@ jobs:
           keep_minimum_runs: 0
 
       - name: 删除自动发布的旧固件
-        uses: shidahuilang/delete-older-releases@main
+        uses: nikhilbadyal/ghaction-rm-releases@v0.8.0
         with:
-          keep_latest: 20         #保留多少个releases不删除
-          delete_tags: true
-        env:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+          RELEASE_PATTERN: ".*"     # 匹配所有 Release 标签（也可以写正则，比如 "^v.*"）
+          RELEASES_TO_KEEP: 20       # 保留最新的 4 个
+          #DAYS_TO_KEEP: 30          # 或者保留 30 天内的（二者满足其一即保留）
 
       - name: 编译成功信息通知-企业微信
         if: steps.compile.outcome == 'success' && env.BUILD_MOD == 'false' && env.WECHAT_WORK_PUSH == 'true'
