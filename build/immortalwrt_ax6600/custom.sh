@@ -102,6 +102,34 @@ cd $HOME && sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
 
 # ================ 网络设置 =======================================
 
+echo "========== 修复 Linux 6.18 iptables 冲突 =========="
+
+BUILD_DIR="."
+include_netfilter_mk="$BUILD_DIR/include/netfilter.mk"
+netfilter_mk="$BUILD_DIR/package/kernel/linux/modules/netfilter.mk"
+
+# 修复 NF_IPT 映射（IPv4）
+if grep -q '$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT,CONFIG_IP_NF_IPTABLES, $(P_V4)ip_tables),))' "$include_netfilter_mk"; then
+    echo "修正 NF_IPT 映射..."
+    sed -i 's@$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT,CONFIG_IP_NF_IPTABLES, $(P_V4)ip_tables),))@$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT,CONFIG_IP_NF_IPTABLES, $(P_V4)ip_tables, lt 6.12),))@' "$include_netfilter_mk"
+    sed -i '/CONFIG_IP_NF_IPTABLES, $(P_V4)ip_tables, lt 6\.12)/a$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT,CONFIG_IP_NF_IPTABLES_LEGACY, $(P_V4)ip_tables, ge 6.12),))' "$include_netfilter_mk"
+fi
+
+# 修复 NF_IPT6 映射（IPv6）
+if grep -q '$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT6,CONFIG_IP6_NF_IPTABLES, $(P_V6)ip6_tables),))' "$include_netfilter_mk"; then
+    echo "修正 NF_IPT6 映射..."
+    sed -i 's@$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT6,CONFIG_IP6_NF_IPTABLES, $(P_V6)ip6_tables),))@$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT6,CONFIG_IP6_NF_IPTABLES, $(P_V6)ip6_tables, lt 6.12),))@' "$include_netfilter_mk"
+    sed -i '/CONFIG_IP6_NF_IPTABLES, $(P_V6)ip6_tables, lt 6\.12)/a$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT6,CONFIG_IP6_NF_IPTABLES_LEGACY, $(P_V6)ip6_tables, ge 6.12),))' "$include_netfilter_mk"
+fi
+
+# 修复依赖关系 - 这是关键！6.18 需要跳过 kmod-nf-ipt
+if grep -q 'DEPENDS:=+!LINUX_6_12:kmod-iptables' "$netfilter_mk"; then
+    echo "修正依赖关系..."
+    sed -i 's/DEPENDS:=+!LINUX_6_12:kmod-iptables/DEPENDS:=+(!(LINUX_6_12||LINUX_6_18)):kmod-iptables/' "$netfilter_mk"
+    echo "✓ 已为 Linux 6.18 禁用 kmod-nf-ipt"
+fi
+
+echo "========== ✓ iptables 冲突修复完成 =========="
 
 # ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● #
 
@@ -327,13 +355,6 @@ CONFIG_PACKAGE_uhttpd=n
 CONFIG_PACKAGE_uhttpd-mod-ubus=n
 CONFIG_PACKAGE_luci-nginx=y
 CONFIG_PACKAGE_nginx-util=y
-
-# 禁用旧版 kmod-ipt-fullconenat
-# CONFIG_PACKAGE_kmod-ipt-fullconenat is not set
-# CONFIG_PACKAGE_kmod-nf-ipt is not set
-# CONFIG_PACKAGE_kmod-nf-ipt6 is not set
-# CONFIG_PACKAGE_kmod-ipt-core is not set
-
 EOF
 
 
