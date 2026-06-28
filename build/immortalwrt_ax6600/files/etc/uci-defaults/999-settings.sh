@@ -71,7 +71,7 @@ configure_wifi() {
 set wireless.radio${radio}.channel="${channel}"
 set wireless.radio${radio}.htmode="${htmode}"
 set wireless.radio${radio}.mu_beamformer='1'
-set wireless.radio${radio}.country='CN'
+set wireless.radio${radio}.country='US'
 set wireless.radio${radio}.txpower="${txpower}"
 set wireless.radio${radio}.cell_density='0'
 set wireless.radio${radio}.disabled='0'
@@ -95,8 +95,8 @@ EOC
 # 配置无线接口
 #            接口顺序    信道     HT频宽      功率      SSID               密码            加密方式
 configure_wifi 0      149     'HE80'      24     'JDC_Guest'       '123456789'     'sae-mixed'
-configure_wifi 1      6       'HE40'      25     'MX-SmartHome'    '123456789'     'psk2+ccmp'
-configure_wifi 2      44      'HE160'     25     'AX6600_5G'       '123456789'     'sae-mixed'
+configure_wifi 1      11      'HE20'      24     'MX-SmartHome'    '123456789'     'psk2+ccmp'
+configure_wifi 2      44      'HE160'     24     'AX6600_5G'       '123456789'     'sae-mixed'
 
 # 添加 radio1 的第二个接口
 uci set wireless.wifinet3=wifi-iface

@@ -38,7 +38,6 @@ echo "uci set luci.main.mediaurlbase=/luci-static/argon" >> $ZZZ                
 BUILDTIME=$(TZ=UTC-8 date "+%Y.%m.%d") && sed -i "s/\(_('Firmware Version'), *\)/\1 ('ONE build $BUILDTIME @ ') + /" feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js               # 增加自己个性名称
 # wget -q https://raw.githubusercontent.com/VIKINGYFY/immortalwrt/refs/heads/main/package/firmware/ath11k-firmware/Makefile -O package/firmware/ath11k-firmware/Makefile --no-check-certificate               # 更新 ath11k-firmware Makefile
 
-
 # ●●●●●●●●●●●●●●●●●●●●●●●●定制部分●●●●●●●●●●●●●●●●●●●●●●●● #
 
 # ========================性能跑分========================
@@ -104,9 +103,8 @@ cd $HOME && sed -i '/exit 0/d' $ZZZ && echo "exit 0" >> $ZZZ
 
 echo "========== 修复 Linux 6.18 iptables 冲突 =========="
 
-BUILD_DIR="."
-include_netfilter_mk="$BUILD_DIR/include/netfilter.mk"
-netfilter_mk="$BUILD_DIR/package/kernel/linux/modules/netfilter.mk"
+include_netfilter_mk="include/netfilter.mk"
+netfilter_mk="package/kernel/linux/modules/netfilter.mk"
 
 # 修复 NF_IPT 映射（IPv4）
 if grep -q '$(eval $(if $(NF_KMOD),$(call nf_add,NF_IPT,CONFIG_IP_NF_IPTABLES, $(P_V4)ip_tables),))' "$include_netfilter_mk"; then
@@ -208,10 +206,11 @@ CONFIG_NSS_FIRMWARE_VERSION_12_2=y
 CONFIG_PACKAGE_sqm-scripts-nss=y
 CONFIG_PACKAGE_kmod-qca-mcs=y
 CONFIG_KERNEL_SKB_RECYCLER=y
+CONFIG_KERNEL_SKB_RECYCLER_MULTI_CPU=y
 CONFIG_PACKAGE_kmod-ath11k-pci=m
-CONFIG_NSS_DRV_WIFI_MESH_ENABLE=n
-CONFIG_PACKAGE_MAC80211_MESH=n
-CONFIG_ATH11K_NSS_MESH_SUPPORT=n
+CONFIG_NSS_DRV_WIFI_MESH_ENABLE=y
+CONFIG_PACKAGE_MAC80211_MESH=y
+CONFIG_ATH11K_NSS_MESH_SUPPORT=y
 
 # Proto
 CONFIG_PACKAGE_proto-bonding=y
