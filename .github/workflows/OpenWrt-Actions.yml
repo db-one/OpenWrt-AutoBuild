@@ -560,7 +560,7 @@ jobs:
           echo "   📥 本次编译直链下载: " > ./artifact/download_links.txt
           
           # 抓取当前编译出的固件文件名
-          full_path=$(ls ./artifact/firmware/*efi*.img* 2>/dev/null | head -n 1)
+          full_path=$(ls ./artifact/firmware/*efi*.img* ./artifact/firmware/*squashfs-sysupgrade.bin* 2>/dev/null | head -n 1)
           if [ -n "$full_path" ]; then
             firmware_name=$(basename "$full_path")
             firmware_download_url="${base_url}/${firmware_name}"
