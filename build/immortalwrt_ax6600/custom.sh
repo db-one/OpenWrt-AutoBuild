@@ -15,8 +15,17 @@ git clone https://github.com/db-one/dbone-packages.git -b 23.05 package/dbone-pa
 rm -rf feeds/luci/applications/luci-app-qbittorrent
 rm -rf feeds/luci/applications/luci-app-openclash
 rm -rf feeds/luci/applications/luci-app-attendedsysupgrade
-rm -rf feeds/luci/themes/luci-theme-argon
 rm -rf package/dbone-packages/passwall/packages/v2ray-geoview
+rm -rf feeds/luci/themes/luci-theme-argon
+rm -rf feeds/luci/applications/luci-app-argon-config
+rm -rf package/dbone-packages/luci-theme-argon/compat/luci-app-argon-config
+find package/dbone-packages/luci-theme-argon/po -name 'argon-config.po' -delete
+
+# 修复libffi问题
+mkdir -p package/libs/libffi
+curl -fsSL \
+  https://raw.githubusercontent.com/immortalwrt/packages/openwrt-24.10/libs/libffi/Makefile \
+  -o package/libs/libffi/Makefile || exit 1
 
 # 安装源
 ./scripts/feeds install -a -f
@@ -294,6 +303,7 @@ CONFIG_PACKAGE_iptables-mod-conntrack-extra=y
 
 # LuCI主题:
 CONFIG_PACKAGE_luci-theme-argon=y
+CONFIG_PACKAGE_luci-app-argon-config=n #argon主题设置
 
 # Enable Luci App
 CONFIG_PACKAGE_luci-app-adguardhome=n
@@ -315,7 +325,7 @@ CONFIG_PACKAGE_luci-app-athena-led=y
 CONFIG_PACKAGE_luci-i18n-athena-led-zh-cn=y
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
 CONFIG_PACKAGE_luci-app-filetransfer=n #文件传输
-CONFIG_PACKAGE_luci-app-quickfile=y #quickfile文件管理器
+# CONFIG_PACKAGE_luci-app-quickfile=y #quickfile文件管理器
 
 # istorex插件
 CONFIG_PACKAGE_luci-app-istorex=y

@@ -131,10 +131,10 @@ cat >> package/dbone-packages/luci-app-openclash/root/etc/openclash/custom/openc
 - DOMAIN-SUFFIX,eastus.tts.speech.microsoft.com,🚀 节点选择
 
 # ==========微软New Bing规则==========
-- DOMAIN-SUFFIX,bing.com,💬 Ai平台
-- DOMAIN-SUFFIX,bingapis.com,💬 Ai平台
-- DOMAIN-SUFFIX,edge.microsoft.com,💬 Ai平台
-- DOMAIN-SUFFIX,copilot.microsoft.com,💬 Ai平台
+# - DOMAIN-SUFFIX,bing.com,💬 Ai平台
+# - DOMAIN-SUFFIX,bingapis.com,💬 Ai平台
+# - DOMAIN-SUFFIX,edge.microsoft.com,💬 Ai平台
+# - DOMAIN-SUFFIX,copilot.microsoft.com,💬 Ai平台
 
 # ==========TMM==========
 - DOMAIN-SUFFIX,tmdb.org,🚀 节点选择
