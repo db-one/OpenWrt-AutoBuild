@@ -17,9 +17,6 @@ rm -rf feeds/luci/applications/luci-app-openclash
 rm -rf feeds/luci/applications/luci-app-attendedsysupgrade
 rm -rf package/dbone-packages/passwall/packages/v2ray-geoview
 rm -rf feeds/luci/themes/luci-theme-argon
-rm -rf feeds/luci/applications/luci-app-argon-config
-rm -rf package/dbone-packages/luci-theme-argon/compat/luci-app-argon-config
-find package/dbone-packages/luci-theme-argon/po -name 'argon-config.po' -delete
 
 # 修复libffi问题
 mkdir -p package/libs/libffi
@@ -303,7 +300,6 @@ CONFIG_PACKAGE_iptables-mod-conntrack-extra=y
 
 # LuCI主题:
 CONFIG_PACKAGE_luci-theme-argon=y
-CONFIG_PACKAGE_luci-app-argon-config=n #argon主题设置
 
 # Enable Luci App
 CONFIG_PACKAGE_luci-app-adguardhome=n

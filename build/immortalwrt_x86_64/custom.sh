@@ -17,9 +17,6 @@ rm -rf feeds/luci/applications/luci-app-openclash
 rm -rf feeds/luci/applications/luci-app-attendedsysupgrade
 rm -rf package/dbone-packages/passwall/packages/v2ray-geoview
 rm -rf feeds/luci/themes/luci-theme-argon
-rm -rf feeds/luci/applications/luci-app-argon-config
-rm -rf package/dbone-packages/luci-theme-argon/compat/luci-app-argon-config
-find package/dbone-packages/luci-theme-argon/po -name 'argon-config.po' -delete
 
 # 安装源
 ./scripts/feeds install -a -f
@@ -213,7 +210,6 @@ CONFIG_PACKAGE_luci-app-nikki=y #nikki 客户端
 # CONFIG_PACKAGE_luci-app-smartdns=y #smartdns服务器
 # CONFIG_PACKAGE_luci-app-adguardhome=y #ADguardhome
 CONFIG_PACKAGE_luci-app-poweroff=y #关机（增加关机功能）
-CONFIG_PACKAGE_luci-app-argon-config=n #argon主题设置
 # CONFIG_PACKAGE_luci-app-autotimeset=y #定时重启系统，网络
 # CONFIG_PACKAGE_luci-app-ddnsto=y #小宝开发的DDNS.to内网穿透
 # CONFIG_PACKAGE_ddnsto=y #DDNS.to内网穿透软件包
