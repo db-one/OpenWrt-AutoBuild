@@ -21,6 +21,7 @@ git clone https://github.com/db-one/dbone-packages.git -b 23.05 package/dbone-pa
 rm -rf feeds/luci/applications/luci-app-qbittorrent
 rm -rf feeds/luci/applications/luci-app-openclash
 rm -rf feeds/luci/themes/luci-theme-argon
+rm -rf feeds/luci/applications/luci-app-argon-config
 
 # 安装源
 ./scripts/feeds install -a -f

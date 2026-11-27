@@ -17,6 +17,7 @@ rm -rf feeds/luci/applications/luci-app-openclash
 rm -rf feeds/luci/applications/luci-app-attendedsysupgrade
 rm -rf package/dbone-packages/passwall/packages/v2ray-geoview
 rm -rf feeds/luci/themes/luci-theme-argon
+rm -rf feeds/luci/applications/luci-app-argon-config
 
 # 修复libffi问题
 mkdir -p package/libs/libffi
